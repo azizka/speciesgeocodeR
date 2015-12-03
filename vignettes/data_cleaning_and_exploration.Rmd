@@ -1,0 +1,338 @@
+---
+title: "Data cleaning and exploration with speciesgeocodeR"
+author: "Alexander Zizka"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 2
+header-includes: \usepackage{graphicx}
+bibliography: tutorial_literature.bib
+vignette: "%\\VignetteIndexEntry{Vignette}\n%\\VignetteEngine{knitr::rmarkdown}
+  \n%\\VignetteEncoding{UTF-8}\n"
+---
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.align = "center", warning=FALSE, message=FALSE)
+```
+
+\newpage  
+
+#Introduction  
+SpeciesgeocodeR is an R-package for the exploration, cleaning and preparation of large scale species distribution data for biogeographic and macro-evolutionary analyses. The package provides functions for the automated cleaning of coordinates, the fast and reproducible classification of point occurrences to geographic areas (including elevation and minimum occurrence thresholds) with an export of the results in nexus or BioGeoBEARS format, as well functions to explore the occurrence data to facilitate data-cleaning and interpretation. This includes automated summary statistics as well as maps and the calculation and visualization of coexistence matrices, species richness patterns and species ranges. The package is designed to be user-friendly: formative output can be calculated directly from text files with on single command. SpeciesgeocodeR has particularly been tested for global scale data sets.
+
+This tutorial provides instructions for the major functionality of the package using an example data set of Lemur distributions from the Global Biodiversity Information Facility (www.gbif.org). There is a detailed description of each function available with `?` plus function name (e.g. `?GeoClean`). If you have no experience with R you might want to have a look at Crawley [-@crawley2012]. Alternatively you can use the python version of SpeciesgeocodeR [@topel2014] for some functionality of the package. SpeciesgeocodeR is mainly based on functions of the
+maps [@becker2013], maptools [@bivand2013b], raster [@hijmans2014], rgeos [@bivand2014] and sp [@pebesma2005; @bivand2013] packages. Please ask questions questions and report bugs to speciesgeocodeR@googlegroups.  
+  
+  
+##Features of the package
+
+  * automated cleaning of geographic data sets
+  * classification of point occurrences to geographic areas for large datasets
+  * inclusion of multiple elevation thresholds and a minimum occurrence threshold into the classification
+  * output as nexus and BioGeoBEARS format
+  * summary statistics and -maps
+  * easy-to-use wrapper function
+  * coexistence matrix calculation
+  * species richness maps
+  * batch calculation of species ranges and range sizes
+
+\newpage
+
+#Example data
+
+```{r, warning = F, echo = F}
+library(speciesgeocodeR)
+```
+
+We will use distribution data of Madagascan Lemur species and a simplified version of the WWF biomes of Madagascar as examples in this tutorial. The data are distributed in R data format or as .txt files with the package. Use `data(package = "speciesgeocodeR")` to see all example dataset. Most functions of speciesgeocodeR can accept file paths as arguments. The following lines of code will load the example occurrences and areas, and store them in R objects called "lemurs" and "mdg_poly".
+
+```{r, warning = F}
+#occurrences
+data(lemurs)
+
+#areas
+data(mdg_poly)
+```
+
+You can load your own data from text or shape files by replacing the "system.file("extdata","lemurs.txt", package = "speciesgeocodeR")" or "system.file("extdata","mdg_biomes_simple.txt", package = "speciesgeocodeR")" in the next example by the path to your input files.
+
+```{r, warning = F}
+#occurrences
+occ <- read.table(system.file("extdata","lemurs.txt", package = "speciesgeocodeR"),
+                  row.names = NULL)
+
+#areas
+pol <- read.table(system.file("extdata","mdg_biomes_simple.txt", 
+                              package = "speciesgeocodeR"), row.names = NULL)
+```
+
+#Automated cleaning of geographic data  
+The `GeoClean` function can be used to check geographic occurrence data for coordinate integrity and to flag potential problems that are known to occur with data from public databases. Load the data from a .txt file with three obligatory columns, named "identifier" (species name), "XCOOR" (decimal longitude) and "YCOOR" (decimal latitude) and an optional "country"" column (ISO2 or ISO3 code) for more complex tests. For example
+
+```{r, warning = F, echo = F}
+library(speciesgeocodeR)
+data(lemurs_test)
+#Example for occurrence input file
+head(lemurs_test)
+```
+  
+We will test the function on the lemurs_test dataset, which deliberately includes problematic coordinates. We will first perform some simple test for coordinate validity. Each argument of `GeoClean` represents one test, see `?GeoClean` for details.
+
+```{r, warning = F, fig.width = 7, fig.height = 4}
+data(lemurs_test)
+
+#A vector, FALSE if one of the test failed
+tt <- GeoClean(lemurs_test, isna = TRUE, isnumeric = TRUE, 
+               coordinatevalidity = TRUE, containszero = TRUE, 
+               zerozero = TRUE, zerozerothresh = 1, 
+               latequallong = TRUE)
+
+#Alternatively a data.frame with results from each test; outp = "detailed"
+tt.long <- GeoClean(lemurs_test, isna = TRUE, isnumeric = TRUE, 
+                    coordinatevalidity = TRUE, containszero = TRUE, 
+                    zerozero = TRUE, zerozerothresh = 1,
+                    latequallong = TRUE, outp = "detailed")
+
+#Or a data.frame containing only unproblematic records; outp = "cleaned"
+simple.clean <- GeoClean(lemurs_test, isna = TRUE, isnumeric = TRUE,
+                         coordinatevalidity = TRUE, containszero = TRUE, 
+                         zerozero = TRUE, zerozerothresh = 1, 
+                         latequallong = TRUE, outp = "cleaned")
+```
+  
+If the coordinates are all valid, more complex tests can be performed. For example, if points fall within the country indicated in the country column, if the points have been assigned to country centroid or the country capital, or if the points have been assigned to the GBIF headquarters.
+
+```{r, warning = F, fig.width = 7, fig.height = 4}
+library(maptools)
+
+data(countryref)
+data(wrld_simpl)
+
+complex.clean <- GeoClean(simple.clean, capitalcoords = TRUE, countrycheck = TRUE, 
+                          polygons = wrld_simpl, GBIFhead = TRUE, countrycentroid = TRUE,
+                          referencecountries = countryref, capthresh = 0.5, 
+                          contthresh = 0.5, outp = "cleaned")
+
+map("world", col = "grey")
+points(lemurs_test$XCOOR, lemurs_test$YCOOR, col = "darkred", pch = 20, cex = .7)
+points(simple.clean$XCOOR, simple.clean$YCOOR, col = "darkblue", pch = 20, cex = .7)
+points(complex.clean$XCOOR, complex.clean$YCOOR, col = "darkgreen", pch = 20, cex = .7)
+````
+  
+#Classifying species to areas
+
+There are two functions that can perform the occurrence to area classification : `SpeciesGeoCoder`, `SpGeoCod`. 
+
+##Input data format
+SpeciesgeocodeR can use different input formats.
+  
+###1. Occurrences as `data.frame`, areas as `spatialPolygons`  
+The data.frame of species occurrences needs three columns named "identifier" (species name, each line one occurrence), "XCOOR" (decimal longitude) and "YCOOR" (decimal latitude). Each row is one occurrence. For the area input you need to indicate the column with the names of single polygons by the `areanames` argument. Find the respective column using the `head` function.
+```{r, warning = F}
+data(lemurs)
+data(mdg_biomes)
+
+head(mdg_biomes@data)
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name")
+```
+  
+
+###2. Occurrences as .txt and areas as .shp  
+Provide occurrences as .txt file and areas as a .shp file in the working directory. The .txt file needs three columns named "identifier" (species name, each line one occurrence), "XCOOR" (decimal longitude) and "YCOOR" (decimal latitude). You can use any shape file, but you need to indicate the name of the column naming the polygons via the `areanames` argument.
+
+```{r, warning = F}
+outp <- SpGeoCod(system.file("extdata","lemurs.txt", package = "speciesgeocodeR"),
+                 system.file("extdata","mdg_biomes_simple.shp", package = "speciesgeocodeR"), 
+                 areanames = "name")
+```
+
+###3. Occurrences and areas as .txt files  
+Provide occurrences and areas as .txt files in the working directory. The species occurrence file needs three obligatory columns named "identifier" (species name), "XCOOR" (decimal longitude) and "YCOOR" (decimal latitude) for the occurrence file. The area file can be provided in a similar style: "identifier" (polygon name, each line is one vertex), "XCOOR" (decimal longitude) and "YCOOR" (decimal latitude). To load your data from text files replace the "system.file("extdata","lemurs.txt", package = "speciesgeocodeR")" or "system.file("extdata","mdg_biomes_simple.txt", package = "speciesgeocodeR")" in the next examples by the path to your input files.
+```{r, warning = F, echo = -c(1,2,4,5,7)}
+library(speciesgeocodeR)
+occ <- read.table(system.file("extdata","lemurs.txt", package = "speciesgeocodeR"), row.names = NULL)
+#Example for occurrence input file
+head(occ)
+pol <- read.table(system.file("extdata","mdg_biomes_simple.txt", package = "speciesgeocodeR"))
+#Example for area input file
+head(pol)
+```
+  
+```{r, warning = F}
+outp <- SpGeoCod(system.file("extdata","lemurs.txt", package = "speciesgeocodeR"),
+                 system.file("extdata","mdg_biomes_simple.txt", package = "speciesgeocodeR"))
+```
+
+###4. Occurrences from GBIF
+Use GBIF occurrence data by indicating species names as input. In this case occurrence data will automatically be downloaded from GBIF and plug in directly into the analyses (**This will download data from the Internet**). Coordinates cleaning can be included via the "cleaning"" argument.
+
+```{r, eval = F}
+outp <- SpGeoCod(c("Indri indri", "Lemur catta" ), pol, areanames = "name")
+```
+  
+##Classifying species to areas 
+The `SpGeoCod` function classifies all occurrences to the respective areas and calculates summary statistics. For larger data sets this might take a moment. The results can be explored with `summary` or `plot`.
+
+```{r, warning = F, fig.width = 7, fig.height = 6}
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name")
+
+summary(outp)
+plot(outp, mar = c(8,4,4,4))
+```
+  
+The `plot` function can visualize multiple results, depending on the `plottype` argument, including species number per area, occurrences per species per area, occurrences per area per species or maps for each species and each area. See `?plot.spgeoOUT` for details. For example species occurrences per polygon:
+```{r, warning = F, fig.width = 7, fig.height = 8}
+par(mfrow = c(2,2), mar = c(8,4,4,4))
+plot(outp, plottype = "polygons")
+````
+
+Or a map of occurrences per polygon:
+```{r, warning = F, fig.width = 7, fig.height = 7}
+par(mfrow = c(2,2), mar = c(8,4,4,4))
+plot(outp, plottype = "mappolygons")
+````
+
+###SpeciesGeoCoder
+The `SpeciesGeoCoder` function provides a wrapper to run an entire classification from text input to the standard output files in the working directory with one line of code.
+```{r, warning = F, eval = F}
+SpeciesGeoCoder(lemurs, mdg_biomes, areanames = "name")
+````
+
+
+##Output data
+Speciesgeocoder can provide the species to area classification in various formats used in phylogenetic analyses. The `WriteOut` function provides a generic way to write results to the working directory. The type of output can be specified via the `writetype` argument. See `?WriteOut` for details. All results can be written out with `writetype = 'all'`.
+
+###Nexus file
+The area classification of species can be written to a file in nexus trait format, which can be used by phylogenetic software (e.g. mesquite).
+```{r, warning = F, fig.width = 7, fig.height = 6}
+WriteOut(outp, writetype = "nexus")
+```
+
+###BioGeoBEARS
+The species area classification can be written out in the format of the geography input for a BioGeoBEARS analysis. Alternatively the Spgc2BioGeoBEARS function returns a R object in the BioGeoBEARS input format from an spgeoOUT object.
+
+```{r, warning = F, fig.width = 7, fig.height = 6}
+WriteOut(outp, writetype = "BioGeoBEARS")
+bgb <- Spgc2BioGeoBEARS(outp)
+head(bgb)
+```
+
+###Summary tables
+Summary tables of species occurrences in tab-delimited text format can be written out using `writetype = "statistics"`
+
+```{r, warning = F, fig.width = 7, fig.height = 6}
+WriteOut(outp, writetype = "statistics")
+```
+
+###Summary graphs and maps
+Graphs visualizing the species occurrence per area (for all species and areas) and maps showing species occurrences can be written out as .pdf files using `writetype = "statistics"`.
+
+```{r, warning = F, fig.width = 7, fig.height = 6}
+WriteOut(outp, writetype = "graphs")
+WriteOut(outp, writetype = "maps")
+```
+
+#Data exploration features
+###Minimum occurrence threshold
+For widespread species, or if the data quality is questionable, it can be of interest to set a minimum number of occurrences that a species needs to be counted as present in a given area. The `occ.thresh` argument allows you to set a minimum percentage of occurrences. For example, we can code lemur species as present in a biome only if at least 10 percent of the occurrences of this species occur in the given biome:
+
+```{r, eval = F}
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name", occ.thresh = 10)
+```
+
+###Including Elevation in the area classification
+It is often desirable to include elevation as a proxy for environmental conditions into the area classification (i.e. consider highland and lowland species differently). You can do this by setting the `elevation` argument of `SpeciesGeoCoder` or `SpGeoCod` to TRUE and providing one or several elevation thresholds with the `threshold` argument. The output will then be a list of spgeoOUT objects according to the elevation thresholds. You can write the results to the working directory directly from the list using `WriteOut` or explore the objects further in R. If you are for example interested in highland and lowland rain forest species you can include a 500m, 1000m and 2000m threshold on the example dataset (strictly speaking it will divide the occurrences, but the result will be the same). **This will download large elevation data files from (http://srtm.csi.cgiar.org) to the working directory and might take long time for large datasets.**
+
+```{r, warning = F, fig.width = 7, fig.height = 7}
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name",
+                 elevation = T, threshold = c(500, 1000, 1500))
+
+#write to working directory
+WriteOut(outp)
+
+#plot species numbers at all elevation intervals
+par(mar = c(8,4,4,4), mfrow = c(2,2))
+for(i in 1:length(outp)){
+  plot(outp[[i]], plottype = "speciesrichness", main = names(outp)[[i]])
+  title(names(outp)[[i]])
+}
+```
+
+###WWF ecoregions
+Biomes, as potentially biologically meaningful units, are of special interest in biogeography. You can directly use the WWF ecoregions (`areanames = "ECO_NAME"`) and biomes (`areanames = "BIOMES"`) in a speciesgeocodeR analyses with `WwfLoad` [@olson2001, @wwfeco].
+```{r, eval = F}
+wd <- getwd()
+wwf <- WwfLoad(wd)
+outp <- SpGeoCod(lemurs, wwf, areanames = "ECO_NAME")
+```
+
+##Coexistence matrix
+You can use `CoExClass` to Calculate a coexistence matrix of species given the areas of interest. The rows indicate which percentage of a species occurrences fall in the same area as the species named in the column.
+```{r, warning = F, fig.width = 7, fig.height = 7}
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name")
+
+coex <- CoExClass(outp)
+plot(coex, plottype = "coexistence")
+```
+
+\newpage
+
+##Mapping species richness in Polygons
+Use `MapRichness` to map species numbers in each polygon, using a continuous or discrete colour scheme.
+
+```{r, warning = F, fig.width = 5, fig.height = 5}
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name")
+
+MapRichness(outp, leg = "continuous", xlim = c(42,52), ylim = c(-27, -10))
+MapRichness(outp, leg = "discrete", show.occ = T, xlim = c(42,52), ylim = c(-27, -10))
+```
+
+##Richness grids
+Use `RichnessGrid` to produce a raster with species number per grid cell or the number of occurrences per grid cell, and `MapGrid` to visualize the grid in the geographic context.
+
+```{r, warning = F, fig.width = 7, fig.height = 5}
+data(lemurs)
+
+limits <- c(42, 52, -27, -10)
+lemurs.spnum <- RichnessGrid(lemurs, limits, reso = 30, type = "spnum") #species number
+
+lemurs.abu <- RichnessGrid(lemurs, limits,reso = 30, type = "abu") #occurrence number
+par(mfrow = c(1,2))
+MapGrid(lemurs.spnum)
+title("Species number")
+
+MapGrid(lemurs.abu)
+title("Occurrences")
+```
+  
+##Range size/Extent of occurrence
+You can calculate species ranges and range size using the `CalcRange` function. This uses the occurrence points to calculate a convex hull polygon representing an estimate of the species ranges given the data. The `value` argument controls the output value, which can either be a data.frame of ranges sizes in square kilometres or a set of polygons showing the ranges.
+```{r, warning = F, fig.width = 7, fig.height = 5}
+data(lemurs)
+data(mdg_poly)
+
+inp <- ReadPoints(lemurs, mdg_poly)
+
+are <- CalcRange(data.frame(inp$identifier, inp$species_coordinates), 
+                value = "area")
+
+head(are)
+
+shp <- CalcRange(data.frame(inp$identifier,
+                     inp$species_coordinates), value = "shape")
+par(mfrow = c(1,2))
+PlotHull(shp, select = "all", xlim = c(42, 52), ylim = c(-27, -10))
+PlotHull(shp, select = "Indri indri", xlim = c(42, 52), ylim = c(-27, -10))
+```
+
+##Species richness from ranges
+Richness estimates based on range polygons instead of point occurrences can give more adequate estimate of species richness, if occurrence data are scarce. The RangeRichness function can be used to calculate species richness based on range polygons. Here, we will use the polygons calculated from the point occurrences of the previous example.
+```{r, warning = F, fig.width = 5, fig.height = 5}
+
+bb <- RangeRichness(shp, limits = c(42, 52, -27, -10), reso = 30)
+MapGrid(bb, col = rev(heat.colors(12)))
+```
+
+

@@ -1,0 +1,6 @@
+"identifier"	"homepolygon"
+"Microcebus murinus"	"Moist Forest"
+"Propithecus diadema"	"Moist Forest"
+"Propithecus diadema"	"Moist Forest"
+"Propithecus diadema"	"Moist Forest"
+"Propithecus diadema"	"Moist Forest"

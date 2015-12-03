@@ -1,0 +1,2 @@
+"Dry.Forest"	"Moist.Forest"
+2	18
