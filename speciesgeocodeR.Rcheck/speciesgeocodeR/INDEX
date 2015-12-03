@@ -1,0 +1,33 @@
+CalcRange               Calculate the Extent of Occurrence
+CoExClass               Species Coexistence Matrices in Given Areas.
+GeoClean                Automated Cleaning of Geographic Coordinates
+GetElevation            Elevation Data for Multiple Species
+MapGrid                 Plotting Rasters in the Geographical Context
+MapRichness             Plotting Species Richness in a Set of Polygons
+PlotHull                Plotting Species Ranges
+RangeRichness           Species Richness Raster from Range Polygons
+ReadPoints              Loading Data into SpeciesgeocodeR
+RichnessGrid            Species Richness and Abundance Grids from Point
+                        Records
+SpGeoCod                Point to Polygon Classification from Text Files
+SpGeoCodH               A Standard a SpeciesgeocodeR Area
+                        Classification
+SpeciesGeoCoder         A Complete SpeciesgeocodeR Analysis
+Spgc2BioGeoBEARS        Geography Input for BioGeoBEARS
+WriteOut                Write SpeciesgeocodeR results to the Working
+                        Directory
+WwfLoad                 Load the WWF Terrestrial Ecoregions
+countryref              Country Centroids and Country Capitals
+lemurs                  Distribution of Lemur Species
+lemurs_in               Example for an spgeoIN Object
+lemurs_test             Distribution of Lemur Species with Problematic
+                        Records
+mdg_biomes              WWF Biomes of Madagascar
+mdg_poly                WWF Biomes of Madagascar in Table Format
+plot.spgeoIN            Plot Method for SpgeoIN Objects
+plot.spgeoOUT           Plot Method for SpgeoOUT Objects
+speciesgeocodeR-package
+                        Prepare Species Distributions for the Use in
+                        Phylogenetic Analyses
+summary.spgeoIN         Summary Method for SpgeoIN
+summary.spgeoOUT        Summary Method for SpgeoOUT
