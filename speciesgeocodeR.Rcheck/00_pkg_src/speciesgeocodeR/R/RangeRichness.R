@@ -1,4 +1,4 @@
-RangeRichness <- function(ra, limits = c(-180, 180, -90, 90), reso = 60){
+RangeRichness <- function(ra, limits = c(-180, 180, -90, 90), reso = 60, terrestrial = FALSE){
   limits <- extent(limits)
   xmin <- limits[1]
   xmax <- limits[2]
@@ -28,5 +28,11 @@ RangeRichness <- function(ra, limits = c(-180, 180, -90, 90), reso = 60){
   rang.ras <- stack(rang.ras)
   div.ras <- sum(rang.ras)
   div.ras[div.ras == 0] <- NA
+  
+  if(terrestrial){
+    test <- rasterize(speciesgeocodeR::landmass, div.ras)
+    div.ras <- mask(div.ras, test)
+  }
+  
   return(div.ras)
 }

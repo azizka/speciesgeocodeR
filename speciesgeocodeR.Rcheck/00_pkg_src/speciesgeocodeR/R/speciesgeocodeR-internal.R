@@ -247,7 +247,7 @@
     }
     return(polys)
 }
-.eoo <- function(x) {
+.eoo <- function(x, clipp) {
   if (!requireNamespace("geosphere", quietly = TRUE)) {
     stop("geosphere needed for this function to work. Please install it.",
          call. = FALSE)
@@ -256,6 +256,9 @@
     dat2 <- x[conv.hull, ]
     dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
     poly <- SpatialPolygons(list(Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))), proj4string = CRS("+proj=longlat +datum=WGS84"))
+    if(clipp){
+      poly <- rgeos::gIntersection(poly, speciesgeocodeR::landmass)
+    }
     area <- round(geosphere::areaPolygon(poly)/(1000 * 1000), 0)
     return(area)
 }

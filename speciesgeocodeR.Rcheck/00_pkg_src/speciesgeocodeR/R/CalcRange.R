@@ -1,4 +1,4 @@
-CalcRange <- function(x, mode = "EOO", value = c("area", "shape")) {
+CalcRange <- function(x, mode = "EOO", value = c("area", "shape"), terrestrial = F, verbose = F) {
     if (class(x) == "spgeoOUT"){
       dat1 <- data.frame(identifier = x$identifier_in, x$species_coordinates_in)
     }else{
@@ -28,16 +28,26 @@ CalcRange <- function(x, mode = "EOO", value = c("area", "shape")) {
     inp <- split(dat.filt, f = dat.filt$identifier)
     
     if (mode == "EOO") {
-      if (value == "area"){
-          out <- lapply(inp, function(x) .eoo(x))
+      if (value[1] == "area"){
+          out <- lapply(inp, function(x) .eoo(x, clipp = T))
           out <- data.frame(do.call("rbind", out))
           names(out) <- "EOO"
           out <- rbind(out, data.frame(row.names = rownames(sortout), EOO = rep("NA", length(sortout))))
-          return(out)
       }
     }
-    if(value == "shape"){
+    if(value[1] == "shape"){
       out <- lapply(inp, function(x) .ConvHull (x))
-      return(out)
+      if(terrestrial){
+        if (!requireNamespace("geosphere", quietly = TRUE)) {
+          stop("rgeos needed for terrestrial = T. Please install the package.",
+               call. = FALSE)
+        }  
+        if(verbose == T){
+          cat("Clipping shapes to landmasses.")
+        }
+        out <- lapply(out, function(x) rgeos::gIntersection(x, speciesgeocodeR::landmass))
+        
+      }
     }
+    return(out)
 } 

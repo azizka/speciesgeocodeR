@@ -1,4 +1,4 @@
-* using log directory 'C:/Users/xzizal/Dropbox (Antonelli Lab)/Arbeit/Gothenburg/Projects/3_speciesgeocoder/version104/speciesgeocodeR.Rcheck'
+* using log directory 'C:/Users/xzizal/Dropbox (Antonelli Lab)/Arbeit/Gothenburg/Projects/3_speciesgeocoder/speciesgeocodeR/speciesgeocodeR.Rcheck'
 * using R Under development (unstable) (2015-10-16 r69529)
 * using platform: x86_64-w64-mingw32 (64-bit)
 * using session charset: ISO8859-1
@@ -6,51 +6,17 @@
 * checking for file 'speciesgeocodeR/DESCRIPTION' ... OK
 * checking extension type ... Package
 * this is package 'speciesgeocodeR' version '1.0-4'
-* checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
+* checking CRAN incoming feasibility ... WARNING
 Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
+
+Insufficient package version (submitted: 1.0.4, existing: 1.0.4)
+
+The Date field is over a month old.
 * checking package namespace information ... OK
-* checking package dependencies ... OK
-* checking if this is a source package ... OK
-* checking if there is a namespace ... OK
-* checking for executable files ... OK
-* checking for hidden files and directories ... OK
-* checking for portable file names ... OK
-* checking whether package 'speciesgeocodeR' can be installed ... OK
-* checking installed package size ... OK
-* checking package directory ... OK
-* checking DESCRIPTION meta-information ... OK
-* checking top-level files ... OK
-* checking for left-over files ... OK
-* checking index information ... OK
-* checking package subdirectories ... OK
-* checking R files for non-ASCII characters ... OK
-* checking R files for syntax errors ... OK
-* checking whether the package can be loaded ... OK
-* checking whether the package can be loaded with stated dependencies ... OK
-* checking whether the package can be unloaded cleanly ... OK
-* checking whether the namespace can be loaded with stated dependencies ... OK
-* checking whether the namespace can be unloaded cleanly ... OK
-* checking use of S3 registration ... OK
-* checking dependencies in R code ... OK
-* checking S3 generic/method consistency ... OK
-* checking replacement functions ... OK
-* checking foreign function calls ... OK
-* checking R code for possible problems ... OK
-* checking Rd files ... OK
-* checking Rd metadata ... OK
-* checking Rd line widths ... OK
-* checking Rd cross-references ... OK
-* checking for missing documentation entries ... OK
-* checking for code/documentation mismatches ... OK
-* checking Rd \usage sections ... OK
-* checking Rd contents ... OK
-* checking for unstated dependencies in examples ... OK
-* checking contents of 'data' directory ... OK
-* checking data for non-ASCII characters ... OK
-* checking data for ASCII and uncompressed saves ... OK
-* checking sizes of PDF files under 'inst/doc' ... OK
-* checking installed files from 'inst/doc' ... OK
-* checking examples ... OK
-* checking PDF version of manual ... OK
+* checking package dependencies ... ERROR
+Namespace dependency not required: 'rgeos'
+
+See section 'The DESCRIPTION file' in the 'Writing R Extensions'
+manual.
 * DONE
-Status: OK
+Status: 1 ERROR, 1 WARNING
