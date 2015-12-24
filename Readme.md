@@ -23,7 +23,6 @@ data(lemurs)
 data(mdg_poly)
 
 SpeciesGeoCoder(lemurs, mdg_poly)
-conv <- Spgc2Biogeobears(outp)
 
 ```
 
@@ -31,5 +30,5 @@ conv <- Spgc2Biogeobears(outp)
 
 Zizka A & Antonelli A (2015) speciesgeocodeR: An R package for linking species occurrences, user-defined regions and phylogenetic trees for biogeography, ecology and evolution. bioRxiv. doi: http://dx.doi.org/10.1101/032755.
 
-Töpel M, Calió MF, Zizka A, SCharn R, Silvestro D, Antonelli A (2014) SpeciesGeoCoder: Fast categorisation of species occurrences for analyses of biodiversity, biogeography, ecology and evolution. bioRxiv.10.1101/009274.10.1101/009274.
+Töpel M, Calió MF, Zizka A, SCharn R, Silvestro D, Antonelli A (2014) SpeciesGeoCoder: Fast categorisation of species occurrences for analyses of biodiversity, biogeography, ecology and evolution. bioRxiv. doi: http://dx.doi.org/10.1101/009274.
 
