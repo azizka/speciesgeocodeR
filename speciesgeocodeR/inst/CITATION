@@ -1,0 +1,22 @@
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "article",
+         title = "speciesgeocodeR: An R package for linking species occurrences, user-defined regions and phylogenetic trees for biogeography, ecology and evolution",
+         author = c(person("Alexander", "Zizka"),
+                    person("Alexandre", "Antonelli")),
+         year = "2015",
+         note = note,
+		 journal = "bioRxiv_10.1101/032755",
+         url = "https://CRAN.R-project.org/package=speciesgeocodeR")
+		 
+		 
+		 bibentry(bibtype = "article",
+         title = "SpeciesGeoCoder: Fast categorisation of species occurrences for analyses of biodiversity, biogeography, ecology and evolution",
+         author = c(person("Mats", "Topel"),
+					person("Maria Fernanda", "Calio"),
+					person("Alexander", "Zizka"),
+					person("Ruud", "Scharn"),
+					person("Daniele", "Silvestro"),
+                    person("Alexandre", "Antonelli")),
+         year = "2014",
+		 journal = "bioRxiv_10.1101/009274 ")
