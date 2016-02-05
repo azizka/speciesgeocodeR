@@ -252,7 +252,7 @@
     stop("geosphere needed for this function to work. Please install it.",
          call. = FALSE)
   }  
-    conv.hull <- chull(x$XCOOR, x$YCOOR)
+    conv.hull <- chull(x$decimalLongitude, x$decimalLatitude)
     dat2 <- x[conv.hull, ]
     dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
     poly <- SpatialPolygons(list(Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))), proj4string = CRS("+proj=longlat +datum=WGS84"))

@@ -1,8 +1,10 @@
+exportPattern("^[^\\.]")
+
 S3method(plot, spgeoIN)
 S3method(plot, spgeoOUT)
 S3method(summary, spgeoIN)
 S3method(summary, spgeoOUT)
-exportPattern("^[^\\.]")
+
 import(graphics)
 importFrom("grDevices", chull, dev.off, heat.colors, pdf, rainbow, rgb)
 importFrom("methods", slot, is)

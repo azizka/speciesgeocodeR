@@ -1,5 +1,5 @@
 MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F, 
-                        lin.col = "grey", lwd = 1, ...) {
+                        lin.col = NA, lwd = 1, ...) {
     if (!class(x) == "spgeoOUT") {
         stop("this function is only defined for class \"spgeoOUT\"")
     }
@@ -57,7 +57,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
         colo <- data.frame(num = c(0:max(polys.df$spec.num)), code = c("#FFFFFFFF", rev(heat.colors(max(polys.df$spec.num)))))
         
     } else {
-        colo <- data.frame(num = c(0, sort(unique(polys.df$spec.num))), code = c("#FFFFFFFF", rev(rainbow(length(unique(polys.df$spec.num))))))
+        colo <- data.frame(num = c(0, sort(unique(polys.df$spec.num))), code = c("#FFFFFFFF", rev(heat.colors(length(unique(polys.df$spec.num))))))
         if (colo$num[2] == 0) {
             colo <- colo[-2, ]
         }
@@ -81,32 +81,6 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
     dum2 <- dum2[order(dum2$ident.add), ]  #,c('sp.count','code','ord')]
     x$polygons@data <- cbind(x$polygons@data, dum2)
     plotpoly <- x$polygons
-#     
-#     if (lim == "polygons") {
-#         limits <- bbox(plotpoly)
-#         if (limits[1, 1] < -170 && limits[1, 2] > 170 && max(x$species_coordinates$XCOOR) < -10) {
-#             limits[1, 2] <- -10
-#         }
-#         if (limits[1, 1] < -170 && limits[1, 2] > 170 && min(x$species_coordinates$XCOOR) > 0) {
-#             limits[1, 1] <- 0
-#         }
-#         limits[1, 1] <- max(limits[1, 1] - abs(abs(limits[1, 1]) - abs(limits[1, 2])) * 0.2, -180)
-#         limits[1, 2] <- min(limits[1, 2] + abs(abs(limits[1, 1]) - abs(limits[1, 2])) * 0.2, 180)
-#         limits[2, 1] <- max(limits[2, 1] - abs(abs(limits[2, 1]) - abs(limits[2, 2])) * 0.2, -90)
-#         limits[2, 2] <- min(limits[2, 2] + abs(abs(limits[2, 1]) - abs(limits[2, 2])) * 0.2, 90)
-#     }
-#     if (lim == "points") {
-#         limits <- matrix(ncol = 2, nrow = 2)
-#         limits[1, 1] <- max(min(x$species_coordinates_in$XCOOR) - abs(min(x$species_coordinates_in$XCOOR) - max(x$species_coordinates_in$XCOOR)) * 
-#             0.2, -180)
-#         limits[1, 2] <- min(max(x$species_coordinates_in$XCOOR) + abs(abs(min(x$species_coordinates_in$XCOOR)) - abs(max(x$species_coordinates_in$XCOOR))) * 
-#             0.2, 180)
-#         limits[2, 1] <- max(min(x$species_coordinates_in$YCOOR) - abs(min(x$species_coordinates_in$YCOOR) - max(x$species_coordinates_in$YCOOR)) * 
-#             0.2, -90)
-#         limits[2, 2] <- min(max(x$species_coordinates_in$YCOOR) + abs(abs(min(x$species_coordinates_in$YCOOR)) - abs(max(x$species_coordinates_in$YCOOR))) * 
-#             0.2, 90)
-#     }
-#     
         if (length(unique(plotpoly$sp.count)) == 1) {
         leg <- "discrete"
     }
@@ -131,8 +105,6 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
         par(mar = c(5, 1, 5, 3))
         plot(c(0, 10), c(0, dim(colo)[1] + 1), type = "n", bty = "n", xaxt = "n", xlab = "", yaxt = "n", ylab = "", 
             xpd = F)
-#         plot(c(0, 10), c(min(colo$num), dim(colo)[1] + 1), type = "n", bty = "n", xaxt = "n", xlab = "", yaxt = "n", ylab = "", 
-#              xpd = F)
         title("Species\nnumber")        
         if (length(unique(plotpoly$sp.count)) == 1) {
             rect(0, (dim(colo)[1] + 1)/2 - 3, 5, (dim(colo)[1] + 1)/2 - 1, col = "white", border = "black")
@@ -149,11 +121,11 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
             rect(0, 0, 5, (max(y) + 1))
         }
     }
-#     if(lim == "polygons" | lim == "points"){
-#       map("world", xlim = limits[1, ], ylim = limits[2, ])
-#     }else{
-      map("world", ...) 
-#     }
+    if(is.na(lin.col)){
+      lin.col <- as.character(plotpoly@data$code)
+    }
+    
+    map("world", ...) 
     axis(1)
     axis(2)
     box("plot")

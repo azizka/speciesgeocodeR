@@ -1,0 +1,64 @@
+
+R Under development (unstable) (2015-10-16 r69529) -- "Unsuffered Consequences"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "speciesgeocodeR"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> options(pager = "console")
+> base::assign(".ExTimings", "speciesgeocodeR-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
+> library('speciesgeocodeR')
+Loading required package: maps
+
+ # ATTENTION: maps v3.0 has an updated 'world' map.        #
+ # Many country borders and names have changed since 1990. #
+ # Type '?world' or 'news(package="maps")'. See README_v3. #
+
+
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("CalcRange")
+> ### * CalcRange
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: CalcRange
+> ### Title: Range polygons, AOO and EOO from occurrence points
+> ### Aliases: CalcRange
+> ### Keywords: spatial
+> 
+> ### ** Examples
+> 
+> data(lemurs)
+> CalcRange(lemurs, index = "EOO", eoo.value = "shape", terrestrial = F)
+Error in CalcRange(lemurs, index = "EOO", eoo.value = "shape", terrestrial = F) : 
+  unused argument (terrestrial = F)
+Execution halted

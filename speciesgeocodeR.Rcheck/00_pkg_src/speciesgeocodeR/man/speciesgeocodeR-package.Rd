@@ -32,7 +32,6 @@ data(lemurs)
 data(mdg_poly)
 
 SpeciesGeoCoder(lemurs, mdg_poly)
-conv <- Spgc2Biogeobears(outp)
 }
 
 data(lemurs)

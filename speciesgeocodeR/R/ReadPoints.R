@@ -102,11 +102,11 @@ ReadPoints <- function(x, y, areanames = NA, verbose = FALSE, cleaning = FALSE) 
     poly <- y
   }
   
-  if (dim(coords)[2] != 3) {
-    if (all(c("species", "decimalLatitude", "decimalLongitude") %in% names(coords))) {
-      coords <- data.frame(identifier = coords$species, XCOOR = coords$decimalLongitude, 
+  if (ncol(coords) != 3) {
+    if (all(c("scientificName", "decimalLatitude", "decimalLongitude") %in% names(coords))) {
+      coords <- data.frame(identifier = coords$scientificName, XCOOR = coords$decimalLongitude, 
                            YCOOR = coords$decimalLatitude)
-      warning("more than 3 columns in point input. Assuming GBIF file. \nidentifier set to species, XCOOR set to decimalLongitude, YCOOR set to decimalLatitude")
+      warning("more than 3 columns in point input. Assuming DarwinCore formatted file")
     } else {
       stop(paste("wrong input format: \n", "Inputfile for coordinates must have three columns", 
                  sep = ""))

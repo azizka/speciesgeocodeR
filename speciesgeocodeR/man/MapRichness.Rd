@@ -9,7 +9,7 @@ Illustrates the species number per polygon, based on and object of the class \co
 }
 \usage{
 MapRichness(x, areanames = NA, leg = "continuous",
-            show.occ = F, lin.col = "grey", lwd = 1, ...)
+            show.occ = F, lin.col = NA, lwd = 1, ...)
 }
 
 \arguments{
@@ -26,7 +26,7 @@ Controls the plot legend and coloring scheme.  Must be either \dQuote{continuous
 logical.  Defines if the occurrence points should be added to the plot (default = F).
 }
   \item{lin.col}{
-character string.  Defines the colour of polygon borders (default = \dQuote{grey}).
+character string.  Defines the colour of polygon borders. If NA, the same colour as for the polygon is used (default = NA).
 }
   \item{lwd}{
 numeric.  Line width of polygon lines.
