@@ -58,7 +58,7 @@ Loading required package: maps
 > ### ** Examples
 > 
 > data(lemurs)
-> CalcRange(lemurs, index = "EOO", eoo.value = "shape", terrestrial = F)
-Error in CalcRange(lemurs, index = "EOO", eoo.value = "shape", terrestrial = F) : 
-  unused argument (terrestrial = F)
+> CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
+Error in .local(obj, ...) : NA values in coordinates
+Calls: CalcRange ... coordinates -> .local -> coordinates -> coordinates -> .local
 Execution halted

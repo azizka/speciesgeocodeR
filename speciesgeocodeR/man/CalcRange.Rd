@@ -53,7 +53,7 @@ See the speciesgeocodeR documentation for further information and examples.
 
 \examples{
 data(lemurs)
-CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo. terrestrial = F)
+CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
 \dontrun{
 CalcRange(lemurs, index = "EOO", eoo.value = "area", eoo.terrestrial = F)
 CalcRange(lemurs, index = "AOO", eoo.value = "area")

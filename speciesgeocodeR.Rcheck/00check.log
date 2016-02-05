@@ -15,7 +15,7 @@ Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
 * checking for executable files ... OK
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
-* checking whether package 'speciesgeocodeR' can be installed ... OK
+* checking whether package 'speciesgeocodeR' can be installed ... [11s] OK
 * checking installed package size ... NOTE
   installed size is  6.1Mb
   sub-directories of 1Mb or more:
@@ -67,9 +67,9 @@ The error most likely occurred in:
 > ### ** Examples
 > 
 > data(lemurs)
-> CalcRange(lemurs, index = "EOO", eoo.value = "shape", terrestrial = F)
-Error in CalcRange(lemurs, index = "EOO", eoo.value = "shape", terrestrial = F) : 
-  unused argument (terrestrial = F)
+> CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
+Error in .local(obj, ...) : NA values in coordinates
+Calls: CalcRange ... coordinates -> .local -> coordinates -> coordinates -> .local
 Execution halted
 * checking PDF version of manual ... OK
 * DONE

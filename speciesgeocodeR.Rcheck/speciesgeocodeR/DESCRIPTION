@@ -13,5 +13,5 @@ Imports: stats, methods, utils, grDevices, graphics, sp, raster, rgeos
 Suggests: ape, geiger, geosphere, rgbif, maptools
 LazyData: true
 NeedsCompilation: no
-Packaged: 2016-02-05 00:44:43 UTC; xzizal
-Built: R 3.3.0; ; 2016-02-05 00:45:07 UTC; windows
+Packaged: 2016-02-05 00:57:43 UTC; xzizal
+Built: R 3.3.0; ; 2016-02-05 00:58:04 UTC; windows
