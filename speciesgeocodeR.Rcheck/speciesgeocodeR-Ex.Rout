@@ -58,7 +58,18 @@ Loading required package: maps
 > ### ** Examples
 > 
 > data(lemurs)
-> CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
-Error in .local(obj, ...) : NA values in coordinates
-Calls: CalcRange ... coordinates -> .local -> coordinates -> coordinates -> .local
+> CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = F
++ ## Not run: 
++ ##D CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
++ ##D CalcRange(lemurs, index = "EOO", eoo.value = "area", eoo.terrestrial = F)
++ ##D CalcRange(lemurs, index = "AOO", eoo.value = "area")
++ ##D )
++ ## End(Not run)
++ 
++ 
++ 
++ base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+Error: unexpected symbol in:
+"
+base"
 Execution halted

@@ -32,11 +32,12 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 ### ** Examples
 
 data(lemurs)
-CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
+CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = F
 ## Not run: 
+##D CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
 ##D CalcRange(lemurs, index = "EOO", eoo.value = "area", eoo.terrestrial = F)
 ##D CalcRange(lemurs, index = "AOO", eoo.value = "area")
-##D CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = F)
+##D )
 ## End(Not run)
 
 

@@ -2,8 +2,11 @@ exportPattern("^[^\\.]")
 
 S3method(plot, spgeoIN)
 S3method(plot, spgeoOUT)
+S3method(plot, DESin)
 S3method(summary, spgeoIN)
 S3method(summary, spgeoOUT)
+S3method(summary, DESin)
+S3method(write, DESin)
 
 import(graphics)
 importFrom("grDevices", chull, dev.off, heat.colors, pdf, rainbow, rgb)

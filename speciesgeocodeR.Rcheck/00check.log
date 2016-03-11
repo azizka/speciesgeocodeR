@@ -5,7 +5,7 @@
 * using option '--as-cran'
 * checking for file 'speciesgeocodeR/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'speciesgeocodeR' version '1.0-5'
+* this is package 'speciesgeocodeR' version '1.0-6'
 * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
 Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
 * checking package namespace information ... OK
@@ -15,7 +15,7 @@ Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
 * checking for executable files ... OK
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
-* checking whether package 'speciesgeocodeR' can be installed ... [11s] OK
+* checking whether package 'speciesgeocodeR' can be installed ... [13s] OK
 * checking installed package size ... NOTE
   installed size is  6.1Mb
   sub-directories of 1Mb or more:
@@ -48,7 +48,12 @@ Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
 * checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... OK
 * checking Rd contents ... OK
-* checking for unstated dependencies in examples ... OK
+* checking for unstated dependencies in examples ... WARNING
+Warning: parse error in file 'speciesgeocodeR-Ex.R':
+32:1: unexpected symbol
+31: 
+32: cleanEx
+    ^
 * checking contents of 'data' directory ... OK
 * checking data for non-ASCII characters ... OK
 * checking data for ASCII and uncompressed saves ... OK
@@ -67,10 +72,21 @@ The error most likely occurred in:
 > ### ** Examples
 > 
 > data(lemurs)
-> CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
-Error in .local(obj, ...) : NA values in coordinates
-Calls: CalcRange ... coordinates -> .local -> coordinates -> coordinates -> .local
+> CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = F
++ ## Not run: 
++ ##D CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
++ ##D CalcRange(lemurs, index = "EOO", eoo.value = "area", eoo.terrestrial = F)
++ ##D CalcRange(lemurs, index = "AOO", eoo.value = "area")
++ ##D )
++ ## End(Not run)
++ 
++ 
++ 
++ base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+Error: unexpected symbol in:
+"
+base"
 Execution halted
 * checking PDF version of manual ... OK
 * DONE
-Status: 1 ERROR, 1 NOTE
+Status: 1 ERROR, 1 WARNING, 1 NOTE

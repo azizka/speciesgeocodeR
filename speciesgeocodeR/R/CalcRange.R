@@ -1,8 +1,9 @@
-CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"), eoo.terrestrial = TRUE, 
-                      aoo.gridsize = 4, aoo.reps = 3, aoo.xmin = NULL, aoo.xmax = NULL, aoo.ymin = NULL, 
-                      aoo.ymax = NULL, verbose = FALSE) {
+CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", 
+                                                                "shape"), eoo.terrestrial = TRUE, aoo.gridsize = 4, aoo.reps = 3, 
+                      aoo.xmin = NULL, aoo.xmax = NULL, aoo.ymin = NULL, aoo.ymax = NULL, 
+                      verbose = FALSE) {
   
-  #prepare input data
+  # prepare input data
   if (is(x)[1] == "spgeoOUT") {
     dat <- data.frame(identifier = x$identifier_in, x$species_coordinates_in)
     names(dat) <- c("scientificName", "decimalLongitude", "decimalLatitude")
@@ -13,15 +14,16 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
     dat$scientificName <- as.character(dat$scientificName)
   }
   
-  #filter out duplicate records, this is necessary to have three unique points
+  # filter out duplicate records, this is necessary to have three
+  # unique points
   dat <- unique(dat)
   
-  #check input data for validity
+  # check input data for validity
   if (!is.numeric(dat[, 2]) | !is.numeric(dat[, 3])) {
     stop("wrong input format, x must be a data.frame with three columns: scientificName, decimalLongitude, decimalLatitude.\n")
   }
-  if (max(dat[, 2]) > 180 | min(dat[, 2]) < -180 | max(dat[, 3]) > 90 | min(dat[, 3]) < 
-      -90) {
+  if (max(dat[, 2]) > 180 | min(dat[, 2]) < -180 | max(dat[, 3]) > 
+      90 | min(dat[, 3]) < -90) {
     stop("invallid input coordinates. Check for column order and valid coordinates.")
   }
   if ("AOO" %in% index & "EOO" %in% index & eoo.value[1] == "shape") {
@@ -33,37 +35,42 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
     
     # only use species with more than 2 occurrences for EOO
     filt <- table(dat$scientificName)
-    filt <- filt[filt > 2]
-    dat.filt <- subset(dat, dat$scientificName %in% as.character(names(filt)))
     sortout <- filt[filt <= 2]
-    
-    if (length(sortout) > 0) {
-      warning("the following species have less than 3 occurrence, values set to NA:", 
-              paste("\n", names(sortout)))
-    }
-    
-    inp <- split(dat.filt, f = dat.filt$scientificName)
-    
-    if (eoo.value[1] == "area") {
-      out <- lapply(inp, function(x) .eoo(x, clipp = T))
-      out <- data.frame(do.call("rbind", out))
-      names(out) <- "EOO"
-      eoo.out <- rbind(out, data.frame(row.names = rownames(sortout), 
-                                       EOO = rep("NA",length(sortout))))
-    }
-    
-    if (eoo.value[1] == "shape") {
-      out <- lapply(inp, function(x) .ConvHull(x))
-      if (eoo.terrestrial) {
-        if (!requireNamespace("geosphere", quietly = TRUE)) {
-          stop("rgeos needed for eoo.terrestrial = T. Please install the package.", 
-               call. = FALSE)
+    filt <- filt[filt > 2]
+    if (length(filt) == 0) {
+      eoo.out <- rbind(data.frame(row.names = names(sortout), 
+                                  EOO = rep("NA", length(sortout))))
+    } else {
+      dat.filt <- subset(dat, dat$scientificName %in% as.character(names(filt)))
+
+        if (length(sortout) > 0) {
+          warning("the following species have less than 3 occurrence, values set to NA:", 
+                  paste("\n", names(sortout)))
         }
-        if (verbose == T) {
-          cat("Clipping shapes to landmasses.")
+      
+      inp <- split(dat.filt, f = dat.filt$scientificName)
+      
+      if (eoo.value[1] == "area") {
+        out <- lapply(inp, function(x) .eoo(x, clipp = T))
+        out <- data.frame(do.call("rbind", out))
+        names(out) <- "EOO"
+        eoo.out <- rbind(out, data.frame(row.names = rownames(sortout), 
+                                         EOO = rep("NA", length(sortout))))
+      }
+      
+      if (eoo.value[1] == "shape") {
+        eoo.out <- lapply(inp, function(x) .ConvHull(x))
+        if (eoo.terrestrial) {
+          if (!requireNamespace("geosphere", quietly = TRUE)) {
+            stop("rgeos needed for eoo.terrestrial = T. Please install the package.", 
+                 call. = FALSE)
+          }
+          if (verbose == T) {
+            cat("Clipping shapes to landmasses.")
+          }
+          eoo.out <- lapply(eoo.out, function(x) rgeos::gIntersection(x,speciesgeocodeR::landmass))
+          
         }
-        eoo.out <- lapply(out, function(x) rgeos::gIntersection(x, speciesgeocodeR::landmass))
-        
       }
     }
   }
@@ -80,7 +87,7 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
       warnings("aoo.xmax not specified, guessed from data")
     }
     if (is.null(aoo.ymin)) {
-      aoo.ymin<- min(dat$decimalLatitude)
+      aoo.ymin <- min(dat$decimalLatitude)
       warnings("aoo.ymin not specified, guessed from data")
     }
     if (is.null(aoo.ymax)) {
@@ -94,11 +101,12 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
     aoo.out <- list()
     
     for (i in 1:aoo.reps) {
-      tt <- SpatialPoints(matrix(c(aoo.xmin, aoo.xmax, aoo.ymin, aoo.ymax), ncol = 2), 
-                          proj4string = wgs84)
+      tt <- SpatialPoints(matrix(c(aoo.xmin, aoo.xmax, aoo.ymin, 
+                                   aoo.ymax), ncol = 2), proj4string = wgs84)
       tt <- spTransform(tt, caep)
       
-      tt <- SpatialPoints(coordinates(tt) + (((sqrt(aoo.gridsize) *1000) / aoo.reps) * (i - 1)))
+      tt <- SpatialPoints(coordinates(tt) + (((sqrt(aoo.gridsize) * 
+                                                 1000)/aoo.reps) * (i - 1)))
       pp <- raster(tt, res = aoo.gridsize * 1000)
       
       occs <- split(dat, f = dat$scientificName)
@@ -127,7 +135,7 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
     rownames(out) <- out$Row.names
     out <- out[, -1]
     class(out) <- c("range.sizes", class(out))
-
+    
   } else if ("EOO" %in% index) {
     out <- eoo.out
     class(out) <- c("range.sizes", class(out))
@@ -138,4 +146,4 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
   
   
   return(out)
-} 
+}

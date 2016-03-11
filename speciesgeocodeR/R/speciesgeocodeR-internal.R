@@ -37,6 +37,7 @@
     par(ask = F)
     
 }
+
 .BarChartSpec <- function(x, mode = c("percent", "total"), plotout = FALSE, verbose = FALSE, ...) {
     match.arg(mode)
     if (!class(x) == "spgeoOUT" && !class(x) == "spgeoH") {
@@ -100,6 +101,7 @@
         par(ask = F)
     }
 }
+
 .CoExClassH <- function(x, verbose = FALSE) {
     dat <- x
     if (length(dim(dat)) == 0) {
@@ -165,8 +167,9 @@
     }
     return(coemat)
 }
+
 .ConvHull <- function(x){
-  conv.hull <- chull(x$XCOOR, x$YCOOR)
+  conv.hull <- chull(x$decimalLongitude, x$decimalLatitude)
   dat2 <- x[conv.hull, ]
   dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
   poly <- SpatialPolygons(list(Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))), proj4string = CRS("+proj=longlat +datum=WGS84"))
@@ -247,6 +250,7 @@
     }
     return(polys)
 }
+
 .eoo <- function(x, clipp) {
   if (!requireNamespace("geosphere", quietly = TRUE)) {
     stop("geosphere needed for this function to work. Please install it.",
@@ -262,6 +266,22 @@
     area <- round(geosphere::areaPolygon(poly)/(1000 * 1000), 0)
     return(area)
 }
+
+.getDescend <- function(tree, node, curr = NULL) { #Code from Ruud Scharn
+  if (is.null(curr)) {
+    curr <- vector()
+  }
+  daughters <- tree$edge[which(tree$edge[, 1] == node), 2]
+  curr <- c(curr, daughters)
+  w <- which(daughters >= length(tree$tip))
+  if (length(w) > 0) {
+    for (i in 1:length(w)) {
+      curr <- .getDescend(tree, daughters[w[i]], curr)
+    }
+  }
+  return(curr)
+} 
+
 .getEle <- function(x) {
   ele <- try(getData("SRTM", lon = round(as.numeric(x[2]), 2), lat = round(as.numeric(x[3]), 2)))
   if (class(ele) == "try-error") {
@@ -275,6 +295,7 @@
   }
   return(elevation)
 }
+
 .GetPythonIn <- function(inpt) {
     
     coord <- read.table(inpt[1], header = T, sep = "\t")
@@ -302,6 +323,7 @@
     class(outo) <- "spgeoOUT"
     return(outo)
 }
+
 .HeatPlotCoEx <- function(x, verbose = FALSE, ...) {
   if (class(x) == "spgeoOUT") {
     dat <- x$coexistence_classified
@@ -357,6 +379,60 @@
   rect(7, 5, 51, 12)
   layout(matrix(1, 1, 1))
 } 
+
+.InputData <- function(x, ...) {
+  
+  # Number of samples
+  occ.all <- table(x[[1]]$midpointAge)
+  occ.reg1 <- table(subset(x[[1]], x[[1]]$higherGeography == unique(x[[1]]$higherGeography)[1], 
+                           select = "midpointAge"))
+  occ.reg2 <- table(subset(x[[1]], x[[1]]$higherGeography == unique(x[[1]]$higherGeography)[2], 
+                           select = "midpointAge"))
+  plot(1, 1, xlim = c(max(as.numeric(names(occ.reg1))), min(as.numeric(names(occ.reg1)))),
+       ylim = c(min(occ.all), max(occ.all)), xlab = "Time", 
+       ylab = "Number of Records", type = "n")
+  points(occ.reg1 ~ as.numeric(names(occ.reg1)), type = "b", col = "blue", ...)
+  points(occ.reg2 ~ as.numeric(names(occ.reg2)), type = "b", col = "red", ...)
+  legend("topleft", legend = as.character(unique(x[[1]]$higherGeography)), 
+         col = c("blue", "red"), lty = 1, pch = 1)
+  title("Number of samples")
+  
+  # Number of taxa
+  dd <- split(x[[1]], f = x[[1]]$higherGeography)
+  dd <- lapply(dd, function(x) aggregate(x$scientificName, by = list(x$midpointAge, 
+                                                                     x$scientificName), length))
+  dd <- lapply(dd, function(x) aggregate(x$Group.2, by = list(x$Group.1), 
+                                         length))
+  
+  plot(1, 1, xlim = c(max(c(as.numeric(dd[[1]]$Group.1)), as.numeric(dd[[2]]$Group.1)), 
+                      min(c(as.numeric(dd[[1]]$Group.1)), as.numeric(dd[[2]]$Group.1))), 
+       ylim = c(min(c(dd[[1]]$x), dd[[2]]$x), max(c(dd[[1]]$x), dd[[2]]$x)), 
+       xlab = "Time", ylab = "Number of Records", 
+       type = "n")
+  
+  points(dd[[1]]$x ~ as.numeric(dd[[1]]$Group.1), type = "b", col = "blue")  #, ...)
+  points(dd[[2]]$x ~ as.numeric(dd[[2]]$Group.1), type = "b", col = "red")  #, ...)
+  legend("topleft", legend = as.character(unique(x[[1]]$higherGeography)), 
+         col = c("blue", "red"), lty = 1, pch = 1)
+  title("Number of taxa")
+  
+  # boxplot fossil ages
+  boxplot(x[[1]]$midpointAge ~ x[[1]]$higherGeography, col = c("blue", "red"))
+  title("Fossil ages")
+  
+  # Number of records per taxon
+  tax.num <- aggregate(x[[1]]$midpointAge, by = list(x[[1]]$scientificName, x[[1]]$higherGeography), 
+                       length)
+  boxplot(tax.num$x ~ tax.num$Group.2, col = c("blue", "red"))
+  title("Number of records per Taxon")
+  
+  #fraction of taxa per area in recent data
+  frq <- round((table(x[[2]]$higherGeography)/ sum(table(x[[2]]$higherGeography))), 2)
+  barplot(frq)
+  box("plot")
+  title("Fraction of Taxa per Area (present day)")
+}
+
 .MapAll <- function(x, polyg, moreborders = FALSE, verbose = FALSE, ...) {
     # data('wrld_simpl', envir = environment())
     if (class(x) == "spgeoOUT") {
@@ -423,6 +499,7 @@
         points(dat$XCOOR, dat$YCOOR, cex = 0.5, pch = 3, col = "red", ...)
     }
 }
+
 .MapPerPoly <- function(x, areanames = NULL, plotout = FALSE) {
     if (!class(x) == "spgeoOUT") {
         stop("this function is only defined for class \"spgeoOUT\"")
@@ -521,6 +598,7 @@
     par(ask = F)
     layout(matrix(1,1,1))
 }
+
 .MapPerSpecies <- function(x, moreborders = FALSE, plotout = FALSE, verbose = FALSE, ...) {
     if (!class(x) == "spgeoOUT") {
         stop("this function is only defined for class \"spgeoOUT\"")
@@ -567,6 +645,7 @@
     par(ask = F)
     layout(matrix(1,1,1))
 }
+
 .MapUnclassified <- function(x, moreborders = FALSE, verbose = FALSE, ...) {
     if (!class(x) == "spgeoOUT") {
         stop("This function is only defined for class \"spgeoOUT\"")
@@ -605,6 +684,7 @@
         box("plot")
     }
 }
+
 .NexusOut <- function(dat, verbose = FALSE) {
   if (class(dat) == "list") {
     tablist <- lapply(dat, function(x) x$spec_table)
@@ -676,6 +756,7 @@
     sink(NULL)
   }
 }
+
 .OutBarChartPoly <- function(x, prefix, verbose = FALSE, ...) {
     if (verbose == TRUE) {
         cat("Creating barchart per polygon: barchart_per_polygon.pdf. \n")
@@ -684,6 +765,7 @@
     .BarChartPoly(x, plotout = T, cex.axis = 0.8, ...)
     dev.off()
 }
+
 .OutBarChartSpec <- function(x, prefix, verbose = FALSE, ...) {
     if (verbose == TRUE) {
         cat("Creating barchart per species: barchart_per_species.pdf. \n")
@@ -692,6 +774,7 @@
     .BarChartSpec(x, plotout = T, mode = "percent", ...)
     dev.off()
 }
+
 .OutHeatCoEx <- function(x, prefix, verbose = FALSE, ...) {
     if (verbose == TRUE) {
         cat("Creating coexistence heatplot: heatplot_coexistence.pdf. \n")
@@ -700,6 +783,7 @@
     .HeatPlotCoEx(x, ...)
     dev.off()
 }
+
 .OutMapAll <- function(x, prefix, areanames = "", verbose = FALSE, ...) {
     if (verbose == TRUE) {
         cat("Creating overview map: map_samples_overview.pdf. \n")
@@ -710,6 +794,7 @@
     .MapUnclassified(x, ...)
     dev.off()
 }
+
 .OutMapPerPoly <- function(x, prefix, verbose = FALSE, ...) {
     if (verbose == TRUE) {
         cat("Creating map per polygon: map_samples_per_polygon.pdf. \n")
@@ -718,6 +803,7 @@
     .MapPerPoly(x, plotout = T)
     dev.off()
 }
+
 .OutMapPerSpecies <- function(x, prefix, verbose = FALSE, ...) {
     if (verbose == TRUE) {
         cat("Creating map per species: map_samples_per_species.pdf. \n")
@@ -726,6 +812,7 @@
     .MapPerSpecies(x, plotout = T, ...)
     dev.off()
 }
+
 .OutPlotSpPoly <- function(x, prefix, verbose = FALSE, ...) {
     if (verbose == TRUE) {
         cat("Creating species per polygon barchart: number_of_species_per_polygon.pdf. \n")
@@ -735,9 +822,11 @@
     .PlotSpPoly(x, ...)
     dev.off()
 }
+
 .perc <- function(x, y){
   x / rowSums(y) * 100
 }
+
 .PipSamp <- function(x, columnname, verbose = FALSE) {
     if (class(x) != "spgeoIN") {
         stop(paste("function is only defined for class \"spgeoIN\".\n", "Use ReadPoints() to produce correct input format", sep = ""))
@@ -794,6 +883,7 @@
         return(pip)
     }
 }
+
 .PlotSpPoly <- function(x, ...) {
     if (class(x) == "spgeoOUT") {
         num <- length(names(x$polygon_table))
@@ -820,6 +910,7 @@
         stop("this function is only defined for class \"spgeoOUT\"")
     }
 }
+
 .rasterSum <- function(x, ras, type = c("div", "abu")) {
     po <- SpatialPoints(x[, 2:3], CRS("+proj=longlat +datum=WGS84"))
     ras_sub <- rasterize(po, ras, fun = "count")
@@ -829,6 +920,7 @@
     ras_sub[is.na(ras_sub)] <- 0
     return(ras_sub)
 }
+
 .Random.seed <- c(403L, 10L, -1648930018L, -1637691944L, -1360844997L, 244027609L, 250264680L, 1688437142L, 1315422481L, -1590103357L, 
     90966738L, -2034009244L, 420605607L, -2132584451L, -983526924L, 1596694234L, 1916756005L, 801402175L, 473227974L, 454578000L, 
     -1346056333L, -27012719L, -780139584L, -131488354L, 664229737L, 1521537947L, 1326930602L, -927648564L, 2089864591L, 477440453L, 
@@ -893,6 +985,117 @@
     -1403847727L, 481869251L, 75421380L, -453616270L, -892366777L, 610145297L, 508761494L, -750458636L, 856547973L, 596495311L, 
     795083464L, 973276006L, 1408547219L, 986968821L, 117304018L, -911256288L, 561569033L, -1183389125L, -1080344692L, 856202778L, 
     698263183L, 603447769L, -1354492306L, 1969853948L, 590032749L, -1912121065L, 348627019L)
+
+.ReplicateAges <- function(x) {
+  meas <- unlist(lapply(x[[3]], length))
+  
+  if(isTRUE(all.equal(max(meas) , min(meas)))){
+    dat <-x[[3]]
+  }else{
+    numb <- which(meas < max(meas))
+    for(i in 1:length(numb)){
+      dat <- x[[3]]
+      dat[[numb[i]]] <- c(rep(0, length(numb)), dat[[numb[i]]])
+      names(dat[[numb[i]]])[1] <- (max(as.numeric(names(dat[[numb[i]]])), na.rm = T) + x[[4]])
+    }
+    
+  }
+  
+  reg1 <- lapply(x[[3]], function(k) {apply(k[,-1], 2, function(z){
+    test <- z[as.numeric(z) == 1]
+    test <- length(test[complete.cases(test)])
+    return(test)})})
+  are1all <- do.call("rbind.data.frame", reg1)
+  names(are1all) <- names(reg1[[1]])
+  
+  reg2 <- lapply(x[[3]], function(k) {apply(k[,-1], 2, function(z){
+    test <- z[as.numeric(z) == 2]
+    test <- length(test[complete.cases(test)])
+    return(test)})})
+  are2all <- do.call("rbind.data.frame", reg2)
+  names(are2all) <- names(reg2[[1]])
+  
+  reg3 <- lapply(x[[3]], function(k) {apply(k[,-1], 2, function(z){
+    test <- z[as.numeric(z) == 3]
+    test <- length(test[complete.cases(test)])
+    return(test)})})
+  are3all <- do.call("rbind.data.frame", reg3)
+  names(are3all) <- names(reg3[[1]])
+  
+  tot <- lapply(x[[3]], function(k) {apply(k[,-1], 2, function(z){
+    test <- z[as.numeric(z) %in% c(1,2,3)]
+    test <- length(test[complete.cases(test)])
+    return(test)})})
+  totall <- do.call("rbind.data.frame", tot)
+  names(totall) <- names(tot[[1]])
+  
+  are1.max <- apply(are1all, 2, max)
+  are1.min <- apply(are1all, 2, min)
+  
+  are2.max <- apply(are2all, 2, max)
+  are2.min <- apply(are2all, 2, min)
+  
+  plot(1, 1, xlim = c(max(c(as.numeric(names(are1)), as.numeric(names(are2)))), 
+                      min(c(as.numeric(names(are1)), as.numeric(names(are2))))), 
+       ylim = c(min(c(are1.min, are2.min)), max(c(are1.max, are2.max))), 
+       xlab = "Time", ylab = "Number of Taxa", 
+       type = "n")
+  polygon(c(names(are1), rev(names(are1))), c(are1.min, rev(are1.max)), 
+          col = rgb(0, 0, 255, 125, maxColorValue = 255), 
+          border = rgb(0, 0, 255, 125, maxColorValue = 255))
+  polygon(c(names(are1), rev(names(are2))), c(are2.min, rev(are2.max)), 
+          col = rgb(255, 0, 0, 125, maxColorValue = 255), 
+          border = rgb(255, 0, 0, 125, maxColorValue = 255))
+  legend("topleft", legend = unique(x[[1]]$higherGeography), 
+         fill = c(rgb(0, 0, 255, 125, maxColorValue = 255), rgb(255, 0, 0, 125, maxColorValue = 255)))
+  title(sprintf("Taxon number randomized ages, replicates = %s",length(x[[3]])))
+  
+  
+  #Faction per area through time
+  reg1all <- round(are1all/totall, 2)
+  reg1.min <- apply(reg1all, 2, min)
+  reg1.max <- apply(reg1all, 2, max)
+  
+  reg2all <- round(are2all/totall, 2)
+  reg2.min <- apply(reg2all, 2, min)
+  reg2.max <- apply(reg2all, 2, max)
+  
+  reg3all <- round(are3all/totall, 2)
+  reg3.min <- apply(reg3all, 2, min)
+  reg3.max <- apply(reg3all, 2, max)
+  
+  # plot
+  plot(1, 1, xlim = c(max(as.numeric(names(reg1all))), 
+                      min(as.numeric(names(reg1all)))), 
+       ylim = c(0, 1.1), 
+       xlab = "Time", ylab = "Fraction of Taxa", 
+       type = "n")
+  polygon(c(names(reg1all), rev(names(reg1all))), c(reg1.min, rev(reg1.max)), 
+          col = rgb(0, 0, 255, 100, maxColorValue = 255), 
+          border = rgb(0, 0, 255, 100, maxColorValue = 255))
+  polygon(c(names(reg2all), rev(names(reg2all))), c(reg2.min, rev(reg2.max)), 
+          col = rgb(255, 0, 0, 100, maxColorValue = 255), 
+          border = rgb(255, 0, 0, 100, maxColorValue = 255))
+  polygon(c(names(reg3all), rev(names(reg3all))), c(reg3.min, rev(reg3.max)), 
+          col = rgb(0, 255, 0, 100, maxColorValue = 255), 
+          border = rgb(0, 255, 0, 100, maxColorValue = 255))
+  legend("top", legend = c(as.character(unique(x[[1]]$higherGeography)), "both"), 
+         fill = c(rgb(0, 0, 255, 125, maxColorValue = 255), 
+                  rgb(255, 0, 0, 125, maxColorValue = 255),
+                  rgb(0, 255, 0, 125, maxColorValue = 255)), ncol = 3)
+  title(sprintf("Fraction of taxa per area, replicates = %s",length(x[[3]])))
+}
+
+.SampleLocations <- function(x, ...) {
+  map("world", ...)
+  points(x[[1]]$decimalLongitude, x[[1]]$decimalLatitude, col = x[[1]]$higherGeography, ...)
+  axis(1)
+  axis(2)
+  title("Input fossil locations")
+  legend("topright", legend = unique(x[[1]]$higherGeography), fill = c("blue", "red"))
+  box("plot")
+}
+
 .SpPerPolH <- function(x, verbose = FALSE) {
     if (verbose == TRUE) {
         cat("Calculating species number per polygon. \n")
@@ -915,6 +1118,7 @@
         cat("Done")
     }
 }
+
 .SpSumH <- function(x, verbose = FALSE, occ.thresh = occ.thresh) {
   liste <- levels(x$homepolygon)
   if (length(liste) == 0) {
@@ -940,6 +1144,7 @@
   }
   return(spec_sum)
 } 
+
 .testcordcap <- function(x, reftab, capthresh) {
   capout <- NA
     if (is.na(as.character(unlist(x["country"]))) | is.na(suppressWarnings(as.numeric(as.character(x["XCOOR"])))) |
@@ -972,6 +1177,7 @@
     }
     return(capout)
 }
+
 .testcordcountr <- function(x, reftab, contthresh) {
   contout <- NA
     if (is.na(as.character(unlist(x["country"]))) | is.na(suppressWarnings(as.numeric(as.character(x["XCOOR"])))) | 
@@ -1004,6 +1210,7 @@
     }
     return(contout)
 }
+
 .WriteTablesSpGeo <- function(x, prefix = "", verbose = FALSE, ...) {
     if (class(x) == "spgeoOUT") {
         if (verbose == TRUE) {

@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.16)  5 FEB 2016 01:59
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9) (preloaded format=pdflatex 2013.10.16)  5 FEB 2016 02:08
 entering extended mode
-**C:/Users/xzizal/AppData/Local/Temp/RtmpUzsogy/Rd2pdf267431a7183/Rd2.tex
-(C:/Users/xzizal/AppData/Local/Temp/RtmpUzsogy/Rd2pdf267431a7183/Rd2.tex
+**C:/Users/xzizal/AppData/Local/Temp/RtmpGoMjA4/Rd2pdf1c74d983333/Rd2.tex
+(C:/Users/xzizal/AppData/Local/Temp/RtmpGoMjA4/Rd2pdf1c74d983333/Rd2.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -622,7 +622,7 @@ File: latin1.def 2008/03/30 v1.1d Input encoding file
 \@indexfile=\write3
 
 Writing index file Rd2.idx
-(C:\Users\xzizal\AppData\Local\Temp\RtmpUzsogy\Rd2pdf267431a7183\Rd2.aux)
+(C:\Users\xzizal\AppData\Local\Temp\RtmpGoMjA4\Rd2pdf1c74d983333\Rd2.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
 LaTeX Font Info:    ... okay on input line 8.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
@@ -677,8 +677,8 @@ LaTeX Info: Redefining \ref on input line 8.
 LaTeX Info: Redefining \pageref on input line 8.
 LaTeX Info: Redefining \nameref on input line 8.
 
-(C:\Users\xzizal\AppData\Local\Temp\RtmpUzsogy\Rd2pdf267431a7183\Rd2.out)
-(C:\Users\xzizal\AppData\Local\Temp\RtmpUzsogy\Rd2pdf267431a7183\Rd2.out)
+(C:\Users\xzizal\AppData\Local\Temp\RtmpGoMjA4\Rd2pdf1c74d983333\Rd2.out)
+(C:\Users\xzizal\AppData\Local\Temp\RtmpGoMjA4\Rd2pdf1c74d983333\Rd2.out)
 \@outlinefile=\write4
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <24.88> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 9.
@@ -698,7 +698,7 @@ LaTeX Font Info:    Try loading font information for T1+phv on input line 31.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\t1phv.fd"
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
-(C:\Users\xzizal\AppData\Local\Temp\RtmpUzsogy\Rd2pdf267431a7183\Rd2.toc
+(C:\Users\xzizal\AppData\Local\Temp\RtmpGoMjA4\Rd2pdf1c74d983333\Rd2.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 1.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -730,18 +730,18 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [5]
-Overfull \hbox (5.06757pt too wide) in paragraph at lines 247--248
+Overfull \hbox (5.06757pt too wide) in paragraph at lines 248--249
 []\T1/ptm/m/n/10 a \T1/zi4/m/n/10 data.frame \T1/ptm/m/n/10 with at least three
  columns: ``iden-ti-fier'' (species name), ``XCOOR''
  []
 
 [6]
-Overfull \hbox (2.15819pt too wide) in paragraph at lines 289--290
+Overfull \hbox (2.15819pt too wide) in paragraph at lines 290--291
 []\T1/ptm/m/n/10 The ref-er-ence poly-gons for the coun-trycheck func-tion. By 
 de-fault the wrld_simpl
  []
 
-LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 305.
+LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 306.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\inconsolata\ts1zi4.fd"
 File: ts1zi4.fd 2013/06/07 Fontinst v1.933 font definitions for TS1/zi4.
@@ -752,7 +752,7 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [8]
-Overfull \hbox (5.95741pt too wide) in paragraph at lines 421--422
+Overfull \hbox (5.95741pt too wide) in paragraph at lines 422--423
 \T1/ptm/m/n/10 (EOO, AOO). De-faults from (IUCN Stan-dards and Pe-ti-tions Sub-
 com-mit-tee 2014). 
  []
@@ -769,7 +769,7 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (4.84756pt too wide) in paragraph at lines 541--542
+Overfull \hbox (4.84756pt too wide) in paragraph at lines 542--543
 []\T1/ptm/m/n/10 A \T1/zi4/m/n/10 data.frame \T1/ptm/m/n/10 with point oc-cur-r
 ences of 42 Lemur species in the right in-put for-mat for the [][]\T1/zi4/m/n/1
 0 GeoClean[][][]\T1/ptm/m/n/10 .
@@ -778,7 +778,7 @@ ences of 42 Lemur species in the right in-put for-mat for the [][]\T1/zi4/m/n/1
 [11] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (14.67728pt too wide) in paragraph at lines 579--580
+Overfull \hbox (14.67728pt too wide) in paragraph at lines 580--581
 []\T1/ptm/m/n/10 A wrap-per func-tion to map a raster with coun-try bor-ders. C
 an be used with the re-sults of [][]\T1/zi4/m/n/10 RichnessGrid[][][]\T1/ptm/m/
 n/10 . 
@@ -808,13 +808,13 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (0.68736pt too wide) in paragraph at lines 986--988
+Overfull \hbox (0.68736pt too wide) in paragraph at lines 987--989
 \T1/ptm/m/n/10 in-ter-est (tab de-lim-ited, three columns with header: iden-ti-
 fier, XCOOR, YCOOR)
  []
 
 
-Overfull \hbox (79.7677pt too wide) in paragraph at lines 986--988
+Overfull \hbox (79.7677pt too wide) in paragraph at lines 987--989
 \T1/ptm/m/n/10 OR an ob-ject of the class [][]\T1/zi4/m/n/10 SpatialPolygons[][
 ][] \T1/ptm/m/n/10 OR an ob-ject of the class [][]\T1/zi4/m/n/10 SpatialPolygon
 sDataFrame[][][]\T1/ptm/m/n/10 . 
@@ -823,7 +823,7 @@ sDataFrame[][][]\T1/ptm/m/n/10 .
 [18] ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 )
-Overfull \hbox (8.30878pt too wide) in paragraph at lines 1042--1043
+Overfull \hbox (8.30878pt too wide) in paragraph at lines 1043--1044
 []\T1/ptm/m/n/10 an ob-ject of the class \T1/zi4/m/n/10 data.frame \T1/ptm/m/n/
 10 or \T1/zi4/m/n/10 spgeoIN \T1/ptm/m/n/10 or \T1/zi4/m/n/10 spgeoOUT \T1/ptm/
 m/n/10 or \T1/zi4/m/n/10 character string\T1/ptm/m/n/10 .
@@ -853,7 +853,7 @@ File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\utf8.def"
 File: utf8.def 2008/04/05 v1.1m UTF-8 support for inputenc
 ) [27]
-(C:\Users\xzizal\AppData\Local\Temp\RtmpUzsogy\Rd2pdf267431a7183\Rd2.ind
+(C:\Users\xzizal\AppData\Local\Temp\RtmpGoMjA4\Rd2pdf1c74d983333\Rd2.ind
 [28]
 LaTeX Font Info:    Font shape `T1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `T1/ptm/b/n' tried instead on input line 3.
@@ -865,18 +865,18 @@ LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
 [29
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1526.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1526.
- (C:\Users\xzizal\AppData\Local\Temp\RtmpUzsogy\Rd2pdf267431a7183\Rd2.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1526.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1526.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1527.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1527.
+ (C:\Users\xzizal\AppData\Local\Temp\RtmpGoMjA4\Rd2pdf1c74d983333\Rd2.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1527.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1527.
 
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
 (rerunfilecheck)             Checksum: DE194630DB24214BCD88629952BBEB91;1671.
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1526.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1527.
  ) 
 Here is how much of TeX's memory you used:
  6677 strings out of 493921
@@ -914,7 +914,7 @@ es (x86)/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Program Files (x86)
 /fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type
 1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times
 /utmri8a.pfb>
-Output written on Rd2.pdf (29 pages, 226141 bytes).
+Output written on Rd2.pdf (29 pages, 226152 bytes).
 PDF statistics:
  742 PDF objects out of 1000 (max. 8388607)
  272 named destinations out of 1000 (max. 500000)
