@@ -11,12 +11,12 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
       num$poly <- gsub("X", " ", as.character(num$poly))
     }
     
-    if (class(x$polygons) == "SpatialPolygonsDataFrame") {
+    if (is.SpatialPolygonsDataFrame(x$polygons)) {
         if (is.na(areanames)) {
           areanames <- x$areanam
         }else{
           if (!areanames %in% names(x$polygons@data)) {
-            stop("cannot find areanames column; check spelling")
+            stop("cannot find areanames column")
          }
         }
         nam.test <- as.vector(unlist(x$polygons@data[areanames]))
@@ -25,7 +25,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
             stop(msg)
         }
         liste <- unique(x$polygons@data[, areanames])
-        if (all(!is.na(liste)) == F) {
+        if (!all(!is.na(liste))) {
             stop("area names in polygondata contain missing data (#N/A)")
         }
         nam <- data.frame(ECO_NAME = unique(x$polygons@data[, areanames]))
@@ -39,7 +39,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
         polys.df <- merge(nam, num, sort = F, by.x = "ECO_NAME", by.y = "poly", all = T)
     }
     
-    if (class(x$polygons) == "SpatialPolygons") {
+    if (is.SpatialPolygons(x$polygons)) {
         if (length(grep("NA", names(x$polygons))) > 0) {
             stop("the polygondata contain a polygon named \"NA\"; please rename")
         }

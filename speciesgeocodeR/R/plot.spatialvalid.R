@@ -1,0 +1,74 @@
+plot.spatialvalid <- function(x, bgmap = NULL, clean = T, details = T) {
+  x <- data.frame(x)
+  
+  #prepare background
+  e <- raster::extent(SpatialPoints(x[, 1:2])) + 1
+
+  if (is.null(bgmap)) {
+    load("landmass.rda")
+    bgmap <- landmass
+    bgmap <- raster::crop(bgmap, e)
+  }
+  
+  bgmap <- ggplot2::fortify(bgmap)
+  
+  #plot background
+  plo <- ggplot2::ggplot()+
+    geom_polygon(data = bgmap, aes(x = long, y = lat, group = group), fill = "grey60")+
+    coord_fixed()+
+    theme_bw()
+  
+  #prepare occurence points
+  inv <- x
+  inv[,-c(1:2)] <- !inv[,-c(1:2)]
+  occs <- names(inv)[unlist(lapply(apply(inv == 1, 1, "which"), "[", 1))]
+
+  if(length(occs) == 0){
+    occs <- rep("AAAclean", nrow(x))
+  }else{
+    occs[is.na(occs)] <- "AAAclean"
+  }
+  
+  occs <- cbind(x[,c("longitude", "latitude", "summary")], flag = occs)
+  
+  if(!"AAAclean" %in% occs$flag){
+    clean <- FALSE
+    warnings("All records were flagged, setting clean to FALSE")
+  }
+
+  #add points to background
+  if(!clean & !details){
+    pts <- occs[!occs$summary,]
+    plo <- plo+
+      ggplot2::geom_point(data = pts, aes(x = longitude, y = latitude), colour = "#F8766D") 
+  }
+  
+  if(clean & !details){
+    pts <- occs
+    plo <- plo+
+      ggplot2::geom_point(data = pts, aes(x = longitude, y = latitude, colour = summary))+
+      ggplot2::scale_colour_manual(values = c("#F8766D", "#00BFC4"), labels = c("Flagged", "Clean"))+
+      ggplot2::theme(legend.title=element_blank())
+  }
+  
+  if(!clean & details){
+    pts <- occs[!occs$summary,]
+    plo <- plo+
+      ggplot2::geom_point(data = pts, aes(x = longitude, y = latitude, shape = flag), colour = "#F8766D")+
+      ggplot2::theme(legend.title=element_blank())
+  }
+  
+  if(clean & details){
+    pts <- occs
+    plo <- plo+
+      ggplot2::geom_point(data = pts, aes(x = longitude, y = latitude, shape = flag, colour = flag))+
+      ggplot2::scale_colour_manual(values = c("#00BFC4", rep("#F8766D", length(unique(pts$flag)))),
+                                   breaks = as.character(unique(pts$flag)),
+                                   labels = c("clean", as.character(unique(pts$flag))[-1]))+
+      ggplot2::scale_shape_manual(values = c(16, seq(15, 15+(length(unique(pts$flag))-1))),
+                                  breaks = as.character(unique(pts$flag)),
+                                  labels = c("clean", as.character(unique(pts$flag))[-1]))+
+      ggplot2::theme(legend.title=element_blank())
+  }
+  plo
+} 

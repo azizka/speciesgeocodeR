@@ -18,7 +18,7 @@ RichnessGrid <- function(x, limits = c(-180, 180, -90, 90), reso, type = c("spnu
         dum <- data.frame(identifier = x$identifier_in, x$species_coordinates_in)
         x <- dum
     }
-    if (class(x) == "character" & length(grep(".txt", x)) == 0) {
+    if (is.character(x) & !(".txt" %in% x)) {
         if (!requireNamespace("rgbif", quietly = TRUE)) {
           stop("rgbif needed for species name option. Please install it.",
                call. = FALSE)
@@ -31,9 +31,9 @@ RichnessGrid <- function(x, limits = c(-180, 180, -90, 90), reso, type = c("spnu
         names(coords) <- c("identifier", "XCOOR", "YCOOR")
         coords <- data.frame(coords[complete.cases(coords),])
         x <- coords
-        warning(paste(dim(inp)[1], "geo-referenced records found in GBIF. No data cleaning was performed", sep = " "))
+        warning(paste(nrow(inp), "geo-referenced records found in GBIF. No data cleaning was performed", sep = " "))
     }
-    if (class(x) == "character" & length(grep(".txt", x)) > 0) {
+    if (is.character(x) & length(grep(".txt", x)) > 0) {
         inp <- read.table(x, sep = "\t", header = T)
         names(inp) <- c("identifier", "XCOOR", "YCOOR")
         x <- inp
@@ -42,10 +42,10 @@ RichnessGrid <- function(x, limits = c(-180, 180, -90, 90), reso, type = c("spnu
     ras <- raster(e, ncols = cols * reso, nrows = rows * reso, crs = CRS("+proj=longlat +datum=WGS84"))
     ras <- setValues(ras, 0)
     inp <- split(x, f = x$identifier)
-    if (type == "spnum") {
+    if (type[1] == "spnum") {
         rast <- lapply(inp, function(x) .rasterSum(x, ras, "div"))
     }
-    if (type == "abu") {
+    if (type[1] == "abu") {
         rast <- lapply(inp, function(x) .rasterSum(x, ras, "abu"))
     }
     out <- Reduce("+", rast)

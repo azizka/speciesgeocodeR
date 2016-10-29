@@ -1,4 +1,6 @@
-RangeRichness <- function(ra, limits = c(-180, 180, -90, 90), reso = 60, terrestrial = FALSE){
+RangeRichness <- function(ra, limits = c(-180, 180, -90, 90), reso = 1, terrestrial = FALSE){
+  
+  
   limits <- extent(limits)
   xmin <- limits[1]
   xmax <- limits[2]
@@ -16,9 +18,7 @@ RangeRichness <- function(ra, limits = c(-180, 180, -90, 90), reso = 60, terrest
   }
   reso <- 60/reso
   rasto <- raster(limits, ncol = cols* reso, nrow = rows * reso, vals = 1)
-  
-#   rasto <- raster(xmn=limits[1], xmx=limits[2], ymn=limits[3], ymx=limits[4], ncol = ncol, nrow = nrow, vals = 1)
-  
+
   rang.ras <- lapply(ra, function(x) rasterize(x, rasto))
   
   for(i in 1:length(rang.ras)){

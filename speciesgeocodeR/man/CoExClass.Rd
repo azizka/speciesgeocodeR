@@ -7,10 +7,11 @@ Species Coexistence Matrices in Given Areas.
 Add a coexistence matrix to an object of the class spgeoOUT created by \code{\link{SpGeoCod}}.
 }
 \usage{
-CoExClass(x)
+CoExClass(x, verbose = F)
 }
 \arguments{
   \item{x}{An object of the class spgeoOUT, where the coexistence matrix shall be added}
+  \item{verbose}{If TRUE, status will be reported.}
 }
 
 \value{

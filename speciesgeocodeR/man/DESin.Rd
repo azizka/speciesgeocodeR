@@ -8,7 +8,7 @@ Create input files for DES-PyRate
 Created are-coded and time-binned input in the format to use by the DES model in PyRate from tables of fossil and current species distributions. 
 }
 \usage{
-DESin(x, recent, bin.size, reps = 1, verbose = T)
+DESin(x, recent, bin.size, reps = 1, verbose = F)
 }
 
 \arguments{

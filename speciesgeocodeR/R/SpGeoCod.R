@@ -1,5 +1,5 @@
 SpGeoCod <- function(x, y, areanames = "", occ.thresh = 0, elevation = FALSE, threshold, cleaning = FALSE, ...) {
-    if (elevation == TRUE){
+    if (elevation){
       ini <- ReadPoints(x, y, cleaning = cleaning, ...)
       coords <- data.frame(identifier = ini$identifier, 
                            ini$species_coordinates)

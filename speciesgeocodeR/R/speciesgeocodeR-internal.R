@@ -102,74 +102,8 @@
     }
 }
 
-.CoExClassH <- function(x, verbose = FALSE) {
-    dat <- x
-    if (length(dim(dat)) == 0) {
-        coemat <- "NULL"
-    } else {
-        if (!is.data.frame(x)) {
-            stop("function only defined for class \"data.frame\"")
-        }
-        if ("identifier" %in% names(dat) == F) {
-            if (T %in% sapply(dat, is.factor)) {
-                id <- sapply(dat, is.factor)
-                old <- names(dat)[id == T]
-                names(dat)[id == T] <- "identifier"
-                warning(paste("no species identifier found in input object. \n", "Column <", old, "> was used as identifier", 
-                  sep = ""))
-            }
-            if (T %in% sapply(dat, is.character)) {
-                id <- sapply(dat, character)
-                old <- names(dat)[id == T]
-                names(dat)[id == T] <- "identifier"
-                warning(paste("no species identifier found in input object. \n", "Column <", old, "> was used as identifier", 
-                  sep = ""))
-            }
-        }
-        spnum <- length(dat$identifier)
-        numpol <- length(names(dat))
-        coemat <- data.frame(matrix(NA, nrow = spnum, ncol = spnum))
-        for (j in 1:spnum) {
-            if (verbose == TRUE) {
-                cat(paste("Calculate coexistence pattern for species: ", j, "/", spnum, " ", dat$identifier[j], "\n", sep = ""))
-            }
-            sco <- data.frame(dat$identifier)
-            for (i in 2:length(names(dat))) {
-                if (dat[j, i] == 0) {
-                  poly <- rep(0, spnum)
-                  sco <- cbind(sco, poly)
-                }
-                if (dat[j, i] > 0) {
-                  scoh <- dat[, i]
-                  if (numpol > 2) {
-                    totocc <- rowSums(dat[j, -1])
-                  } else {
-                    totocc <- dat[j, -1]
-                  }
-                  for (k in 1:length(scoh)) if (scoh[k] > 0) {
-                    scoh[k] <- dat[j, i]/totocc * 100
-                  } else {
-                    scoh[k] <- 0
-                  }
-                  sco <- cbind(sco, scoh)
-                }
-            }
-            if (numpol > 2) {
-                coex <- rowSums(sco[, -1])
-                coemat[j, ] <- coex
-            } else {
-                coex <- sco[, -1]
-                coemat[j, ] <- coex
-            }
-        }
-        coemat <- cbind(dat$identifier, coemat)
-        names(coemat) <- c("identifier", as.character(dat$identifier))
-    }
-    return(coemat)
-}
-
 .ConvHull <- function(x){
-  conv.hull <- chull(x$decimalLongitude, x$decimalLatitude)
+  conv.hull <- chull(x$decimallongitude, x$decimallatitude)
   dat2 <- x[conv.hull, ]
   dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
   poly <- SpatialPolygons(list(Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))), proj4string = CRS("+proj=longlat +datum=WGS84"))
@@ -249,22 +183,6 @@
         polys <- SpatialPolygons(col, proj4string = CRS("+proj=longlat +datum=WGS84"))
     }
     return(polys)
-}
-
-.eoo <- function(x, clipp) {
-  if (!requireNamespace("geosphere", quietly = TRUE)) {
-    stop("geosphere needed for this function to work. Please install it.",
-         call. = FALSE)
-  }  
-    conv.hull <- chull(x$decimalLongitude, x$decimalLatitude)
-    dat2 <- x[conv.hull, ]
-    dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
-    poly <- SpatialPolygons(list(Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))), proj4string = CRS("+proj=longlat +datum=WGS84"))
-    if(clipp){
-      poly <- rgeos::gIntersection(poly, speciesgeocodeR::landmass)
-    }
-    area <- round(geosphere::areaPolygon(poly)/(1000 * 1000), 0)
-    return(area)
 }
 
 .getDescend <- function(tree, node, curr = NULL) { #Code from Ruud Scharn
@@ -457,16 +375,16 @@
         box("plot")
         title("All samples")
         # if (moreborders == T) {plot(wrld_simpl, add = T)}
-        if (verbose == TRUE) {
+        if (verbose) {
             warning("adding polygons")
         }
         plot(x$polygons, col = "grey60", border = "grey40", add = T, ...)
-        if (verbose == TRUE) {
+        if (verbose) {
             warning("adding sample points")
         }
         points(x$species_coordinates_in[, 1], x$species_coordinates_in[, 2], cex = 0.7, pch = 3, col = "blue", ...)
     }
-    if (class(x) == "matrix" || class(x) == "data.frame") {
+    if (is.matrix(x)|| is.data.frame(x)) {
         if (!is.numeric(x[, 1]) || !is.numeric(x[, 2])) {
             stop(paste("wrong input format:\n", "Point input must be a \"matrix\" or \"data.frame\" with 2 columns.\n", "Column order must be lon - lat", 
                 sep = ""))
@@ -490,7 +408,7 @@
         title("All samples")
         box("plot")
         # if (moreborders == T) {plot(wrld_simpl, add = T, ...)}
-        if (class(polyg == "list")) 
+        if (is.list(polyg)) 
             
         plot(polyg, col = "grey60", add = T, ...)
         
@@ -614,9 +532,6 @@
     
     
     for (i in 1:length(liste)) {
-#         if (verbose == TRUE) {
-#             cat(paste("Mapping species: ", i, "/", length(liste), ": ", liste[i], "\n", sep = ""))
-#         }
         kk <- subset(dat, dat$identifier == liste[i])
         
         inside <- kk[!is.na(kk$homepolygon), ]
@@ -631,7 +546,6 @@
         axis(1)
         axis(2)
         title(liste[i])
-        # if (moreborders == T) {plot(wrld_simpl, add = T)}
         plot(x$polygons, col = "grey60", add = T)
         
         if (length(inside) > 0) {
@@ -651,7 +565,6 @@
         stop("This function is only defined for class \"spgeoOUT\"")
     }
     dat <- data.frame(x$not_classified_samples)
-    # if (moreborders == T) {data('wrld_simpl', envir = environment())}
     if (dim(dat)[1] == 0) {
         plot(c(1:20), c(1:20), type = "n", axes = F, xlab = "", ylab = "")
         text(10, 10, labels = paste("All points fell into the polygons and were classified.\n", "No unclassified points", sep = ""))
@@ -665,11 +578,11 @@
         axis(1)
         axis(2)
         title("Samples not classified to polygons \n")
-        # if (moreborders == T) {plot(wrld_simpl, add = T)}
-        if (verbose == TRUE) {
+
+        if (verbose) {
             warning("adding polygons")
         }
-        if (class(x$polygons) == "list") {
+        if (is.list(x$polygons)) {
             plota <- function(x) {
                 plot(x, add = T, col = "grey60", border = "grey40")
             }
@@ -677,7 +590,7 @@
         } else {
             plot(x$polygons, col = "grey60", border = "grey40", add = T, ...)
         }
-        if (verbose == TRUE) {
+        if (verbose) {
             warning("adding sample points")
         }
         points(dat$XCOOR, dat$YCOOR, cex = 0.5, pch = 3, col = "red", ...)
@@ -686,7 +599,7 @@
 }
 
 .NexusOut <- function(dat, verbose = FALSE) {
-  if (class(dat) == "list") {
+  if (is.list(dat)) {
     tablist <- lapply(dat, function(x) x$spec_table)
     for (i in 1:length(tablist)) {
       names(tablist[[i]])[-1] <- paste(names(tablist)[i], names(tablist[[i]][-1]), sep = "_")
@@ -740,7 +653,7 @@
       ee <- paste("\t\t", ff, "\t", dd$x, "\n", sep = "")
       cat(ee)
     }
-    if (verbose == T) {
+    if (verbose) {
       gg <- vector()
       jj <- speciestab[, -1]
       for (i in 1:dim(jj)[2]) {
@@ -758,7 +671,7 @@
 }
 
 .OutBarChartPoly <- function(x, prefix, verbose = FALSE, ...) {
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Creating barchart per polygon: barchart_per_polygon.pdf. \n")
     }
     pdf(file = paste(prefix, "barchart_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
@@ -767,7 +680,7 @@
 }
 
 .OutBarChartSpec <- function(x, prefix, verbose = FALSE, ...) {
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Creating barchart per species: barchart_per_species.pdf. \n")
     }
     pdf(file = paste(prefix, "barchart_per_species.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
@@ -785,7 +698,7 @@
 }
 
 .OutMapAll <- function(x, prefix, areanames = "", verbose = FALSE, ...) {
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Creating overview map: map_samples_overview.pdf. \n")
     }
     pdf(file = paste(prefix, "map_samples_overview.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T, 
@@ -796,7 +709,7 @@
 }
 
 .OutMapPerPoly <- function(x, prefix, verbose = FALSE, ...) {
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Creating map per polygon: map_samples_per_polygon.pdf. \n")
     }
     pdf(file = paste(prefix, "map_samples_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
@@ -805,7 +718,7 @@
 }
 
 .OutMapPerSpecies <- function(x, prefix, verbose = FALSE, ...) {
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Creating map per species: map_samples_per_species.pdf. \n")
     }
     pdf(file = paste(prefix, "map_samples_per_species.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
@@ -814,7 +727,7 @@
 }
 
 .OutPlotSpPoly <- function(x, prefix, verbose = FALSE, ...) {
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Creating species per polygon barchart: number_of_species_per_polygon.pdf. \n")
     }
     pdf(file = paste(prefix, "number_of_species_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, 
@@ -1097,7 +1010,7 @@
 }
 
 .SpPerPolH <- function(x, verbose = FALSE) {
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Calculating species number per polygon. \n")
     }
     numpoly <- length(names(x)[-1])
@@ -1114,7 +1027,7 @@
         }
     }
     return(num_sp_poly)
-    if (verbose == TRUE) {
+    if (verbose) {
         cat("Done")
     }
 }
@@ -1173,7 +1086,7 @@
             warning(paste("found country information for", unlist(x["identifier"]), "with more than 3 letters. Change country information to ISO2 or ISO3", 
                 sep = " "))
         }
-        ifelse(loncap == T & latcap == T, capout <- FALSE, capout <- TRUE)
+        ifelse(loncap & latcap, capout <- FALSE, capout <- TRUE)
     }
     return(capout)
 }
@@ -1206,34 +1119,18 @@
             warning(paste("found country information for", unlist(x["identifier"]), "with more than 3 letters. Change country information to ISO2 or ISO3", 
                 sep = " "))
         }
-        ifelse(loncont == T & latcont == T, contout <- FALSE, contout <- TRUE)
+        ifelse(loncont & latcont, contout <- FALSE, contout <- TRUE)
     }
     return(contout)
 }
 
 .WriteTablesSpGeo <- function(x, prefix = "", verbose = FALSE, ...) {
     if (class(x) == "spgeoOUT") {
-        if (verbose == TRUE) {
-            cat("Writing sample table: sample_classification_to_polygon.txt. \n")
-        }
         write.table(x$sample_table, file = paste(prefix, "sample_classification_to_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-        if (verbose == TRUE) {
-            cat("Writing species occurence table: species_occurences_per_polygon.txt. \n")
-        }
         write.table(x$spec_table, file = paste(prefix, "species_occurences_per_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-        if (verbose == TRUE) {
-            cat("Writing species number per polygon table: speciesnumber_per_polygon.txt. \n")
-        }
         write.table(x$polygon_table, file = paste(prefix, "speciesnumber_per_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-        if (verbose == TRUE) {
-            cat("Writing table of unclassified samples: unclassified samples.txt. \n")
-        }
         write.table(x$not_classified_samples, file = paste(prefix, "unclassified samples.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-        if (verbose == TRUE) {
-            cat("Writing coexistence tables: species_coexistence_matrix.txt. \n")
-        }
-        write.table(x$coexistence_classified, file = paste(prefix, "species_coexistence_matrix.txt", sep = ""), row.names = FALSE, sep = "\t", 
-            ...)
+        write.table(x$coexistence_classified, file = paste(prefix, "species_coexistence_matrix.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
     } else {
         stop("this function is only defined for class \"spgeoOUT\"")
     }

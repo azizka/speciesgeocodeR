@@ -1,16 +1,17 @@
 SpeciesGeoCoder <- function(x, y, coex = FALSE, graphs = TRUE, areanames = "", 
                             occ.thresh = 0, elevation = FALSE, threshold,
                             verbose = FALSE, cleaning = FALSE, ...) {
-    if (elevation == T) {
-        if (class(x) == "character") {
+    if (elevation) {
+        if (is.character(x)) {
             coords <- read.table(x, sep = "\t", header = T, fill = T, quote = "")
         }
-        if (class(x) == "data.frame") {
+        if (is.data.frame(x)) {
             coords <- x
         }
-        if (verbose == T) {
+        if (verbose) {
             cat("Downloading elevation information.\n")
         }
+      
         coords$ele <- GetElevation(coords)
         
         if (max(threshold) > max(coords$ele, na.rm = T))
@@ -31,6 +32,7 @@ SpeciesGeoCoder <- function(x, y, coex = FALSE, graphs = TRUE, areanames = "",
         
         names(outo) <- gsub(">", "over_", names(outo))
         names(outo) <- paste(names(outo), "_meters", sep = "")
+                             
         for (i in 1:length(outo)) {
             if (coex == T) {
                 for (i in 1:length(outo)) {
@@ -43,7 +45,7 @@ SpeciesGeoCoder <- function(x, y, coex = FALSE, graphs = TRUE, areanames = "",
         }
         .NexusOut(outo)
         
-        if (graphs == T) {
+        if (graphs) {
             for (i in 1:length(outo)) {
                 .OutPlotSpPoly(outo[[i]], prefix = names(outo)[i]) 
                 .OutBarChartPoly(outo[[i]], prefix = names(outo)[i])
@@ -58,7 +60,7 @@ SpeciesGeoCoder <- function(x, y, coex = FALSE, graphs = TRUE, areanames = "",
         ini <- ReadPoints(x, y, cleaning = cleaning, ...)
         outo <- SpGeoCodH(ini, areanames, occ.thresh = occ.thresh)
         
-        if (coex == T) {
+        if (coex) {
             outo <- CoExClass(outo)
             .OutHeatCoEx(outo, prefix = "")
         }
@@ -66,7 +68,7 @@ SpeciesGeoCoder <- function(x, y, coex = FALSE, graphs = TRUE, areanames = "",
         .WriteTablesSpGeo(outo)
         .NexusOut(outo)
         
-        if (graphs == T) {
+        if (graphs) {
             .OutPlotSpPoly(outo, prefix = "")
             .OutBarChartPoly(outo, prefix = "")
             .OutBarChartSpec(outo, prefix = "")

@@ -27,15 +27,21 @@ SpGeoCodH <- function(x, areanames = NULL, occ.thresh = 0) {
         
         sppol <- .SpPerPolH(spsum)
         
-        
         nc <- subset(kkk, is.na(kkk$homepolygon))
         identifier <- x$identifier[as.numeric(rownames(nc))]
         bb <- x$species_coordinates[as.numeric(rownames(nc)), ]
         miss <- data.frame(identifier, bb)
         names(miss) <- c("identifier", "XCOOR", "YCOOR")
         
-        out <- list(identifier_in = x$identifier, species_coordinates_in = x$species_coordinates, polygons = x$polygons, sample_table = kkk, 
-            spec_table = spsum, polygon_table = sppol, not_classified_samples = miss, coexistence_classified = "NA", areanam = areanames)
+        out <- list(identifier_in = x$identifier, 
+                    species_coordinates_in = x$species_coordinates, 
+                    polygons = x$polygons, 
+                    sample_table = kkk,
+                    spec_table = spsum, 
+                    polygon_table = sppol, 
+                    not_classified_samples = miss, 
+                    coexistence_classified = "NA", 
+                    areanam = areanames)
         class(out) <- "spgeoOUT"
         return(out)
     } else {

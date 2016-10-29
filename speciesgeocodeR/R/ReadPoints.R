@@ -1,12 +1,11 @@
-ReadPoints <- function(x, y, areanames = NA, verbose = FALSE, cleaning = FALSE) {
+ReadPoints <- function(x, y, areanames = NA, verbose = FALSE) {
   res <- list()
   
-  if (class(x) != "character" && class(x) != "data.frame") {
-    msg <- sprintf("function not defined for class %s", dQuote(class(x)))
-    stop(msg)
+  if (!is.character(x) && !is.data.frame(x)) {
+    stop(sprintf("function not defined for class %s", dQuote(class(x))))
   }
   
-  if (class(x) == "character" & length(grep(".txt", x)) == 0) {
+  if (is.character(x) & length(grep(".txt", x)) == 0) {
     if (!requireNamespace("rgbif", quietly = TRUE)) {
       stop("rgbif needed for species name option. Please install it.", 
            call. = FALSE)
@@ -17,30 +16,7 @@ ReadPoints <- function(x, y, areanames = NA, verbose = FALSE, cleaning = FALSE) 
     coords <- do.call("rbind", coords)
     names(coords) <- c("identifier", "XCOOR", "YCOOR")
     coords <- data.frame(coords[complete.cases(coords), ])
-    
-    if (cleaning == T) {
-      cleaner <- GeoClean(coords, isna = TRUE, isnumeric = TRUE, coordinatevalidity = TRUE, 
-                          containszero = TRUE, zerozero = TRUE, zerozerothresh = 1, latequallong = TRUE, 
-                          GBIFhead = FALSE, countrycentroid = TRUE, contthresh = 0.05, 
-                          capitalcoords = TRUE, capthresh = 0.1, countrycheck = FALSE, 
-                          referencecountries = speciesgeocodeR::countryref, outp = "cleaned")
-      warning(sprintf("%s geo-referenced records found in GBIF; %s  coordinates removed by cleaning", 
-                      dim(coords)[1], (dim(coords)[1] - dim(cleaner)[1])))
-      cleaner <- cleaner[, 1:3]
-      rownames(cleaner) <- NULL
-      coords <- cleaner
-    } else {
-      cleaner <- GeoClean(coords, isna = TRUE, isnumeric = TRUE, coordinatevalidity = TRUE, 
-                          containszero = FALSE, zerozero = FALSE, latequallong = FALSE, 
-                          GBIFhead = FALSE, countrycentroid = FALSE, capitalcoords = FALSE, 
-                          countrycheck = FALSE, outp = "cleaned")
-      warning(sprintf("%s geo-referenced records found in GBIF; %s non-numeric coordinates removed", 
-                      dim(coords)[1], (dim(coords)[1] - dim(cleaner)[1])))
-      cleaner <- cleaner[, 1:3]
-      rownames(cleaner) <- NULL
-      coords <- cleaner
     }
-  }
   
   if (class(x) == "character" & length(grep(".txt", x)) > 0) {
     coords <- read.table(x, sep = "\t", header = T, row.names = NULL)
@@ -51,14 +27,14 @@ ReadPoints <- function(x, y, areanames = NA, verbose = FALSE, cleaning = FALSE) 
     rownames(coords) <- 1:dim(coords)[1]
   }
   
-  if (class(y) == "character" | class(y) == "data.frame") {
-    if (class(y) == "character" & length(grep(".shp", y)) > 0) {
+  if (is.character(y) | is.data.frame(y)) {
+    if (is.character(y) & length(grep(".shp", y)) > 0) {
       poly <- maptools::readShapeSpatial(y)
     } else {
-      if (class(y) == "character") {
+      if (is.character(y)) {
         polycord <- read.table(y, sep = "\t", header = T)
       }
-      if (class(y) == "data.frame") {
+      if (is.data.frame(y)) {
         polycord <- y
       }
       if (dim(polycord)[2] != 3) {

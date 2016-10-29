@@ -1,4 +1,4 @@
-DESin <- function(x, recent, bin.size, reps = 1, verbose = T) {
+DESin <- function(x, recent, bin.size, reps = 1, verbose = F) {
   
   # load data
   if (is.data.frame(x)) {
@@ -16,7 +16,6 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = T) {
     dat$midpointAge <- (dat$earliestAge + dat$latestAge)/2
     warning("column midpointAge not found, calculating from earliestAge and latestAge")
   }
-  
   
   # load and prepare recent data
   if (is.data.frame(recent)) {
@@ -40,7 +39,7 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = T) {
   # code fossil data
   outp <- list()
   for (i in 1:reps) {
-    if (verbose == TRUE) {
+    if (verbose) {
       print(sprintf("producing replicate %s of %s", i, reps))
     }
     
@@ -88,7 +87,6 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = T) {
     # output format
     out <- do.call("rbind.data.frame", out)
     names(out) <- (cutter + bin.size/2)
-    # out <- out[,as.numeric(names(out)) < age.cut]
     out <- rev(out)
     outp[[i]] <- out
   }
@@ -99,8 +97,6 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = T) {
     outo$higherGeography[is.na(outo$higherGeography)] <- 0
     names(outo)[1] <- "scientificName"
     names(outo)[ncol(outo)] <- 0
-    # outo2 <- data.frame(apply(outo, 2, function(x) as.character(x)), stringsAsFactors = F)
-    # names(outo2) <- names(outo)
     return(outo)
   })
   

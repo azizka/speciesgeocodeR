@@ -3,16 +3,8 @@
 TraitByClade <- function(x, tree, prefix){
   
   ##Data preparation
-  if(is(x) == "spgeoOUT"){
-    dat <- x$spec_table #FIX this, how to inclde data from speciesgeocoder, have different filters? probably onlye nebale total threshold here.
-    #run formatr
-
-    names(geo) <- names(out_geo)  #change
-    
-
-  }
   if(is.data.frame(x)){
-    geo <- data.frame(trait = x[, 2], row.names = x[,1 ])
+    geo <- data.frame(trait = x[, 2], row.names = x[, 1])
   }
   
     dat.tre<- suppressWarnings(treedata(tree, geo))
@@ -36,7 +28,7 @@ TraitByClade <- function(x, tree, prefix){
     names(others2) <- names(geo)[1]
 
     #create summary files if desired
-    if (summary.out == T) {
+    if (summary.out) {
       #A modified input table, taking into account the phylogeny
       write.table(all.classified, paste(prefix, "_area_classification_used.txt", sep = ""), quote = F, 
                   col.names = F, sep = "\t")
@@ -141,7 +133,7 @@ TraitByClade <- function(x, tree, prefix){
                   round(mean(clades[, 2]), digits = 2),
                   round(median(lengtab), 1))
 
-    if(summary.out == T){
+    if(summary.out){
     #write log file
       if (!"GetAreasClades_log.txt" %in% list.files()) {
       write.table(as.vector(data.frame(t(descwrite))), "CladesByTrait_log.txt", col.names = F, row.names = F, quote = F, 

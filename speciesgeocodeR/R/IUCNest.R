@@ -10,23 +10,23 @@ IUCNest <- function(x, value = c("all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN
     IUCN100 <- rep(0, nrow(x))
     IUCN500 <- rep(0, nrow(x))
     
-    AOO[x$AOO > 3000] <- "LC"
-    AOO[x$AOO < 3000] <- "NT"
-    AOO[x$AOO < 2000] <- "VU"
-    AOO[x$AOO < 500] <- "EN"
-    AOO[x$AOO < 10] <- "CR"
+    AOO[x$AOO > NT.thresh[2]] <- "LC"
+    AOO[x$AOO < NT.thresh[2]] <- "NT"
+    AOO[x$AOO < VU.thresh[2]] <- "VU"
+    AOO[x$AOO < EN.thresh[2]] <- "EN"
+    AOO[x$AOO < CR.thresh[2]] <- "CR"
     
-    EOO[x$EOO > 30000] <- "LC"
-    EOO[x$EOO < 30000] <- "NT"
-    EOO[x$EOO < 20000] <- "VU"
-    EOO[x$EOO < 5000] <- "EN"
-    EOO[x$EOO < 100] <- "CR"
+    EOO[x$EOO > NT.thresh[1]] <- "LC"
+    EOO[x$EOO < NT.thresh[1]] <- "NT"
+    EOO[x$EOO < VU.thresh[1]] <- "VU"
+    EOO[x$EOO < EN.thresh[1]] <- "EN"
+    EOO[x$EOO < CR.thresh[1]] <- "CR"
     
-    both[x$EOO > 30000 | x$AOO > 3000] <- "LC"
-    both[x$EOO < 30000 & x$AOO < 3000] <- "NT"
-    both[x$EOO < 20000 & x$AOO < 2000] <- "VU"
-    both[x$EOO < 5000 & x$AOO < 500] <- "EN"
-    both[x$EOO < 100 & x$AOO < 10] <- "CR"
+    both[x$EOO > NT.thresh[1] | x$AOO > NT.thresh[2]] <- "LC"
+    both[x$EOO < NT.thresh[1] & x$AOO < NT.thresh[2]] <- "NT"
+    both[x$EOO < VU.thresh[1] & x$AOO < VU.thresh[2]] <- "VU"
+    both[x$EOO < EN.thresh[1] & x$AOO < EN.thresh[2]] <- "EN"
+    both[x$EOO < CR.thresh[1] & x$AOO < CR.thresh[2]] <- "CR"
     
     IUCN50[both == "LC"] <- 5e-05
     IUCN50[both == "NT"] <- 0.004
