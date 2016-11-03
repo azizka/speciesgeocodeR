@@ -1,5 +1,0 @@
-"identifier"	"XCOOR"	"YCOOR"
-"Propithecus tattersalli"	49.66111	-13.20556
-"Eulemur coronatus"	48.25	-13.33333
-"Eulemur coronatus"	48.25	-13.33333
-"Eulemur mongoz"	48.31833	-13.39917
