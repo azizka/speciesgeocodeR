@@ -29,7 +29,7 @@ character string indicating the type of data displayed: \dQuote{spnum} = number 
 a \code{\link{raster}} object.
 }
 \seealso{
- \code{\link{MapRichness}}, \code{\link{MapGrid}}, \code{\link{RangeRichness}}.
+ \code{\link{MapRichness}}, \code{\link{RangeRichness}}.
 }
 \examples{
 # for x = data.frame

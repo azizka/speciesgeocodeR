@@ -6,42 +6,34 @@ Range polygons, AOO and EOO from occurrence points
 }
 
 \description{
-Calculate the Area of Occupancy based on a user-defined grid as well as range polygons and the Extent of Occurrence based on the \code{areaPolygon} function of the \code{geosphere}, which can be used for criterion B of the IUCN red list classification using \code{\link{IUCNest}}.
+Calculate the Area of Occupancy based on a user-defined grid as well as range polygons and the Extent of Occurrence based on an Euclidean convex hull on the \code{areaPolygon} function of the \code{geosphere}, which can be used for criterion B of the IUCN red list classification using \code{\link{IUCNest}}.
 }
 
 \usage{
 CalcRange(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"), 
-eoo.terrestrial = TRUE, aoo.gridsize = 4, aoo.reps = 3, 
-aoo.xmin = NULL, aoo.xmax = NULL, aoo.ymin = NULL, 
-aoo.ymax = NULL, verbose = FALSE)
+eoo.terrestrial = TRUE, aoo.gridsize = NULL, 
+aoo.proj = NULL, aoo.reps = 3, verbose = FALSE)
 }
 
 \arguments{
-  \item{x}{data.frame of species occurrence records, with 3 columns: 1 = species name, 2 = longitude coordinates, y = latitude coordinates.}
+  \item{x}{data.frame of species occurrence records, including columns named \sQuote{species}, \sQuote{decimallongitude}, \sQuote{decimallatitude}.}
   \item{index}{character string, setting the mode of calculation. Default is both.}
-  \item{eoo.value}{character string, setting the output value.  If value = \dQuote{area}: A data.frame with the EOO for each species in square kilometers; if value = \dQuote{shape}, a list of convex hull polygons.}
+  \item{eoo.value}{character string, setting the output value.  If value = \dQuote{area}: A data.frame with the EOO for each species in square kilometers; if value = \dQuote{shape}, a list of convex hull polygons. See details for EOO calculation}
   \item{eoo.terrestrial}{logial.  If TRUE, the shapes are clipped to continent borders.  Only relevant, if EOO is calculated.}
   \item{aoo.gridsize}{
-The area of the grid cells used for the AOO calculation in square kilometers. Folloeing the IUCN recommendations the default is to 4.
+The area of the grid cells used for the AOO calculation in units of aoo.proj. Following the IUCN recommendations the default is to 4 square kilometres.
+}
+  \item{aoo.proj}{
+A \code{CRS} object, indicating the projection used for AOO calculation.   Should be a suitable eqaul area projection. Default is to \code{CRS("+proj=cea +lon_0=0 +lat_ts=30 +x_0=0 +y_0=0 +a=6371228 +b=6371228 +units=m +no_defs")}
 }
   \item{aoo.reps}{
 The number of replicates for the AOO calculation. See details.  Default = 3.
 }
-  \item{aoo.xmin}{
-The minimum longitude for the AOO grid in degrees. If not specified it will be estimated from the minimum in the data.
-}
-  \item{aoo.xmax}{
-The maximum longitude for the AOO grid in degrees. If not specified it will be estimated from the minimum in the data.
-}
-  \item{aoo.ymin}{
-The minimum latitude for the AOO grid in degrees. If not specified it will be estimated from the minimum in the data.
-}
-  \item{aoo.ymax}{
-The minimum latitude for the AOO grid in degrees. If not specified it will be estimated from the minimum in the data.
-}
   \item{verbose}{If TRUE, status will be reported.}
 }
 \details{
+The EOO calculation uses a Euclidean space convex hull algorithm which is only suitable for lat/long under strong assumtions, including among others points not crossing long 180/0 and all points being in the same hemisphere. NOT TO BE USED for large scale data unless confident that the assumtptions are met.
+
 As the starting point of the AOO grid can influence the result (depending on ehere the boarders of the gridcells fall, occurrence points might or might not be in the same cell by chance), a replication with different grids is recommended. The starting position of each grid is determined by aoo.xmin and aoo.ymin plus (sqrt(aoo.gridsize) * 1000) / aoo.reps. SO the higher the number of replicates the smaller the difference between the replicates will be.
 }
 
@@ -53,12 +45,6 @@ See the speciesgeocodeR documentation for further information and examples.
 
 \examples{
 data(lemurs)
-CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = F
-\dontrun{
-CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
-CalcRange(lemurs, index = "EOO", eoo.value = "area", eoo.terrestrial = F)
-CalcRange(lemurs, index = "AOO", eoo.value = "area")
-)
-}
+CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = FALSE)
 }
 \keyword{ spatial }

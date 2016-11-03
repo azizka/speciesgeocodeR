@@ -31,7 +31,7 @@ a set of files in the working directory
 }
 
 \seealso{
-\code{\link{SpeciesGeoCoder}}, \code{\link{SpGeoCod}}, \code{\link{SpGeoCodH}}
+\code{\link{SpGeoCod}}
 }
 \examples{
 \dontrun{

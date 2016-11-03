@@ -39,7 +39,7 @@ Arguments to be passed to other methods, such as graphical parameters (see \code
 A plotted map.
 }
 \seealso{
- \code{\link{RichnessGrid}}, \code{\link{MapGrid}}, \code{\link{RangeRichness}}.
+ \code{\link{RichnessGrid}}, \code{\link{RangeRichness}}.
 }
 \note{
 See the speciesgeocodeR tutorial for further information and examples.
