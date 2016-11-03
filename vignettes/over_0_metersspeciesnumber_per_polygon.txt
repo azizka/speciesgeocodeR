@@ -1,2 +1,0 @@
-"Dry.Forest"	"Moist.Forest"	"Shrublands"
-14	17	7
