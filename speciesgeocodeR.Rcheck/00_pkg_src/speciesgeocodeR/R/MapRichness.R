@@ -16,7 +16,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
           areanames <- x$areanam
         }else{
           if (!areanames %in% names(x$polygons@data)) {
-            stop("cannot find areanames column; check spelling")
+            stop("cannot find areanames column")
          }
         }
         nam.test <- as.vector(unlist(x$polygons@data[areanames]))
@@ -25,7 +25,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
             stop(msg)
         }
         liste <- unique(x$polygons@data[, areanames])
-        if (all(!is.na(liste)) == F) {
+        if (!all(!is.na(liste))) {
             stop("area names in polygondata contain missing data (#N/A)")
         }
         nam <- data.frame(ECO_NAME = unique(x$polygons@data[, areanames]))
@@ -132,7 +132,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
     plot(plotpoly, col = as.character(plotpoly@data$code), border = lin.col, add = T, lwd = lwd)  #, ...)
     
     if (show.occ == T) {
-        points(x$species_coordinates_in$XCOOR, x$species_coordinates_in$YCOOR)
+        points(x$species_coordinates_in$decimallongitude, x$species_coordinates_in$decimallatitude)
     }
 
     layout(matrix(1, 1, 1))

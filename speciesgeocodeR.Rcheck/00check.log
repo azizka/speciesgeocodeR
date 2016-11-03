@@ -1,13 +1,11 @@
-* using log directory 'C:/Users/xzizal/Dropbox (Antonelli Lab)/Arbeit/Gothenburg/Projects/3_speciesgeocoder/speciesgeocodeR/speciesgeocodeR.Rcheck'
-* using R Under development (unstable) (2015-10-16 r69529)
+* using log directory 'C:/Users/alexander.zizka/Dropbox (Antonelli Lab)/Arbeit/Gothenburg/projects/3_speciesgeocoder/speciesgeocodeR/speciesgeocodeR.Rcheck'
+* using R version 3.3.1 (2016-06-21)
 * using platform: x86_64-w64-mingw32 (64-bit)
 * using session charset: ISO8859-1
-* using option '--as-cran'
+* using options '--no-manual --as-cran'
 * checking for file 'speciesgeocodeR/DESCRIPTION' ... OK
 * checking extension type ... Package
-* this is package 'speciesgeocodeR' version '1.0-6'
-* checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
-Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
+* this is package 'speciesgeocodeR' version '1.0-7'
 * checking package namespace information ... OK
 * checking package dependencies ... OK
 * checking if this is a source package ... OK
@@ -15,12 +13,11 @@ Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
 * checking for executable files ... OK
 * checking for hidden files and directories ... OK
 * checking for portable file names ... OK
-* checking whether package 'speciesgeocodeR' can be installed ... [13s] OK
+* checking whether package 'speciesgeocodeR' can be installed ... OK
 * checking installed package size ... NOTE
-  installed size is  6.1Mb
+  installed size is 20.4Mb
   sub-directories of 1Mb or more:
-    data   3.3Mb
-    doc    2.6Mb
+    data  20.1Mb
 * checking package directory ... OK
 * checking DESCRIPTION meta-information ... OK
 * checking top-level files ... OK
@@ -34,59 +31,82 @@ Maintainer: 'Alexander Zizka <alexander.zizka@bioenv.gu.se>'
 * checking whether the package can be unloaded cleanly ... OK
 * checking whether the namespace can be loaded with stated dependencies ... OK
 * checking whether the namespace can be unloaded cleanly ... OK
-* checking use of S3 registration ... OK
+* checking loading without being on the library search path ... OK
 * checking dependencies in R code ... OK
 * checking S3 generic/method consistency ... OK
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
-* checking R code for possible problems ... OK
+* checking R code for possible problems ... NOTE
+.ReplicateAges: no visible binding for global variable 'are1'
+.ReplicateAges: no visible binding for global variable 'are2'
+CoExClass: no visible binding for global variable 'not_classified'
+Undefined global functions or variables:
+  are1 are2 not_classified
 * checking Rd files ... OK
 * checking Rd metadata ... OK
 * checking Rd line widths ... OK
 * checking Rd cross-references ... OK
-* checking for missing documentation entries ... OK
+* checking for missing documentation entries ... WARNING
+Undocumented code objects:
+  'CladeByTrait' 'plot.spatialvalid'
+All user-level objects in a package should have documentation entries.
+See chapter 'Writing R documentation files' in the 'Writing R
+Extensions' manual.
 * checking for code/documentation mismatches ... OK
 * checking Rd \usage sections ... OK
 * checking Rd contents ... OK
-* checking for unstated dependencies in examples ... WARNING
-Warning: parse error in file 'speciesgeocodeR-Ex.R':
-32:1: unexpected symbol
-31: 
-32: cleanEx
-    ^
+* checking for unstated dependencies in examples ... OK
 * checking contents of 'data' directory ... OK
 * checking data for non-ASCII characters ... OK
 * checking data for ASCII and uncompressed saves ... OK
-* checking sizes of PDF files under 'inst/doc' ... OK
-* checking installed files from 'inst/doc' ... OK
 * checking examples ... ERROR
 Running examples in 'speciesgeocodeR-Ex.R' failed
 The error most likely occurred in:
 
 > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-> ### Name: CalcRange
-> ### Title: Range polygons, AOO and EOO from occurrence points
-> ### Aliases: CalcRange
-> ### Keywords: spatial
+> ### Name: DESin
+> ### Title: Create input files for DES-PyRate
+> ### Aliases: DESin
+> ### Keywords: datgen
 > 
 > ### ** Examples
 > 
-> data(lemurs)
-> CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = F
-+ ## Not run: 
-+ ##D CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
-+ ##D CalcRange(lemurs, index = "EOO", eoo.value = "area", eoo.terrestrial = F)
-+ ##D CalcRange(lemurs, index = "AOO", eoo.value = "area")
-+ ##D )
-+ ## End(Not run)
-+ 
-+ 
-+ 
-+ base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
-Error: unexpected symbol in:
-"
-base"
+> fos <- data.frame(scientificName = rep(letters[1:4],25),
++                   earliestAge = runif(100, min = 60, max = 100),
++                   latestAge = runif(100, min = 0, max = 60),
++                   higherGeography = sort(rep(c("A", "B"), 50)))
+> 
+> rec <- data.frame(scientificName = c(letters[1:4], letters[1:2]),
++                   higherGeography = c(rep("A",4), rep("B", 2)))
+> 
+> exp1 <- DESin(fos, rec, bin.size = 2, reps = 3)
+Warning in DESin(fos, rec, bin.size = 2, reps = 3) :
+  column midpointAge not found, calculating from earliestAge and latestAge
+> 
+> summary(exp1)
+$Number_of_areas
+[1] 2
+
+$Data
+                    Area_1   Area_2
+Timerange_min     35.72043 37.41531
+Timerange_max     78.44926 76.30481
+Number of records 50.00000 50.00000
+Mean record age   55.70000 56.10000
+Number of taxa     4.00000  4.00000
+Mean taxon age    40.60000 40.30000
+
+$Number_of_Replicates
+[1] 3
+
+> 
+> par(ask = TRUE)
+> plot(exp1)
+Warning in plot.DESin(exp1) :
+  no coordinates found, no locations are plotted
+Warning: NAs introduced by coercion
+Error in xy.coords(x, y) : object 'are1' not found
+Calls: plot ... plot.DESin -> .ReplicateAges -> polygon -> xy.coords
 Execution halted
-* checking PDF version of manual ... OK
 * DONE
-Status: 1 ERROR, 1 WARNING, 1 NOTE
+Status: 1 ERROR, 1 WARNING, 2 NOTEs
