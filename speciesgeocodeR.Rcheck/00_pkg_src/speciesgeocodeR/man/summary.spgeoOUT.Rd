@@ -24,9 +24,6 @@ arguments to be passed to methods, such as graphical parameters (see par).
 \details{
 The summary gives an overview of the number of species, occurrence points and number of polygons in the object, and gives a summary of the input coordinates as well as the polygon names.  Additionally it shows a summary of species diversity per polygon and the number of species not classified to any polygon.
 }
-\seealso{
-\code{\link{SpGeoCodH}}
-}
 \examples{
 data(lemurs)
 data(mdg_poly)

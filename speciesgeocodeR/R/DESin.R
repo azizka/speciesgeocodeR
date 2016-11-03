@@ -44,7 +44,7 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = F) {
     }
     
     # simulate random age between min and max
-    dat$age <- sapply(seq(1, length(dat$scientificName)), function(x) runif(1, max = dat$earliestAge[x], 
+    dat$age <- sapply(seq(1, length(dat$scientificName)), function(x) stats::runif(1, max = dat$earliestAge[x], 
                                                                             min = dat$latestAge[x]))
     
     # define age class cutter and cut ages into timebins

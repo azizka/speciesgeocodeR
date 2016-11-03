@@ -11,7 +11,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
       num$poly <- gsub("X", " ", as.character(num$poly))
     }
     
-    if (is.SpatialPolygonsDataFrame(x$polygons)) {
+    if (class(x$polygons) == "SpatialPolygonsDataFrame") {
         if (is.na(areanames)) {
           areanames <- x$areanam
         }else{
@@ -39,7 +39,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
         polys.df <- merge(nam, num, sort = F, by.x = "ECO_NAME", by.y = "poly", all = T)
     }
     
-    if (is.SpatialPolygons(x$polygons)) {
+    if (class(x$polygons) == "SpatialPolygons") {
         if (length(grep("NA", names(x$polygons))) > 0) {
             stop("the polygondata contain a polygon named \"NA\"; please rename")
         }
@@ -132,7 +132,7 @@ MapRichness <- function(x, areanames = NA, leg = "continuous", show.occ = F,
     plot(plotpoly, col = as.character(plotpoly@data$code), border = lin.col, add = T, lwd = lwd)  #, ...)
     
     if (show.occ == T) {
-        points(x$species_coordinates_in$XCOOR, x$species_coordinates_in$YCOOR)
+        points(x$species_coordinates_in$decimallongitude, x$species_coordinates_in$decimallatitude)
     }
 
     layout(matrix(1, 1, 1))

@@ -1,15 +1,15 @@
-CalcRange2 <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"), 
+CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"), 
                       eoo.terrestrial = TRUE, aoo.gridsize = NULL, aoo.proj = NULL,
                       aoo.reps = 3, verbose = FALSE) {
   
   # prepare input data
   if (is(x)[1] == "spgeoOUT") {
-    dat <- data.frame(identifier = x$identifier_in, x$species_coordinates_in)
-    names(dat) <- c("scientificname", "decimallongitude", "decimallatitude")
-    dat$scientificname <- as.character(dat$scientificname)
+    dat <- data.frame(species = x$species_in, x$species_coordinates_in)
+    names(dat) <- c("species", "decimallongitude", "decimallatitude")
+    dat$species <- as.character(dat$species)
   } else {
-    dat <- x[, c("scientificname", "decimallongitude", "decimallatitude")]
-    dat$scientificname <- as.character(dat$scientificname)
+    dat <- x[, c("species", "decimallongitude", "decimallatitude")]
+    dat$species <- as.character(dat$species)
   }
   
   # filter out duplicate records, this is necessary to have three unique points
@@ -31,19 +31,19 @@ CalcRange2 <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"
     warning("Using Euclidean convex hull algorithm on lat/long")
     
     # only use species with more than 2 occurrences for EOO
-    filt <- table(dat$scientificname)
+    filt <- table(dat$species)
     sortout <- filt[filt <= 2]
     filt <- filt[filt > 2]
     if (length(filt) == 0) {
       eoo.out <- rbind(data.frame(row.names = names(sortout), EOO = rep("NA", length(sortout))))
     } else {
-      dat.filt <- subset(dat, dat$scientificname %in% as.character(names(filt)))
+      dat.filt <- subset(dat, dat$species %in% as.character(names(filt)))
       
       if (length(sortout) > 0) {
         warning("the following species have less than 3 occurrence, values set to NA:", paste("\n", names(sortout)))
       }
       #calculate convex hull polygons
-      inp <- split(dat.filt, f = dat.filt$scientificname)
+      inp <- split(dat.filt, f = dat.filt$species)
       eoo.out <- lapply(inp, ".ConvHull")
       
       #crop to landmass
@@ -82,10 +82,10 @@ CalcRange2 <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"
     }
 
     # identify secies with only one record
-    coun <- table(dat$scientificname)
-    occ <- dat[dat$scientificname %in% names(coun[coun > 1]), ]
-    occ$scientificname <- as.character(occ$scientificname)
-    sings <- unique(dat[!occ$scientificname %in% names(coun[coun > 1]), "scientificname"])
+    coun <- table(dat$species)
+    occ <- dat[dat$species %in% names(coun[coun > 1]), ]
+    occ$species <- as.character(occ$species)
+    sings <- unique(dat[!occ$species %in% names(coun[coun > 1]), "species"])
     
     pts <- sp::SpatialPoints(occ[, 2:3], proj4string = wgs84)
     pts <- sp::spTransform(pts, aoo.proj)
@@ -94,7 +94,7 @@ CalcRange2 <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"
     aoo.extent <- aoo.extent + (sqrt(aoo.gridsize))
     
     # create a list of species for which to calculate AOO
-    occs <- split(data.frame(scientificname = occ[, 1], coordinates(pts)), f = occ$scientificname)
+    occs <- split(data.frame(species = occ[, 1], coordinates(pts)), f = occ$species)
     aoo.out <- list()
     
     for (i in 1:aoo.reps) {

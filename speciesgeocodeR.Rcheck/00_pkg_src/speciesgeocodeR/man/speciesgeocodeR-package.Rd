@@ -16,7 +16,7 @@ Version: \tab 1.04\cr
 Date: \tab 2015-10-17\cr
 License: \tab GPL-3\cr
 }
-The core functions of the package can be  used via the wrapper function \code{\link{SpeciesGeoCoder}}, with two input text files and one single command.  In addition to this the package includes a set of functions to visualize geographic distribution data and diversity.
+The core functions of the package can be  used via the wrapper function \code{\link{SpGeoCod}}, with two input text files and one single command.  In addition to this the package includes a set of functions to visualize geographic distribution data and diversity.
 }
 \author{
 Alexander Zizka
@@ -31,16 +31,11 @@ Maintainer: Alexander Zizka, alexander.zizka@bioenv.gu.se
 data(lemurs)
 data(mdg_poly)
 
-SpeciesGeoCoder(lemurs, mdg_poly)
+SpGeoCOd(lemurs, mdg_poly)
 }
 
 data(lemurs)
 data(mdg_poly)
-inp <- ReadPoints(lemurs, mdg_poly)
-
-outp <- SpGeoCodH(inp)
-e <- c(42, 52, -27, -10)
-ivesia_abu <- RichnessGrid(outp, e, reso = 60, type = "abu")
 
 outp <- SpGeoCodH(inp)
 e <- c(42, 52, -27, -10)

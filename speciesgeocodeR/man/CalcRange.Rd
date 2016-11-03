@@ -16,7 +16,7 @@ aoo.proj = NULL, aoo.reps = 3, verbose = FALSE)
 }
 
 \arguments{
-  \item{x}{data.frame of species occurrence records, including columns named \sQuote{scientificname}, \sQuote{decimallongitude}, \sQuote{decimallatitude}.}
+  \item{x}{data.frame of species occurrence records, including columns named \sQuote{species}, \sQuote{decimallongitude}, \sQuote{decimallatitude}.}
   \item{index}{character string, setting the mode of calculation. Default is both.}
   \item{eoo.value}{character string, setting the output value.  If value = \dQuote{area}: A data.frame with the EOO for each species in square kilometers; if value = \dQuote{shape}, a list of convex hull polygons. See details for EOO calculation}
   \item{eoo.terrestrial}{logial.  If TRUE, the shapes are clipped to continent borders.  Only relevant, if EOO is calculated.}
@@ -45,12 +45,6 @@ See the speciesgeocodeR documentation for further information and examples.
 
 \examples{
 data(lemurs)
-CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = F
-\dontrun{
-CalcRange(lemurs, index = "EOO", eoo.value = "shape", eoo.terrestrial = F)
-CalcRange(lemurs, index = "EOO", eoo.value = "area", eoo.terrestrial = F)
-CalcRange(lemurs, index = "AOO", eoo.value = "area")
-)
-}
+CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = FALSE)
 }
 \keyword{ spatial }

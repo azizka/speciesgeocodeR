@@ -1,5 +1,5 @@
-summary.DESin <- function(x) {
-  ares <- split(x[[1]], f = x[[1]]$higherGeography)
+summary.DESin <- function(object, ...) {
+  ares <- split(object[[1]], f = object[[1]]$higherGeography)
   
   list(Number_of_areas = length(ares), 
        Data = data.frame(row.names = c("Timerange_min", "Timerange_max", "Number of records", 
@@ -11,5 +11,5 @@ summary.DESin <- function(x) {
                          Area_2 = c(min(ares[[2]]$midpointAge), max(ares[[2]]$midpointAge),
                                     nrow(ares[[2]]), round(mean(ares[[2]]$midpointAge), 1), length(unique(ares[[2]]$scientificName)),
                                     round(mean(aggregate(ares[[2]]$midpointAge, by = list(ares[[2]]$scientificName), min)$x), 1))), 
-       Number_of_Replicates = length(x[[3]]))
+       Number_of_Replicates = length(object[[3]]))
 }

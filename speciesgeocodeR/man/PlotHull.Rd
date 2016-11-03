@@ -49,7 +49,7 @@ A plot or a set of plots.
 
 \examples{
 data("lemurs_in")
-dat <- CalcRange(data.frame(lemurs_in$identifier,
+dat <- CalcRange(data.frame(lemurs_in$species,
                             lemurs_in$species_coordinates),
                  value = "shape")
 PlotHull(dat, xlim = c(-130, -100), ylim = c(30,60))

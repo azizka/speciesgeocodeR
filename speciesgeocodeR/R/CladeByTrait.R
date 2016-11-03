@@ -1,13 +1,13 @@
 # format data.frame : 2 columns, header: darwinCOre, 2 columns: 1.: species name, higherGeography: presence/absence: 1_ present, 0 = absent, NA = no info
 #prefix = group name as prefix for outputfiles
-TraitByClade <- function(x, tree, prefix){
+CladeByTrait <- function(x, tree, prefix, min_clade_size, max_clade_size, monophyly_threshold, summary = F){
   
   ##Data preparation
   if(is.data.frame(x)){
     geo <- data.frame(trait = x[, 2], row.names = x[, 1])
   }
   
-    dat.tre<- suppressWarnings(treedata(tree, geo))
+    dat.tre<- suppressWarnings(geiger::treedata(tree, geo))
     
     #records from the tree with no occrrences
     nodata <- tree$tip.label[!tree$tip.label %in% row.names(geo)]
@@ -28,7 +28,7 @@ TraitByClade <- function(x, tree, prefix){
     names(others2) <- names(geo)[1]
 
     #create summary files if desired
-    if (summary.out) {
+    if (summary) {
       #A modified input table, taking into account the phylogeny
       write.table(all.classified, paste(prefix, "_area_classification_used.txt", sep = ""), quote = F, 
                   col.names = F, sep = "\t")
@@ -66,11 +66,11 @@ TraitByClade <- function(x, tree, prefix){
     
     for (i in (length(tr$tip.label) + 1):max(tr$edge)) {
       if (nodenr[as.character(i), 1] == 1) {
-        V <- geo[tips(tr, i), area]
-        if (length(V[V == 0])/length(V) >= monophyly_threshold || length(tips(tr, i)) > max_clade_size) {
+        V <- geo[geiger::tips(tr, i), area]
+        if (length(V[V == 0])/length(V) >= monophyly_threshold || length(geiger::tips(tr, i)) > max_clade_size) {
           nodenr[as.character(i), 1] = 0
         } else {
-          nodenr[as.character(i), 2] = length(tips(tr, i))  # number of tips in the clade
+          nodenr[as.character(i), 2] = length(geiger::tips(tr, i))  # number of tips in the clade
           nodes <- .getDescend(tr, i)
           nodenr[as.character(nodes[nodes > length(tr$tip.label)]), 1] = 0  # set all descendent noeds to zero (skip check)
           nodenr[as.character(i), 1] = 2  # indentifier of monophyletic group
@@ -92,18 +92,18 @@ TraitByClade <- function(x, tree, prefix){
     pdf(paste(prefix, "_subtrees.pdf", sep = ""), height = 11, width = 8, paper = "special")
     for (i in 1:length(clades[, 2])) {
       node <- as.numeric(row.names(clades)[i])
-      subtree <- extract.clade(tr, node, root.edge = 0, interactive = F)
-      lengtab[i] <- max(node.age(subtree)$ages)
-      write.tree(subtree, file = paste("clade_", i, "_area_", area, ".tre", sep = ""))
+      subtree <- ape::extract.clade(tr, node, root.edge = 0, interactive = F)
+      lengtab[i] <- max(picante::node.age(subtree)$ages)
+      ape::write.tree(subtree, file = paste("clade_", i, "_area_", area, ".tre", sep = ""))
       
       colo <- geo[match(subtree$tip.label, rownames(geo)), ]
       colo <- gsub(1, "red", colo)
       colo <- gsub(0, "blue", colo)
       colo[is.na(colo)] <- "grey"
-      plot(subtree, tip.color = colo, cex = 0.5, main = paste("Clade", i, sep = "_"))  #, type = 'fan')
+      plot(subtree, tip.color = colo, cex = 0.5, main = paste("Clade", i, sep = "_"))
       legend("topleft", bg = "white", fill = c("blue", "red", "grey"), legend = c("Outside", "Inside", "No occurrence data"), 
              cex = 0.7)
-      add.scale.bar()
+      ape::add.scale.bar()
     }
     dev.off()
 
@@ -125,15 +125,16 @@ TraitByClade <- function(x, tree, prefix){
                   min_clade_size, 
                   max_clade_size, 
                   monophyly_threshold, 
-                  Ntip(tree),
+                  ape::Ntip(tree),
                   nrow(geo),
-                  Ntip(tree) - length(nodata),
+                  ape::Ntip(tree) - length(nodata),
                   length(nodata),
                   length(clades[, 2]),
                   round(mean(clades[, 2]), digits = 2),
                   round(median(lengtab), 1))
 
-    if(summary.out){
+    if(summary){
+      
     #write log file
       if (!"GetAreasClades_log.txt" %in% list.files()) {
       write.table(as.vector(data.frame(t(descwrite))), "CladesByTrait_log.txt", col.names = F, row.names = F, quote = F, 

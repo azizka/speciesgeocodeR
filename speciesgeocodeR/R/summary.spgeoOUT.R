@@ -1,5 +1,5 @@
 summary.spgeoOUT <- function(object, areanames = NA, ...) {
-  suma <- paste(length(unique(object$identifier_in)), " species with ", dim(object$species_coordinates_in)[1], 
+  suma <- paste(length(unique(object$species_in)), " species with ", dim(object$species_coordinates_in)[1], 
                 " occurrence points and ", length(object$polygons), " input polygons.", sep = "")
   coords <- summary(object$species_coordinates)
   if (is.na(areanames) & length(object$areanam) != 0){

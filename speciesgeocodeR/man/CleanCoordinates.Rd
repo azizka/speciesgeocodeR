@@ -8,24 +8,30 @@ Geographic Cleaning of Coordinates from Biologic Collections
 Cleaning geographic coordinates by multiple empirical tests to flag potentially erroneous coordinates.
 }
 \usage{
-CleanCoordinates(x, species = NULL, validity = T, zeros = T, capitals = T, centroids = T,
+CleanCoordinates(x, countries = NULL, species = NULL, dataset = NULL, 
+                 validity = T, zeros = T, capitals = T, centroids = T,
                  seas = T, urban = F, countrycheck = T, outliers = T, GBIF = T, 
-                 duplicates = F, verbose = T, limits = NULL, 
+                 duplicates = F, verbose = T,
                  output = c("spatialvalid", "summary", "cleaned"),
                  zeros.rad = 0.5, capitals.rad = 0.05, outliers.mtp = 25, 
                  outliers.td = NULL, centroids.rad = 0.01, capitals.ref = NULL, 
                  centroids.detail = c("both", "country", "provinces"),
                  centroids.ref = NULL, seas.ref = NULL, urban.ref = NULL, 
-                 country.ref = NULL, 
-                 method = c("Haversine", "Cosine", "VincentyEllipse"), report = F)
+                 country.ref = NULL, report = F)
 }
 
 \arguments{
   \item{x}{
 a \code{matrix} or \code{data.frame} with two columns in the format: longitude, latitude, or a \code{data.frame} with three columns, where the third column is a character with country information in ISO3 format. If no country information is provided, the countrycheck test is skipped.
 }
+  \item{countries}{
+character. A vector of the same length as x, with country information for each record in ISO3 format.  If set to NULL, the countries test is skipped.  Default = NULL 
+}
   \item{species}{
 character. A vector of the same length as x, with the species identity for each record.  If set to NULL, the outliers test is skipped.  Default = NULL 
+}
+  \item{dataset}{
+character. A vector of the same length as x, with the dataset of origin for each record.  If set to NULL, the dataset test is skipped.  Default = NULL 
 }
   \item{validity}{
 logical. If TRUE, tests for non-numeric or missing coordinates and coordinates exceeding the global extent (lon/lat, WGS84). Default = TRUE
@@ -59,9 +65,6 @@ logical.  If TRUE, tests for duplicate records. THis checks for identical coordi
 }
   \item{verbose}{
 logical.  If TRUE the progress of testing is reported (to stdout).  Default = TRUE
-}
-  \item{limits}{
-numeric. A vector of the format (xmin, xmax, ymin, ymax) giving strict geographic borders for the tests. This can reduces computation time.  If NULL, borders are calculated from the data.  Default = NULL.
 }
   \item{output}{
 character. Defining the output value. See the value section for details.  Default = \dQuote{\code{spatialvalid}}.
@@ -99,9 +102,6 @@ a \code{SpatialPolygonsDataFrame} as alternative reference for the urban test. I
   \item{country.ref}{
 a \code{SpatialPolygonsDataFrame} as alternative reference for the countrycheck test. If set to NULL, the \code{\link{countryborders}} dataset is used.  Default = NULL.
 }
-  \item{method}{
-character.  The method to calculate geographic distances for the outlier test passed to \code{distm{geosphere}}.  Default is to \dQuote{Haversine}.
-}
   \item{report}{
 logical or character.  If TRUE a report file is written to the working directory, summarizing the cleaning results. If a character, the path to which the file should be written.  Default = F.
 }
@@ -122,13 +122,14 @@ Depending on the output argument:
 \note{
 See package vignette for details and examples. 
 }
-\seealso{
-\code{\link{CleanCoordinatesLarge}}
-}
-\examples{
-data(exampledata)
 
-test <- CleanCoordinates(exampledata[, 2:4],species = exampledata[, 1], verbose = FALSE)
+\examples{
+
+exmpl <- data.frame(species = sample(letters, size = 250, replace = TRUE),
+                    decimallongitude = runif(250, min = 42, max = 51),
+                    decimallatitude = runif(250, min = -26, max = -11))
+
+test <- CleanCoordinates(exmpl[, 2:3],species = exmpl[, 1], verbose = FALSE)
 
 plot(test)
 }

@@ -74,7 +74,7 @@
   flags <- lapply(splist, function(k, td = tdi, mu = mltpl) {
     
     test <- nrow(k[!duplicated(k), ])
-    dist <- geosphere::distm(k, fun = distHaversine)
+    dist <- geosphere::distm(k, fun = geosphere::distHaversine)
     dist[dist == 0] <- NA
     
     if (!is.null(mu) & !is.null(td)) {

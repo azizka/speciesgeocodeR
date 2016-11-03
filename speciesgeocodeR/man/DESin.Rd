@@ -50,7 +50,7 @@ exp1 <- DESin(fos, rec, bin.size = 2, reps = 3)
 
 summary(exp1)
 
-par(ask = T)
+par(ask = TRUE)
 plot(exp1)
 
 \dontrun{

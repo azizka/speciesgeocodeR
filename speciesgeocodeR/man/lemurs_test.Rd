@@ -5,15 +5,15 @@
 Distribution of Lemur Species with Problematic Records
 }
 \description{
-A \code{data.frame} with point occurrences of 42 Lemur species in the right input format for the \code{\link{GeoClean}}.  The data is downloaded from GBIF but has some added erroneous coordinates.
+A \code{data.frame} with point occurrences of 42 Lemur species in the right input format.  The data is downloaded from GBIF but has some added erroneous coordinates.
 }
 \usage{data("lemurs_test")}
 \format{
   A data frame with 627 observations on the following 4 variables.
   \describe{
-    \item{\code{identifier}}{species name}
-    \item{\code{XCOOR}}{longitude}
-    \item{\code{YCOOR}}{latitude}
+    \item{\code{species}}{species name}
+    \item{\code{decimallongitude}}{longitude}
+    \item{\code{decimallatitude}}{latitude}
     \item{\code{country}}{a factor with levels \code{MDG}}
   }
 }

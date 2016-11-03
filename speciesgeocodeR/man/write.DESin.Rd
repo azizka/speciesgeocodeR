@@ -2,13 +2,13 @@
 \alias{write.DESin}
 
 \title{
-Write MEtod for DESin
+Write Method for DESin
 }
 \description{
 Writes out objects of the class DESin to the working directory in a format suitable as direct input for PyRate-DES.
 }
 \usage{
-\method{plot}{DESin}(x, file)
+\method{write}{DESin}(x, file)
 }
 
 \arguments{

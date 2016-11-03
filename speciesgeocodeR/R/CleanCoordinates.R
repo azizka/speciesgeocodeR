@@ -4,7 +4,7 @@
 # include warning message in case the standard landmass is used
 
 CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL, validity = T, zeros = T, capitals = T, centroids = T, seas = T, urban = F, countrycheck = T, outliers = T, 
-                             GBIF = T, duplicates = F, verbose = T, buffer = 1, output = c("spatialvalid", "summary", "cleaned"), zeros.rad = 0.5, capitals.rad = 0.05, outliers.mtp = 25, outliers.td = NULL, centroids.rad = 0.01, 
+                             GBIF = T, duplicates = F, verbose = T, output = c("spatialvalid", "summary", "cleaned"), zeros.rad = 0.5, capitals.rad = 0.05, outliers.mtp = 25, outliers.td = NULL, centroids.rad = 0.01, 
                              capitals.ref = NULL, centroids.detail = c("both", "country", "provinces"), centroids.ref = NULL, seas.ref = NULL, urban.ref = NULL, country.ref = NULL, report = F) {
   
   match.arg(output)
@@ -55,7 +55,7 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
       if (verbose) {
         cat("running capitals test\n")
       }
-      cap <- .CapitalCoordinates(x, testdist = capitals.rad, buffer = buffer, 
+      cap <- .CapitalCoordinates(x, testdist = capitals.rad, buffer = 1, 
                                  referencedat = capitals.ref)
       if (verbose) {
         cat(sprintf("flagged %s records \n", sum(!cap)))
@@ -69,7 +69,7 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
       if (verbose) {
         cat("running centroids test\n")
       }
-      cen <- .CentroidCoordinates(x, testdist = centroids.rad, buffer = buffer, 
+      cen <- .CentroidCoordinates(x, testdist = centroids.rad, buffer = 1, 
                                   testtype = centroids.detail, referencedat = centroids.ref)
       if (verbose) {
         cat(sprintf("flagged %s records \n", sum(!cen)))

@@ -16,7 +16,7 @@ plot.DESin <- function(x, plottype = c("all", "samplelocations", "inputviz", "re
       .SampleLocations(x, ...)
     }
     if ("occurrencetimes" %in% plottype) {
-      .IputData(x, ...)
+      .InputData(x, ...)
     }
     if ("inputviz" %in% plottype) {
       .InputData(x, ...)

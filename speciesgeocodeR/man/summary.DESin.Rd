@@ -8,12 +8,15 @@ Summary Method for DESin
 Summarizes the content of a DESin object.
 }
 \usage{
-\method{summary}{DESin}(x)
+\method{summary}{DESin}(object, ...)
 }
 
 \arguments{
-  \item{x}{
+  \item{object}{
 an object of the class DESin.
+}
+  \item{...}{
+arguments passed to other methods.
 }
 }
 

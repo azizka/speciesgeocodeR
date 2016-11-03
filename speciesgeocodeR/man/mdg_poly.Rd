@@ -11,9 +11,9 @@ A \code{data.frame} of a simplified version of the WWF biomes of Madagascar (sim
 \format{
   A data frame with 87 observations on the following 3 variables.
   \describe{
-    \item{\code{identifier}}{a factor with levels \code{Dry Forest} \code{Moist Forest} \code{Shrublands}}
-    \item{\code{XCOOR}}{a numeric vector}
-    \item{\code{YCOOR}}{a numeric vector}
+    \item{\code{species}}{a factor with levels \code{Dry Forest} \code{Moist Forest} \code{Shrublands}}
+    \item{\code{decimallongitude}}{a numeric vector}
+    \item{\code{decimallatitude}}{a numeric vector}
   }
 }
 \references{

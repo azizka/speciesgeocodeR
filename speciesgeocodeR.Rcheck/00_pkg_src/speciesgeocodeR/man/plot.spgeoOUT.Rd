@@ -41,7 +41,7 @@ The output will be different depending on the plottype argument. \code{plottype}
 }
 
 \seealso{
-\code{\link{summary.spgeoOUT}}, \code{\link{SpGeoCodH}}
+\code{\link{summary.spgeoOUT}}
 }
 \examples{
 data(lemurs)
