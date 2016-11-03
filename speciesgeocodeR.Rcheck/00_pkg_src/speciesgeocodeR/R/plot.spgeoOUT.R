@@ -1,8 +1,8 @@
 plot.spgeoOUT <- function(x, plottype = "summary", plotout = F, mode = c("percent", "total"), moreborders = F, areanames = NULL, 
     ...) {
     if (plottype == "summary") {
-      if ((max(x$species_coordinates_in$XCOOR) + 180) - (min(x$species_coordinates_in$XCOOR) + 180) > (max(x$species_coordinates_in$YCOOR) + 
-          90) - (min(x$species_coordinates_in$YCOOR) + 90)) {
+      if ((max(x$species_coordinates_in$decimallongitude) + 180) - (min(x$species_coordinates_in$decimallongitude) + 180) > (max(x$species_coordinates_in$decimallatitude) + 
+          90) - (min(x$species_coordinates_in$decimallatitude) + 90)) {
           layout(matrix(c(1, 2, 1, 2), 2, 2))
           .MapAll(x)
           par(...)

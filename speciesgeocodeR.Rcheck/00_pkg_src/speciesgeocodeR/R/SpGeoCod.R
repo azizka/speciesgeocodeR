@@ -1,9 +1,9 @@
-SpGeoCod <- function(x, y, areanames = "", occ.thresh = 0, elevation = FALSE, threshold, cleaning = FALSE, ...) {
-    if (elevation == TRUE){
-      ini <- ReadPoints(x, y, cleaning = cleaning, ...)
-      coords <- data.frame(identifier = ini$identifier, 
+SpGeoCod <- function(x, y, areanames = "", occ.thresh = 0, elevation = FALSE, threshold, ...) {
+    if (elevation){
+      ini <- .ReadPoints(x, y, ...)
+      coords <- data.frame(species = ini$species, 
                            ini$species_coordinates)
-      coords$ele <- GetElevation(coords)
+      coords$ele <- .GetElevation(coords)
       
       if (max(threshold) > max(coords$ele, na.rm = T))
       {
@@ -18,14 +18,14 @@ SpGeoCod <- function(x, y, areanames = "", occ.thresh = 0, elevation = FALSE, th
       tt <- split(coords, coords$cuts)
   
       tt <- lapply(tt, function(x) .adjFormat(x))
-      ini <- lapply(tt, function(x) ReadPoints(x, y, cleaning = cleaning, ...))
-      outo <- lapply(ini, function(x) SpGeoCodH(x, areanames, occ.thresh = occ.thresh))
+      ini <- lapply(tt, function(x) .ReadPoints(x, y, ...))
+      outo <- lapply(ini, function(x) .SpGeoCodH(x, areanames, occ.thresh = occ.thresh))
       names(outo) <- gsub(">", "over_", names(outo))
       names(outo) <- paste(names(outo), "_meters", sep = "")
       return(outo)
     }else{    
-      ini <- ReadPoints(x, y, cleaning = cleaning, ...)
-      outo <- SpGeoCodH(ini, areanames, occ.thresh = occ.thresh)
+      ini <- .ReadPoints(x, y, ...)
+      outo <- .SpGeoCodH(ini, areanames, occ.thresh = occ.thresh)
     return(outo)
     }
 } 

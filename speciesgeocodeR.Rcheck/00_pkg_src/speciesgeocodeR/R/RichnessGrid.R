@@ -15,10 +15,10 @@ RichnessGrid <- function(x, limits = c(-180, 180, -90, 90), reso, type = c("spnu
         rows <- abs(abs(slot(e, "ymax")) + abs(slot(e, "ymin")))
     }
     if (class(x) == "spgeoOUT" | class(x) == "spgeoIN") {
-        dum <- data.frame(identifier = x$identifier_in, x$species_coordinates_in)
+        dum <- data.frame(species = x$species_in, x$species_coordinates_in)
         x <- dum
     }
-    if (class(x) == "character" & length(grep(".txt", x)) == 0) {
+    if (is.character(x) & !(".txt" %in% x)) {
         if (!requireNamespace("rgbif", quietly = TRUE)) {
           stop("rgbif needed for species name option. Please install it.",
                call. = FALSE)
@@ -28,24 +28,24 @@ RichnessGrid <- function(x, limits = c(-180, 180, -90, 90), reso, type = c("spnu
                                     limit = 200000, hasCoordinate = T, spatialIssues = F,
                                     fields = c("species", "decimalLongitude","decimalLatitude"))
         coords <- do.call("rbind", coords)
-        names(coords) <- c("identifier", "XCOOR", "YCOOR")
+        names(coords) <- c("species", "decimallongitude", "decimallatitude")
         coords <- data.frame(coords[complete.cases(coords),])
         x <- coords
-        warning(paste(dim(inp)[1], "geo-referenced records found in GBIF. No data cleaning was performed", sep = " "))
+        warning(paste(nrow(inp), "geo-referenced records found in GBIF. No data cleaning was performed", sep = " "))
     }
-    if (class(x) == "character" & length(grep(".txt", x)) > 0) {
+    if (is.character(x) & length(grep(".txt", x)) > 0) {
         inp <- read.table(x, sep = "\t", header = T)
-        names(inp) <- c("identifier", "XCOOR", "YCOOR")
+        names(inp) <- c("species", "decimallongitude", "decimallatitude")
         x <- inp
     }
     reso <- 60/reso
     ras <- raster(e, ncols = cols * reso, nrows = rows * reso, crs = CRS("+proj=longlat +datum=WGS84"))
     ras <- setValues(ras, 0)
-    inp <- split(x, f = x$identifier)
-    if (type == "spnum") {
+    inp <- split(x, f = x$species)
+    if (type[1] == "spnum") {
         rast <- lapply(inp, function(x) .rasterSum(x, ras, "div"))
     }
-    if (type == "abu") {
+    if (type[1] == "abu") {
         rast <- lapply(inp, function(x) .rasterSum(x, ras, "abu"))
     }
     out <- Reduce("+", rast)

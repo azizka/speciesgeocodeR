@@ -1,13 +1,13 @@
 WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "coexistence", "graphs", 
                                       "maps", "nexus", "statistics"), areanames = NULL) {
 
-  if (is(x) == "list") {
+  if (is.list(x)) {
     if (length(areanames) == 0) {
       areanam <- x[[1]]$areanam
     } else {
       areanam <- areanames
     }
-    if (writetype[1] == "all") {
+    if ("all" %in% writetype) {
       .NexusOut(x)
       for (i in 1:length(x)) {
         .WriteTablesSpGeo(x[[i]], prefix = names(x)[i])
