@@ -56,7 +56,7 @@
   }
   testpolys <- crop(testpolys, extent(pts))
   
-  country <- sp::over(x = pts, y = testpolys)[, "ISO3"]
+  country <- sp::over(x = pts, y = testpolys)[, "ISO2"]
   out <- as.character(country) == as.character(countries)
   
   return(out)

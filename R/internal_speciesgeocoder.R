@@ -629,15 +629,6 @@
     dev.off()
 }
 
-.OutHeatCoEx <- function(x, prefix, verbose = FALSE, ...) {
-    if (verbose == TRUE) {
-        cat("Creating coexistence heatplot: heatplot_coexistence.pdf. \n")
-    }
-    pdf(file = paste(prefix, "heatplot_coexistence.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .HeatPlotCoEx(x, ...)
-    dev.off()
-}
-
 .OutMapAll <- function(x, prefix, areanames = "", verbose = FALSE, ...) {
     if (verbose) {
         cat("Creating overview map: map_samples_overview.pdf. \n")
