@@ -1,27 +1,11 @@
-WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "coexistence", "graphs", 
-                                      "maps", "nexus", "statistics"), areanames = NULL) {
-
+WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "graphs", "maps", "nexus", "stats")) {
+  
   if (is.list(x)) {
-    if (length(areanames) == 0) {
-      areanam <- x[[1]]$areanam
-    } else {
-      areanam <- areanames
-    }
-    if ("all" %in% writetype) {
+    switch(writetype, all = {
       .NexusOut(x)
       for (i in 1:length(x)) {
         .WriteTablesSpGeo(x[[i]], prefix = names(x)[i])
-      }
-      if (length(dim(x[[1]]$coexistence_classified)) == 0) {
-        warning("no coexistence matrix found")
-      } else {
-        for (i in 1:length(x)) {
-          .OutHeatCoEx(x[[i]], prefix = names(x)[i])
-        }
-      }
-      for (i in 1:length(x)) {
-        Spgc2BioGeoBEARS(x[[i]], file = paste(names(x)[i], "_BioGeoBEARS.txt", 
-                                         sep = ""))
+        Spgc2BioGeoBEARS(x[[i]], file = paste(names(x)[i], "_BioGeoBEARS.txt", sep = ""))
         .OutPlotSpPoly(x[[i]], prefix = names(x)[i])
         .OutBarChartPoly(x[[i]], prefix = names(x)[i])
         .OutBarChartSpec(x[[i]], prefix = names(x)[i])
@@ -29,58 +13,33 @@ WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "coexistence", "grap
         .OutMapPerSpecies(x[[i]], prefix = names(x)[i])
         .OutMapPerPoly(x[[i]], prefix = names(x)[i])
       }
-    }
-    if ("graphs" %in% writetype) {
+    }, graphs = {
       for (i in 1:length(x)) {
         .OutPlotSpPoly(x[[i]], prefix = names(x)[i])
         .OutBarChartPoly(x[[i]], prefix = names(x)[i])
         .OutBarChartSpec(x[[i]], prefix = names(x)[i])
       }
-    }
-    if ("maps" %in% writetype) {
+    }, maps = {
       for (i in 1:length(x)) {
         .OutMapAll(x[[i]], prefix = names(x)[i])
         .OutMapPerSpecies(x[[i]], prefix = names(x)[i])
-        .OutMapPerPoly(x[[i]], areanames = areanames, prefix = names(x)[i])
+        .OutMapPerPoly(x[[i]], areanames = x[[1]]$areanam, prefix = names(x)[i])
       }
-    }
-    if ("statistics" %in% writetype) {
+    }, stats = {
       for (i in 1:length(x)) {
         .WriteTablesSpGeo(x[[i]], prefix = names(x)[i])
       }
-    }
-    if ("BioGeoBEARS" %in% writetype) {
+    }, BioGeoBEARS = {
       for (i in 1:length(x)) {
         Spgc2BioGeoBEARS(x, file = paste(names(x)[i], "BioGeoBEARS.txt", sep = ""))
       }
-    }
-    if ("nexus" %in% writetype) {
+    }, nexus = {
       .NexusOut(x)
-    }
-    if ("coexistence" %in% writetype) {
-      if (length(dim(x[[1]]$coexistence_classified)) == 0) {
-        print("No coexistence matrix found")
-      } else {
-        for (i in 1:length(x)) {
-          .OutHeatCoEx(x[[i]], prefix = names(x)[i])
-        }
-      }
-    }
+    })
   } else {
-    if (length(areanames) == 0) {
-      areanam <- x$areanam
-    } else {
-      areanam <- areanames
-    }
-    if ("all" %in% writetype) {
+    switch(plottype, all = {
       .NexusOut(x)
       .WriteTablesSpGeo(x)
-      
-      if (length(dim(x$coexistence_classified)) == 0) {
-        warning("No coexistence matrix found")
-      } else {
-        .OutHeatCoEx(x, prefix = "")
-      }
       Spgc2BioGeoBEARS(x, file = "BioGeoBEARS.txt")
       .OutPlotSpPoly(x, prefix = "")
       .OutBarChartPoly(x, prefix = "")
@@ -88,34 +47,20 @@ WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "coexistence", "grap
       .OutMapAll(x, prefix = "")
       .OutMapPerSpecies(x, prefix = "")
       .OutMapPerPoly(x, areanames = areanam, prefix = "")
-    }
-    if ("graphs" %in% writetype) {
+    }, graphs = {
       .OutPlotSpPoly(x, prefix = "")
       .OutBarChartPoly(x, prefix = "")
       .OutBarChartSpec(x, prefix = "")
-    }
-    if ("maps" %in% writetype) {
+    }, maps = {
       .OutMapAll(x, prefix = "")
       .OutMapPerSpecies(x, prefix = "")
-      .OutMapPerPoly(x, areanames = areanames, prefix = "")
-    }
-    
-    if ("statistics" %in% writetype) {
+      .OutMapPerPoly(x, areanames = x$areanam, prefix = "")
+    }, stats = {
       .WriteTablesSpGeo(x)
-    }
-    if ("nexus" %in% writetype) {
+    }, nexus = {
       .NexusOut(x)
-    }
-    if ("BioGeoBEARS" %in% writetype) {
+    }, BioGeoBEARS = {
       Spgc2BioGeoBEARS(x, file = "BioGeoBEARS.txt")
-    }
-    
-    if ("coexistence" %in% writetype) {
-      if (length(dim(x$coexistence_classified)) == 0) {
-        print("No coexistence matrix found")
-      } else {
-        .OutHeatCoEx(x, prefix = "")
-      }
-    }
+    })
   }
 }

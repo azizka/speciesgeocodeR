@@ -39,9 +39,6 @@
 
 .BarChartSpec <- function(x, mode = c("percent", "total"), plotout = FALSE, verbose = FALSE, ...) {
     match.arg(mode)
-    if (!class(x) == "spgeoOUT" && !class(x) == "spgeoH") {
-        stop("this function is only defined for class \"spgeoOUT\"")
-    }
     if (length(x$spec_table) == 0) {
         cat("No point was found inside the given polygons")
     } else {
@@ -894,14 +891,25 @@
     }
     
     #species number per polygon
-    sppol <- colSums(spsum)
+    sppol <- spsum
+    sppol[sppol > 1] <- 1
+    sppol <- colSums(sppol)
+    
+    #SpatialPolygonsDataFrame with species number per polygon based on areanam
+    pol.df <- as(x$polygons, "data.frame")
+    nums <- data.frame(sppol)
+    nums$names <- gsub("[[:punct:]]", " ", as.character(rownames(nums)))
+    pol.df <- merge(pol.df, nums, sort=FALSE, by.x = areanames,
+                    by.y = "row.names", all.x = TRUE)
+    pol.df <- subset(pol.df, select = -c(names))
+    pol <- SpatialPolygonsDataFrame(as(x$polygons, "SpatialPolygons"), data = pol.df)
     
     #create output
     out <- list(samples = data.frame(species = x$species,
                                      decimallongitude = x$species_coordinates[,1],
                                      decimallatitude = x$species_coordinates[,2],
                                      homepolygon = kkk),
-                polygons = x$polygons, 
+                polygons = pol, 
                 spec_table = spsum, 
                 polygon_table = sppol,
                 coexistence_classified = "NA", 

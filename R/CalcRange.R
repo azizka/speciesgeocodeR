@@ -2,10 +2,12 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
                       eoo.terrestrial = TRUE, aoo.gridsize = NULL, aoo.proj = NULL,
                       aoo.reps = 3, verbose = FALSE) {
   
+  #enable the use of Darwin core and gbif simple csv
+  names(x) <- tolower(names(x))
+  
   # prepare input data
-  if (is(x)[1] == "spgeoOUT") {
-    dat <- data.frame(species = x$species_in, x$species_coordinates_in)
-    names(dat) <- c("species", "decimallongitude", "decimallatitude")
+  if (is.spgeoOUT(x)[1]) {
+    dat <- x$samples[, c("species", "decimallongitude", "decimallatitude")]
     dat$species <- as.character(dat$species)
   } else {
     dat <- x[, c("species", "decimallongitude", "decimallatitude")]
@@ -18,9 +20,6 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
   # check input data for validity
   if (!is.numeric(dat[, 2]) | !is.numeric(dat[, 3])) {
     stop("input coordinates must be numeric\n")
-  }
-  if (max(dat[, 2]) > 180 | min(dat[, 2]) < -180 | max(dat[, 3]) > 90 | min(dat[, 3]) < -90) {
-    stop("coordinates must be in lat/long wgs1984")
   }
   if ("AOO" %in% index & "EOO" %in% index & eoo.value[1] == "shape") {
     stop("combined AOO and EOO analyses are only enabled with eoo.value = 'area'")
@@ -35,13 +34,15 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
     sortout <- filt[filt <= 2]
     filt <- filt[filt > 2]
     if (length(filt) == 0) {
-      eoo.out <- rbind(data.frame(row.names = names(sortout), EOO = rep("NA", length(sortout))))
+      eoo.out <- rbind(data.frame(row.names = names(sortout), 
+                                  EOO = rep("NA", length(sortout))))
     } else {
       dat.filt <- subset(dat, dat$species %in% as.character(names(filt)))
       
       if (length(sortout) > 0) {
         warning("the following species have less than 3 occurrence, values set to NA:", paste("\n", names(sortout)))
       }
+      
       #calculate convex hull polygons
       inp <- split(dat.filt, f = dat.filt$species)
       eoo.out <- lapply(inp, ".ConvHull")

@@ -1,6 +1,5 @@
 # add collections argument with: Herbaria from INdex Herbariorum, GBIF institutionen, Botanical gardens from GBCI and Museums from gr bio, all where referencing is was possible from google and that to not fall into water
 # add a dataset test
-#change the landmass to simplified and buffered
 # include warning message in case the standard landmass is used
 
 CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL, validity = T, zeros = T, capitals = T, centroids = T, seas = T, urban = F, countrycheck = T, outliers = T, 
@@ -32,7 +31,6 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
     val <- .ValidCoordinates(x)
     
     if (!all(val)) {
-      return(val)
       stop("invalid coordinates found, clean dataset before further tests:\n", 
            paste(which(val == FALSE), "\n"))
     }
