@@ -4,97 +4,68 @@
   return(x)
 }
 
-#barchart of occurrence per polygon per specie
-.BarChartPoly <- function(x, plotout = F, verbose = FALSE, ...) {
-    if (plotout) {
-        par(ask = F)
-    }
-    if (!plotout) {
-      par(ask = T)
-    }
-    liste <- names(x$spec_table)
+#barchart of occurrence per polygon per species
+.BarChartPoly <- function(x) {
+    liste <- names(x$spec_table[-1])
     leng <- length(liste)
-    if (length(names(x$spec_table)) == 0) {
+    if (leng == 0) {
         cat("No point fell in any polygon")
     } else {
         for (i in 2:leng) {
             subs <- subset(x$spec_table, x$spec_table[, i] > 0)
             datsubs <- subs[order(subs[, i]), ]
-            if (dim(subs)[1] == 0) {
+            if (nrow(subs) == 0) {
                 plot(1:10, 1:10, type = "n", xlab = "", ylab = "Number of occurences")
                 text(3, 6, labels = "No species occurred in this polygon.", adj = 0)
                 title(liste[i])
             } else {
-                barplot(datsubs[, i], names.arg = datsubs$species, 
-                        las = 2, ylab = "Number of occurences", cex.names = 0.7,
-                        ylim = c(0, (max(datsubs[, i]) + max(datsubs[, i])/10)))  #, ...)
-                box("plot")
-                title(liste[i])
+              ggplot()+
+                ggplot2::geom_bar(data = datsubs, 
+                                  aes_string(x = "rownames(datsubs)", y = "datsubs[,i]"),
+                                  stat = "identity")+
+                theme_bw()+
+                xlab("Species")+
+                ylab("Number of occurrences")+
+                ggtitle(liste[i])
             }
         }
     }
-    par(ask = F)
-    
 }
 
-.BarChartSpec <- function(x, mode = c("percent", "total"), plotout = FALSE, verbose = FALSE, ...) {
-    match.arg(mode)
-    if (length(x$spec_table) == 0) {
-        cat("No point was found inside the given polygons")
-    } else {
-        if (!plotout) {
-            par(ask = T)
-        }
-        if (any(mode == "total")) {
-            liste <- x$spec_table$species
-            leng <- length(liste)
-            for (i in 1:leng) {
-                if (verbose) {
-                  cat(paste("Creating barchart for species ", i, "/", leng, ": ", liste[i], "\n", sep = ""))
-                }
-                spsub <- as.matrix(subset(x$spec_table, x$spec_table$species == liste[i])[, 2:dim(x$spec_table)[2]])
-                if (sum(spsub) > 0) {
-                  barplot(spsub, las = 2, ylim = c(0, (max(spsub) + max(spsub)/10)), ylab = "Number of occurrences", ...)
-                  title(liste[i])
-                  box("plot")
-                }
-            }
-        }
-        if (any(mode == "percent")) {
-            percent <- x$spec_table[, -1]
-            anzpoly <- length(names(x$spec_table)[-1])
-            if (anzpoly > 1) {
-                percent2 <- percent/rowSums(percent) * 100
-            } else {
-                percent2 <- percent/sum(percent) * 100
-            }
-            percent2[percent2 == "NaN"] <- 0
-            percent2 <- data.frame(species = x$spec_table[, 1], percent2)
-            
-            liste <- x$spec_table$species
-            leng <- length(liste)
-            leng2 <- length(colnames(percent2))
-
-            for (i in 1:leng) {
-                if (verbose) {
-                  cat(paste("Creating barchart for species ", i, "/", leng, ": ", liste[i], "\n", sep = ""))
-                }
-                if (anzpoly > 1) {
-                  spsub <- as.matrix(subset(percent2, percent2$species == liste[i])[, 2:leng2])
-                } else {
-                  spsub <- as.matrix(percent2[percent2$species == liste[i], ][, 2:leng2])
-                  names(spsub) <- names(x$spec_table)[-1]
-                }
-                if (sum(spsub) > 0) {
-                  barplot(spsub, las = 2, ylim = c(0, (max(spsub) + max(spsub)/10)), ylab = "Percent of occurrences", names.arg = names(spsub), 
-                    ...)
-                  title(liste[i])
-                  box("plot")
-                }
-            }
-        }
-        par(ask = F)
+.BarChartSpec <- function(x, mode = c("percent", "total")) {
+  match.arg(mode)
+  switch(mode, 
+         percent = {
+    dat.plo <- x$spec_table/rowSums(x$spec_table) * 100
+    leng <- length(rownames(dat.plo))
+    for (i in 1:leng) {
+      dat.sub <- as.numeric(as.vector(dat.plo[i, ]))
+      ggplot2::ggplot()+
+        ggplot2::geom_bar(data = data.frame(dat.sub), 
+                          aes(x = names(x$spec_table), 
+                              y = dat.sub), stat = "identity")+
+        ggplot2::theme_bw()+
+        ggplot2::ylab("Percent of occurrences")+ 
+        ggtitle(rownames(dat.plo[i, ]))+
+        theme(axis.title.x = element_blank())
     }
+  }, 
+  total = {
+    dat.plo <- x$spec_table
+    leng <- length(rownames(dat.plo))
+    
+    for (i in 1:leng) {
+      dat.sub <- as.numeric(as.vector(dat.plo[i, ]))
+      ggplot2::ggplot()+
+        ggplot2::geom_bar(data = data.frame(dat.sub),
+                          aes(x = names(x$spec_table),
+                              y = dat.sub), stat = "identity")+
+        ggplot2::theme_bw()+
+        ggplot2::ylab("Number of occurrences")+ 
+        ggtitle(rownames(dat.plo[i, ]))+
+        theme(axis.title.x = element_blank())
+    }
+  })
 }
 
 .ConvHull <- function(x){
@@ -232,62 +203,6 @@
   } else {
     return(ele.vector)
   }
-} 
-
-.HeatPlotCoEx <- function(x, verbose = FALSE, ...) {
-  if (class(x) == "spgeoOUT") {
-    dat <- x$coexistence_classified
-  } else {
-    dat <- x
-  }
-  if (dim(dat)[1] > 40) {
-    warning("more than 40 species in coexistence matrix. Plot might be unreadable")
-  }
-  if (class(dat) != "data.frame") {
-    stop("wrong input format. Input must be a \"data.frame\"")
-  }
-  if (dim(dat)[2] != (dim(dat)[1] + 1)) {
-    warning("suspicicous data dimensions, check input file")
-  }
-  ymax <- dim(dat)[1]
-  xmax <- dim(dat)[2]
-  colo <- rev(heat.colors(10))
-  numer <- rev(1:ymax)
-  
-  layout(matrix(c(rep(1, 9), 2), ncol = 1, nrow = 10))
-  par(mar = c(0, 10, 10, 0))
-  plot(0, xlim = c(0, xmax - 1), ylim = c(0, ymax), type = "n", axes = F, xlab = "", ylab = "")
-  for (j in 2:xmax) {
-    for (i in 1:ymax) {
-      if (i == (j - 1)) {
-        rect(j - 2, numer[i] - 1, j - 1, numer[i], col = "black")
-      } else {
-        ind <- round(dat[i, j]/10, 0)
-        if (ind == 0) {
-          rect(j - 2, numer[i] - 1, j - 1, numer[i], col = "white")
-        } else {
-          rect(j - 2, numer[i] - 1, j - 1, numer[i], col = colo[ind])
-        }
-      }
-    }
-  }
-  axis(side = 3, at = seq(0.5, (xmax - 1.5)), labels = colnames(dat)[-1], las = 2, cex.axis = 0.7, pos = ymax)
-  axis(2, at = seq(0.5, ymax), labels = rev(dat$species), las = 2, cex.axis = 0.7, pos = 0)
-  title("Species co-occurrence", line = 9)
-  
-  par(mar = c(0.5, 10, 0, 0))
-  plot(c(1, 59), c(1, 12), type = "n", axes = F, ylab = "", xlab = "")
-  text(c(13, 13), c(10, 7), c("0%", "10%"))
-  text(c(20, 20), c(10, 7), c("20%", "30%"))
-  text(c(27, 27), c(10, 7), c("40%", "50%"))
-  text(c(34, 34), c(10, 7), c("60%", "70%"))
-  text(c(41, 41), c(10, 7), c("80%", "90%"))
-  text(c(48), 10, "100%")
-  rect(c(9, 9, 16, 16, 23, 23, 30, 30, 37, 37, 44), c(rep(c(10.7, 7.7), 5), 10.7), 
-       c(11, 11, 18, 18, 25, 25, 32, 32, 39, 39, 46), c(rep(c(8.7, 
-                                                                                                                                          5.7), 5), 8.7), col = c("white", colo))
-  rect(7, 5, 51, 12)
-  layout(matrix(1, 1, 1))
 } 
 
 .MapAll <- function(x, polyg, moreborders = FALSE, verbose = FALSE, ...) {
@@ -498,42 +413,39 @@
     layout(matrix(1,1,1))
 }
 
-.MapUnclassified <- function(x, moreborders = FALSE, verbose = FALSE, ...) {
-    if (!class(x) == "spgeoOUT") {
-        stop("This function is only defined for class \"spgeoOUT\"")
-    }
-    dat <- x$samples[x$samples$homepolygon == "not_classified",]
-    if (dim(dat)[1] == 0) {
-        plot(c(1:20), c(1:20), type = "n", axes = F, xlab = "", ylab = "")
-        text(10, 10, labels = paste("All points fell into the polygons and were classified.\n", "No unclassified points", sep = ""))
-    } else {
-        xmax <- min(max(dat$decimallongitude) + 2, 180)
-        xmin <- max(min(dat$decimallongitude) - 2, -180)
-        ymax <- min(max(dat$decimallatitude) + 2, 90)
-        ymin <- max(min(dat$decimallatitude) - 2, -90)
-        
-        map("world", xlim = c(xmin, xmax), ylim = c(ymin, ymax), ...)
-        axis(1)
-        axis(2)
-        title("Samples not classified to polygons \n")
-
-        if (verbose) {
-            warning("adding polygons")
-        }
-        if (is.list(x$polygons)) {
-            plota <- function(x) {
-                plot(x, add = T, col = "grey60", border = "grey40")
-            }
-            lapply(x$polygons, plota)
-        } else {
-            plot(x$polygons, col = "grey60", border = "grey40", add = T, ...)
-        }
-        if (verbose) {
-            warning("adding sample points")
-        }
-        points(dat$decimallongitude, dat$decimallatitude, cex = 0.5, pch = 3, col = "red", ...)
-        box("plot")
-    }
+.MapUnclassified <- function(x, buffer = 1, ...) {
+  
+  #pick unclassified species
+  dat <- x$samples[x$samples$homepolygon == "not_classified", ]
+  if (nrow(dat) == 0) {
+    plot(c(1:20), c(1:20), type = "n", axes = F, xlab = "", ylab = "")
+    text(10, 10, labels = paste("All points fell into the polygons and were classified.\n", 
+                                "No unclassified points", sep = ""))
+  } else {
+    # prepare background
+    e <- raster::extent(SpatialPoints(x$samples[, 2:3])) + buffer
+    
+    bgmap <- speciesgeocodeR::landmass
+    bgmap <- raster::crop(bgmap, e)
+    bgmap <- ggplot2::fortify(bgmap)
+    
+    pols <- ggplot2::fortify(x$polygons)
+    pts <- subset(x$samples, homepolygon == "not_classified")
+    
+    #plot results
+    plo <- ggplot2::ggplot()+
+      ggplot2::geom_polygon(data = bgmap, 
+                            aes_string(x = "long", y = "lat", group = "group"),
+                            fill = "grey60")+
+      ggplot2::geom_polygon(data = pols,  
+                            aes_string(x = "long", y = "lat", group = "group"), 
+                            fill = rgb(0, 100,0, 100, maxColorValue = 255))+
+      ggplot2::geom_point(data = pts, 
+                          aes_string(x = "decimallongitude", y = "decimallatitude", color = "species"))+
+      ggplot2::coord_fixed()+ 
+      ggplot2::theme_bw()
+    return(plo)
+  }
 }
 
 .NexusOut <- function(dat, verbose = FALSE) {
@@ -613,7 +525,7 @@
         cat("Creating barchart per polygon: barchart_per_polygon.pdf. \n")
     }
     pdf(file = paste(prefix, "barchart_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .BarChartPoly(x, plotout = T, cex.axis = 0.8, ...)
+    .BarChartPoly(x)
     dev.off()
 }
 
@@ -622,7 +534,7 @@
         cat("Creating barchart per species: barchart_per_species.pdf. \n")
     }
     pdf(file = paste(prefix, "barchart_per_species.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .BarChartSpec(x, plotout = T, mode = "percent", ...)
+    .BarChartSpec(x, mode = "percent")
     dev.off()
 }
 
@@ -691,31 +603,15 @@
     }
 }
 
-.PlotSpPoly <- function(x, ...) {
-    if (class(x) == "spgeoOUT") {
-        num <- length(names(x$polygon_table))
-        dat <- sort(x$polygon_table)
-        counter <- num/10
-        if (length(x$polygon_table) != 0) {
-          if (length(x$polygon_table) == 1){
-            barplot(as.matrix(dat[1, ]),
-                    ylim = c(0, round((max(dat) + max(c(max(dat)/4, 1))), 0)),
-                    ylab = "Number of Species per Polygon", 
-                    names.arg = names(x$polygon_table),
-                    las = 2, ...)
-          }else{
-            barplot(as.matrix(dat[1, ]), 
-                    ylim = c(0, round((max(dat) + max(c(max(dat)/4, 1))), 0)), 
-                    ylab = "Number of Species per Polygon", 
-                    las = 2, ...)
-          }
-          box("plot")
-        } else {
-            cat("No point in any polygon")
-        }
-    } else {
-        stop("this function is only defined for class \"spgeoOUT\"")
-    }
+.PlotSpPoly <- function(x) {
+  dat.plo <- data.frame(x$polygon_table)
+  ggplot()+
+    ggplot2::geom_bar(data = dat.plo, 
+                      aes_string(x = "rownames(dat.plo)", y = "dat.plo[,1]"),
+                      stat = "identity")+
+    ggplot2::theme_bw()+ 
+    ggplot2::ylab("Number of Species per Polygon")+
+    ggplot2::theme(axis.title.x = element_blank())
 }
 
 .rasterSum <- function(x, ras, type) {
@@ -936,72 +832,6 @@
   }
   return(spec_sum)
 } 
-
-.testcordcap <- function(x, reftab, capthresh) {
-  capout <- NA
-    if (is.na(as.character(unlist(x["country"]))) | is.na(suppressWarnings(as.numeric(as.character(x["decimallongitude"])))) |
-          is.na(suppressWarnings(as.numeric(as.character(x["decimallatitude"])))) | as.character(unlist(x["country"])) == "") {
-        capout <- NA
-    } else {
-        if (nchar(as.character(unlist(x["country"]))) <= 2) {
-            loncap <- suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) > (subset(reftab, as.character(reftab$ISO2) == 
-                as.character(unlist(x["country"])))$capital_lon - capthresh) & suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO2) == as.character(unlist(x["country"])))$capital_lon + capthresh)
-            latcap <- suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) > (subset(reftab, as.character(reftab$ISO2) == 
-                as.character(unlist(x["country"])))$capital_lat - capthresh) & suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO2) == as.character(unlist(x["country"])))$capital_lat + capthresh)
-        }
-        if (nchar(as.character(unlist(x["country"]))) <= 3 & !nchar(as.character(unlist(x["country"]))) <= 2) {
-            loncap <- suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) > (subset(reftab, as.character(reftab$ISO3) == 
-                as.character(unlist(x["country"])))$capital_lon - capthresh) & suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO3) == as.character(unlist(x["country"])))$capital_lon + capthresh)
-            latcap <- suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) > (subset(reftab, as.character(reftab$ISO3) == 
-                as.character(unlist(x["country"])))$capital_lat - capthresh) & suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO3) == as.character(unlist(x["country"])))$capital_lat + capthresh)
-        }
-        if (nchar(as.character(unlist(x["country"]))) > 3) {
-            loncap <- T
-            latcap <- T
-            warning(paste("found country information for", unlist(x["species"]), "with more than 3 letters. Change country information to ISO2 or ISO3", 
-                sep = " "))
-        }
-        ifelse(loncap & latcap, capout <- FALSE, capout <- TRUE)
-    }
-    return(capout)
-}
-
-.testcordcountr <- function(x, reftab, contthresh) {
-  contout <- NA
-    if (is.na(as.character(unlist(x["country"]))) | is.na(suppressWarnings(as.numeric(as.character(x["decimallongitude"])))) | 
-          is.na(suppressWarnings(as.numeric(as.character(x["decimallatitude"])))) | as.character(unlist(x["country"])) == "") {
-        contout <- NA
-    } else {
-        if (nchar(as.character(unlist(x["country"]))) <= 2) {
-            loncont <- suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) > (subset(reftab, as.character(reftab$ISO2) == 
-                as.character(unlist(x["country"])))$centroid_lon - contthresh) & suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO2) == as.character(unlist(x["country"])))$centroid_lon + contthresh)
-            latcont <- suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) > (subset(reftab, as.character(reftab$ISO2) == 
-                as.character(unlist(x["country"])))$centroid_lat - contthresh) & suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO2) == as.character(unlist(x["country"])))$centroid_lat + contthresh)
-        }
-        if (nchar(as.character(unlist(x["country"]))) == 3) {
-            loncont <- suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) > (subset(reftab, as.character(reftab$ISO3) == 
-                as.character(unlist(x["country"])))$centroid_lon - contthresh) & suppressWarnings(as.numeric(as.character(x["decimallongitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO3) == as.character(unlist(x["country"])))$centroid_lon + contthresh)
-            latcont <- suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) > (subset(reftab, as.character(reftab$ISO3) == 
-                as.character(unlist(x["country"])))$centroid_lat - contthresh) & suppressWarnings(as.numeric(as.character(x["decimallatitude"]))) < 
-                (subset(reftab, as.character(reftab$ISO3) == as.character(unlist(x["country"])))$centroid_lat + contthresh)
-        }
-        if (nchar(as.character(unlist(x["country"]))) > 3) {
-            loncont <- T
-            latcont <- T
-            warning(paste("found country information for", unlist(x["species"]), "with more than 3 letters. Change country information to ISO2 or ISO3", 
-                sep = " "))
-        }
-        ifelse(loncont & latcont, contout <- FALSE, contout <- TRUE)
-    }
-    return(contout)
-}
 
 .WriteTablesSpGeo <- function(x, prefix = "", verbose = FALSE, ...) {
     if (class(x) == "spgeoOUT") {
