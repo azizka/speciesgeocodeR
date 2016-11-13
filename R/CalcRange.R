@@ -57,11 +57,15 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
         cropper <- cropper + 1
         cropper <- raster::crop(speciesgeocodeR::landmass, cropper)
         
-        eoo.out <- lapply(eoo.out, function(x) rgeos::gIntersection(x, cropper))
+        eoo.list <- lapply(eoo.out, function(x) rgeos::gIntersection(x, cropper))
+        eoo.out <- do.call(raster::bind, eoo.list)
+        eoo.out <- sp::SpatialPolygonsDataFrame(Sr = eoo.out,
+                                                data = data.frame(species = names(eoo.list)),
+                                                FALSE)
+        
       }
-      
       if (eoo.value[1] == "area") {
-        eoo.out <- lapply(eoo.out, function(k){round(geosphere::areaPolygon(k)/(1000 * 1000), 0)})
+        eoo.out <- lapply(eoo.list, function(k){round(geosphere::areaPolygon(k)/(1000 * 1000), 0)})
         eoo.out <- data.frame(do.call("rbind", eoo.out))
         names(eoo.out) <- "EOO"
         eoo.out <- rbind(eoo.out, data.frame(row.names = rownames(sortout), EOO = rep("NA", length(sortout))))
@@ -128,8 +132,6 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
   } else if ("AOO" %in% index) {
     out <- aoo.out
   }
-  
-  class(out) <- c("range.sizes", class(out))
-  
+
   return(out)
 } 

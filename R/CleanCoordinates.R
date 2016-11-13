@@ -210,8 +210,10 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
     report <- "CleanCoordinates_report.txt"
   }
   if (is.character(report)) {
-    suma <- data.frame(test = as.character(names(out[-c(1:2)])), flagged.records = colSums(!out[-c(1:2)]))
-    suma <- rbind(suma, c("Error Quotient", round(sum(out$summary, na.rm = T)/length(out$summary), 2)))
+    suma <- data.frame(test = as.character(names(out[-c(1:2)])), 
+                       flagged.records = colSums(!out[-c(1:2)]))
+    suma <- rbind(suma, c("Error Quotient", 
+                          round(sum(out$summary, na.rm = T)/length(out$summary), 2)))
     write.table(suma, report, sep = "\t", row.names = F)
   }
   
