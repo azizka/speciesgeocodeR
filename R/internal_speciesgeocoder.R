@@ -238,108 +238,46 @@
         return(plo)
 }
 
-.MapPerPoly <- function(x, areanames = NULL, plotout = FALSE) {
-    if (!class(x) == "spgeoOUT") {
-        stop("this function is only defined for class \"spgeoOUT\"")
-    }
-    dum <- x$polygons
+.MapPerPoly <- function(x, areanames, buffer = 1) {
+  #background plot data
+  e <- raster::extent(SpatialPoints(x$samples[, 2:3])) + buffer
+  
+  bgmap <- speciesgeocodeR::landmass
+  bgmap <- raster::crop(bgmap, e)
+  bgmap <- ggplot2::fortify(bgmap)
+  
+  #backgroundplot
+  plo <- ggplot2::ggplot()+
+    ggplot2::geom_polygon(data = bgmap, 
+                          aes_string(x = "long", y = "lat", group = "group"),
+                          fill = "grey60")+
+    ggplot2::coord_fixed()+
+    ggplot2::theme_bw()
+  
+  #per polygon plots
+  liste <- unique(as.character(x$polygons@data[,areanames]))
+  
+  for(i in liste){
+    #select polygon
+    pols <- x$polygons[x$polygons[[areanames]] == i,]
+    pols <- ggplot2::fortify(pols)
     
-    if (class(dum) == "SpatialPolygonsDataFrame") {
-      if (length(areanames) == 0) {
-        areanames <- x$areanam
-      }
-        len <- length(unique(x$polygons@data[, areanames]))
-    } else {
-        len <- length(names(dum))
-    }
-    for (i in 1:len) {
-        if (class(dum) == "SpatialPolygonsDataFrame") {
-            chopo <- unique(x$polygons@data[, areanames])[i]
-            
-            xmax <- min(max(bbox(subset(x$polygons, x$polygons@data[, areanames] == unique(x$polygons@data[, areanames])[i]))[1, 
-                2]) + 5, 180)
-            xmin <- max(min(bbox(subset(x$polygons, x$polygons@data[, areanames] == unique(x$polygons@data[, areanames])[i]))[1, 
-                1]) - 5, -180)
-            ymax <- min(max(bbox(subset(x$polygons, x$polygons@data[, areanames] == unique(x$polygons@data[, areanames])[i]))[2, 
-                2]) + 5, 90)
-            ymin <- max(min(bbox(subset(x$polygons, x$polygons@data[, areanames] == unique(x$polygons@data[, areanames])[i]))[2, 
-                1]) - 5, -90)
-        } else {
-            chopo <- names(dum)[i]
-            
-            xmax <- min(max(bbox(x$polygons[i])[1, 2]) + 5, 180)
-            xmin <- max(min(bbox(x$polygons[i])[1, 1]) - 5, -180)
-            ymax <- min(max(bbox(x$polygons[i])[2, 2]) + 5, 90)
-            ymin <- max(min(bbox(x$polygons[i])[2, 1]) - 5, -90)
-        }
-        po <- x$samples[,c(4,2:3)]
-        subpo <- subset(po, as.character(po$homepolygon) == as.character(chopo))
-        
-        subpo <- subpo[order(subpo$species), ]
-        
-        liste <- unique(subpo$species)
-        leng <- length(liste)
-        
-        rain <- rainbow(leng)
-        ypos <- vector(length = leng)
-        yled <- (ymax - ymin) * 0.025
-        for (k in 1:leng) {
-            ypos[k] <- ymax - yled * k
-        }
-        
-        layout(matrix(c(1, 1, 1, 1, 1, 2, 2), ncol = 7, nrow = 1))
-        par(mar = c(3, 3, 3, 0))
-        te <- try(map("world", xlim = c(xmin, xmax), ylim = c(ymin, ymax)), silent = T)
-        if (class(te) == "try-error") {
-            map("world")
-        }
-        axis(1)
-        axis(2)
-        box("plot")
-        title(chopo)
-        if (class(dum) == "SpatialPolygonsDataFrame") {
-            plot(subset(x$polygons, x$polygons@data[, areanames] == unique(x$polygons@data[, areanames])[i]), col = "grey60", 
-                add = T)
-        } else {
-            plot(x$polygons[i], col = "grey60", add = T)
-        }
-        for (j in 1:leng) {
-            subsub <- subset(subpo, subpo$species == liste[j])
-            points(subsub[, 3], subsub[, 4], cex = 1, pch = 3, col = rain[j])
-        }
-        par(mar = c(3, 0, 3, 0), ask = F)
-        plot(c(1, 50), c(1, 50), type = "n", axes = F)
-        if (leng == 0) {
-            yset <- 25
-            xset <- 1
-        }
-        if (leng == 1) {
-            yset <- 25
-            xset <- rep(4, leng)
-        }
-        if (leng > 1) {
-            yset <- rev(sort(c(seq(25, 25 + max(ceiling(leng/2) - 1, 0)), seq(24, 24 - leng/2 + 1))))
-            xset <- rep(4, leng)
-        }
-        points(xset - 2, yset, pch = 3, col = rain)
-        if (leng == 0) {
-            text(xset, yset, labels = "No species found in this polygon", adj = 0)
-        } else {
-            text(xset, yset, labels = liste, adj = 0, xpd = T)
-            rect(min(xset) - 4, min(yset) - 1, 50 + 1, max(yset) + 1, xpd = T)
-        }
-        
-        if (plotout == FALSE) {
-            par(ask = T)
-        }
-    }
-    par(ask = F)
-    layout(matrix(1,1,1))
+    #select points
+    pts <- x$samples[x$samples$homepolygon == i,]
+    
+    #plot
+    plo2 <- plo+
+      ggplot2::geom_polygon(data = pols,
+                            aes_string(x = "long", y = "lat", group = "group"), 
+                            fill = "grey90")+
+      ggplot2::geom_point(data = pts,
+                          aes_string(x = "decimallongitude", y = "decimallatitude", colour = "species"))
+    print(plo2)
+  }
 }
 
 .MapPerSpecies <- function(x, buffer = 1) {
-
-  #create background plot
+  # create background plot
   e <- raster::extent(SpatialPoints(x$samples[, 2:3])) + buffer
   
   bgmap <- speciesgeocodeR::landmass
@@ -348,30 +286,29 @@
   
   pols <- ggplot2::fortify(x$polygons)
   
-  #plot results
+  # plot results
   plo <- ggplot2::ggplot()+
     ggplot2::geom_polygon(data = bgmap, 
-                          aes_string(x = "long", y = "lat", group = "group"),
+                          aes_string(x = "long",y = "lat", group = "group"), 
                           fill = "grey60")+
-    ggplot2::geom_polygon(data = pols,  
+    ggplot2::geom_polygon(data = pols,
                           aes_string(x = "long", y = "lat", group = "group"), 
-                          fill = rgb(0, 100,0, 100, maxColorValue = 255))+
-    ggplot2::coord_fixed()+ 
-    ggplot2::theme_bw()+
-    theme(
-      legend.title = element_blank()
-    )
-    
-  #create per species plots
+                          fill = rgb(0, 100, 0, 100, maxColorValue = 255))+
+    ggplot2::coord_fixed()+
+    ggplot2::theme_bw()+ 
+    theme(legend.title = element_blank())
+  
+  # create per species plots
   inp <- x$samples
   inp$homepolygon <- as.character(inp$homepolygon)
   inp$homepolygon[inp$homepolygon != "not_classified"] <- "classified"
   liste <- sort(unique(inp$species))
-  for( i in liste){
-    dat <- inp[inp$species == i,]
+  for (i in liste) {
+    dat <- inp[inp$species == i, ]
     plo2 <- plo+
-      ggplot2::geom_point(data = dat, 
+      ggplot2::geom_point(data = dat,
                           aes_string(x = "decimallongitude", y = "decimallatitude", color = "homepolygon"))+
+      ggplot2::scale_colour_manual(values = c("blue", "red"))+
       ggplot2::ggtitle(i)
     print(plo2)
   }
