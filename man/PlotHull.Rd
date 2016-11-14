@@ -48,11 +48,16 @@ A plot or a set of plots.
 }
 
 \examples{
-data("lemurs_in")
-dat <- CalcRange(data.frame(lemurs_in$species,
-                            lemurs_in$species_coordinates),
+#simulate example occurrences
+occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
+                       decimallongitude = runif(n = 250, min = 42, max = 51),
+                       decimallatitude = runif(n = 250, min = -26, max = -11))
+
+
+dat <- CalcRange(data.frame(occ.exmpl$species,
+                            occ.exampl[, 2:3]),
                  value = "shape")
-PlotHull(dat, xlim = c(-130, -100), ylim = c(30,60))
+PlotHull(dat, xlim = c(-130, -100), ylim = c(30, 60))
 }
 \keyword{ spatial }
 \keyword{ hplot }

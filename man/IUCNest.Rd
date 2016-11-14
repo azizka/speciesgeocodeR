@@ -47,8 +47,11 @@ Mooers, A.O., Faith D.P. & MAddison W. P. 2008 Converting Endangered Species Cat
 }
 
 \examples{
-data(lemurs)
-rang <- CalcRange(lemurs, terrestrial = F)
+occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
+                       decimallongitude = runif(n = 250, min = 42, max = 51),
+                       decimallatitude = runif(n = 250, min = -26, max = -11))
+
+rang <- CalcRange(occ.exmpl, terrestrial = F)
 IUCNest(rang)
 }
 

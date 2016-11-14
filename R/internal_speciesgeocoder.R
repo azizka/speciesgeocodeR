@@ -541,7 +541,6 @@
                                 hasCoordinate = T, spatialIssues = F, fields = c("species", "decimalLongitude", 
                                                                                  "decimalLatitude"))
     coords <- do.call("rbind", coords)
-    names(coords) <- c("identifier", "XCOOR", "YCOOR")
     coords <- data.frame(coords[complete.cases(coords), ])
   }
   
@@ -551,7 +550,8 @@
   
   if (class(x) == "data.frame") {
     coords <- x
-    rownames(coords) <- 1:dim(coords)[1]
+    rownames(coords) <- 1:nrow(coords)
+    names(x) <- tolower(names(x))
   }
   
   if (is.character(y) | is.data.frame(y)) {
@@ -606,9 +606,9 @@
   }
   
   if (ncol(coords) != 3) {
-    if (all(c("scientificName", "decimalLatitude", "decimalLongitude") %in% names(coords))) {
-      coords <- data.frame(identifier = coords$scientificName, XCOOR = coords$decimalLongitude, 
-                           YCOOR = coords$decimalLatitude)
+    if (all(c("scientificName", "decimallatitude", "decimallongitude") %in% names(coords))) {
+      coords <- data.frame(species = coords$species, decimallongitude = coords$decimalLongitude, 
+                           decimallatitude = coords$decimalLatitude)
       warning("more than 3 columns in point input. Assuming DarwinCore formatted file")
     } else {
       stop(paste("wrong input format: \n", "Inputfile for coordinates must have three columns", 
@@ -642,11 +642,11 @@
     coords <- coords[!coords[, 3] < -90, ]
   }
   if (!is.character(coords[, 1]) && !is.factor(coords[, 1])) {
-    warning("coordinate identifier (column 1) should be a string or a factor")
+    warning("species name (column 1) should be a string or a factor")
   }
   coords[, 1] <- as.factor(coords[, 1])
   coordi <- coords[, c(2, 3)]
-  names(coordi) <- c("XCOOR", "YCOOR")
+  names(coordi) <- c("decimallongitude", "decimallatitude")
   
   areanam <- areanames
   
@@ -709,7 +709,6 @@
                 polygons = pol, 
                 spec_table = spsum, 
                 polygon_table = sppol,
-                coexistence_classified = "NA", 
                 areanam = areanames)
     class(out) <- "spgeoOUT"
     return(out)

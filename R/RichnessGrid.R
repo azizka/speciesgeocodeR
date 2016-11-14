@@ -1,4 +1,4 @@
-RichnessGrid <- function(x, ras, reso = NULL, type = c("spnum", "abu")) {
+RichnessGrid <- function(x, ras, reso = 1, type = "spnum") {
   names(x) <- tolower(names(x))
   
   # Input spgeoOUT objects
@@ -29,7 +29,7 @@ RichnessGrid <- function(x, ras, reso = NULL, type = c("spnum", "abu")) {
   }
   
   # Create raster
-  if (is.null(ras)) {
+  if (missing(ras)) {
     pts <- SpatialPoints(x[, c("decimallongitude", "decimallatitude")])
     e <- extent(pts)
     ras <- raster(e)

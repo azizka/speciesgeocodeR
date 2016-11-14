@@ -44,7 +44,10 @@ See the speciesgeocodeR documentation for further information and examples.
 }
 
 \examples{
-data(lemurs)
-CalcRange(lemurs, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = FALSE)
+occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
+                       decimallongitude = runif(n = 250, min = 42, max = 51),
+                       decimallatitude = runif(n = 250, min = -26, max = -11))
+
+CalcRange(occ.exmpl, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = FALSE)
 }
 \keyword{ spatial }

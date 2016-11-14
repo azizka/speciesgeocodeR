@@ -31,7 +31,11 @@ a \code{\link{raster}} object.
 }
 
 \examples{
-data(lemurs)
+#simulate example occurrences
+occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
+                       decimallongitude = runif(n = 250, min = 42, max = 51),
+                       decimallatitude = runif(n = 250, min = -26, max = -11))
+
 rang <- CalcRange(lemurs, value = "shape")
 sprich <- RangeRichness(rang)
 MapGrid(sprich)

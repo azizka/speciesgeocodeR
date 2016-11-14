@@ -44,11 +44,22 @@ The output will be different depending on the plottype argument. \code{plottype}
 \code{\link{summary.spgeoOUT}}
 }
 \examples{
-data(lemurs)
-data(mdg_poly)
+#simulate example occurrences
+occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
+                       decimallongitude = runif(n = 250, min = 42, max = 51),
+                       decimallatitude = runif(n = 250, min = -26, max = -11))
 
-inp <- ReadPoints(lemurs, mdg_poly)
-outp <- SpGeoCodH(inp)
+#simulate example areas
+pol.exmpl <- 
+  SpatialPolygonsDataFrame(
+    SpatialPolygons(
+      list(Polygons(list(Polygon(cbind(c(44, 46, 46, 44, 44),
+                                       c(-24, -24, -13, -13, -24)))), ID = '1'),
+           Polygons(list(Polygon(cbind(c(47, 50, 50, 47, 47),
+                                       c(-24, -24, -13, -13, -24)))), ID = '2'))),            
+    data.frame(areas = c("Polygon1", "Polygon2")))
+
+outp <- SpGeoCod(occ.exmpl, pol.exampl, areanames = 'areas')
 plot(outp)
 plot(outp, plottype = "species")
 plot(outp, plottype = "polygons")

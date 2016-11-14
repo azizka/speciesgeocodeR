@@ -31,14 +31,7 @@ Maintainer: Alexander Zizka, alexander.zizka@bioenv.gu.se
 data(lemurs)
 data(mdg_poly)
 
-SpGeoCOd(lemurs, mdg_poly)
+SpGeoCod(lemurs, mdg_poly)
 }
 
-data(lemurs)
-data(mdg_poly)
-
-outp <- SpGeoCodH(inp)
-e <- c(42, 52, -27, -10)
-lemurs_div <- RichnessGrid(outp, e, reso = 60, type = "spnum")
-MapGrid(lemurs_div)
 }
