@@ -205,71 +205,37 @@
   }
 } 
 
-.MapAll <- function(x, polyg, moreborders = FALSE, verbose = FALSE, ...) {
-    # data('wrld_simpl', envir = environment())
-    if (class(x) == "spgeoOUT") {
-        xmax <- min(max(x$species_coordinates_in[, 1]) + 2, 180)
-        xmin <- max(min(x$species_coordinates_in[, 1]) - 2, -180)
-        ymax <- min(max(x$species_coordinates_in[, 2]) + 2, 90)
-        ymin <- max(min(x$species_coordinates_in[, 2]) - 2, -90)
-        difx <- sqrt(xmax^2 + xmin^2)
-        dify <- sqrt(ymax^2 + ymin^2)
-        if (difx > 90) {
-            xmax <- min(xmax + 10, 180)
-            xmin <- max(xmin - 10, -180)
-            ymax <- min(ymax + 10, 90)
-            ymin <- max(ymin - 10, -90)
-        }
-        if (verbose == TRUE) {
-            warning("creating map of all samples")
-        }
-        map("world", xlim = c(xmin, xmax), ylim = c(ymin, ymax))
-        axis(1)
-        axis(2)
-        box("plot")
-        title("All samples")
-        # if (moreborders == T) {plot(wrld_simpl, add = T)}
-        if (verbose) {
-            warning("adding polygons")
-        }
-        plot(x$polygons, col = "grey60", border = "grey40", add = T, ...)
-        if (verbose) {
-            warning("adding sample points")
-        }
-        points(x$species_coordinates_in[, 1], x$species_coordinates_in[, 2], cex = 0.7, pch = 3, col = "blue", ...)
-    }
-    if (is.matrix(x)|| is.data.frame(x)) {
-        if (!is.numeric(x[, 1]) || !is.numeric(x[, 2])) {
-            stop(paste("wrong input format:\n", "Point input must be a \"matrix\" or \"data.frame\" with 2 columns.\n", "Column order must be lon - lat", 
-                sep = ""))
-        }
-        if (class(polyg) != "SpatialPolygons") {
-            warning("to plot polygons, polyg must be of class \"SpatialPolygons\"")
-        }
-        x <- as.data.frame(x)
-        nums <- sapply(x, is.numeric)
-        x <- x[, nums]
-        xmax <- min(max(x[, 2]) + 2, 180)
-        xmin <- max(min(x[, 2]) - 2, -180)
-        ymax <- min(max(x[, 1]) + 2, 90)
-        ymin <- max(min(x[, 1]) - 2, -90)
-        if (ymax > 92 || ymin < -92) {
-            warning("column order must be lon-lat, not lat - lon. Please check")
-        }
-        map("world", xlim = c(xmin, xmax), ylim = c(ymin, ymax))
-        axis(1)
-        axis(2)
-        title("All samples")
-        box("plot")
-        # if (moreborders == T) {plot(wrld_simpl, add = T, ...)}
-        if (is.list(polyg)) 
-            
-        plot(polyg, col = "grey60", add = T, ...)
+.MapAll <- function(x, buffer = 1) {
+      dat <- x$samples
+      dat$homepolygon <- as.character(dat$homepolygon)
+      dat$homepolygon[dat$homepolygon != "not_classified"] <- "classified"
+  
+        # prepare background
+        e <- raster::extent(SpatialPoints(x$samples[, 2:3])) + buffer
         
-        points(x[, 2], x[, 1], cex = 0.5, pch = 3, col = "blue", ...)
-        dat <- data.frame(x$not_classified_samples)
-        points(dat$decimallongitude, dat$decimallatitude, cex = 0.5, pch = 3, col = "red", ...)
-    }
+        bgmap <- speciesgeocodeR::landmass
+        bgmap <- raster::crop(bgmap, e)
+        bgmap <- ggplot2::fortify(bgmap)
+        
+        pols <- ggplot2::fortify(x$polygons)
+        
+        #plot results
+        plo <- ggplot2::ggplot()+
+          ggplot2::geom_polygon(data = bgmap, 
+                                aes_string(x = "long", y = "lat", group = "group"),
+                                fill = "grey60")+
+          ggplot2::geom_polygon(data = pols,  
+                                aes_string(x = "long", y = "lat", group = "group"), 
+                                fill = rgb(0, 100,0, 100, maxColorValue = 255))+
+          ggplot2::geom_point(data = dat, 
+                              aes_string(x = "decimallongitude", y = "decimallatitude", color = "homepolygon"))+
+          ggplot2::scale_colour_manual(values = c("blue", "red"))+
+          ggplot2::coord_fixed()+ 
+          ggplot2::theme_bw()+
+          theme(
+            legend.title = element_blank()
+          )
+        return(plo)
 }
 
 .MapPerPoly <- function(x, areanames = NULL, plotout = FALSE) {
@@ -371,49 +337,47 @@
     layout(matrix(1,1,1))
 }
 
-.MapPerSpecies <- function(x, moreborders = FALSE, plotout = FALSE, verbose = FALSE, ...) {
-    if (!class(x) == "spgeoOUT") {
-        stop("this function is only defined for class \"spgeoOUT\"")
-    }
-    # if (moreborders == T) {data('wrld_simpl', envir = environment())}
-    layout(matrix(1, ncol = 1, nrow = 1))
-    if (plotout == FALSE) {
-        par(ask = T)
-    }
-    dat <- x$samples[,c(1,4,2,3)]
-    liste <- unique(dat$species)
+.MapPerSpecies <- function(x, buffer = 1) {
+
+  #create background plot
+  e <- raster::extent(SpatialPoints(x$samples[, 2:3])) + buffer
+  
+  bgmap <- speciesgeocodeR::landmass
+  bgmap <- raster::crop(bgmap, e)
+  bgmap <- ggplot2::fortify(bgmap)
+  
+  pols <- ggplot2::fortify(x$polygons)
+  
+  #plot results
+  plo <- ggplot2::ggplot()+
+    ggplot2::geom_polygon(data = bgmap, 
+                          aes_string(x = "long", y = "lat", group = "group"),
+                          fill = "grey60")+
+    ggplot2::geom_polygon(data = pols,  
+                          aes_string(x = "long", y = "lat", group = "group"), 
+                          fill = rgb(0, 100,0, 100, maxColorValue = 255))+
+    ggplot2::coord_fixed()+ 
+    ggplot2::theme_bw()+
+    theme(
+      legend.title = element_blank()
+    )
     
-    
-    for (i in 1:length(liste)) {
-        kk <- subset(dat, dat$species == liste[i])
-        
-        inside <- kk[!is.na(kk$homepolygon), ]
-        outside <- kk[is.na(kk$homepolygon), ]
-        
-        xmax <- min(max(dat$decimallongitude) + 2, 180)
-        xmin <- max(min(dat$decimallongitude) - 2, -180)
-        ymax <- min(max(dat$decimallatitude) + 2, 90)
-        ymin <- max(min(dat$decimallatitude) - 2, -90)
-        
-        map("world", xlim = c(xmin, xmax), ylim = c(ymin, ymax))
-        axis(1)
-        axis(2)
-        title(liste[i])
-        plot(x$polygons, col = "grey60", add = T)
-        
-        if (length(inside) > 0) {
-            points(inside$decimallongitude, inside$decimallatitude, cex = 0.7, pch = 3, col = "blue")
-        }
-        if (length(outside) > 0) {
-            points(outside$decimallongitude, outside$decimallatitude, cex = 0.7, pch = 3, col = "red")
-        }
-        box("plot")
-    }
-    par(ask = F)
-    layout(matrix(1,1,1))
+  #create per species plots
+  inp <- x$samples
+  inp$homepolygon <- as.character(inp$homepolygon)
+  inp$homepolygon[inp$homepolygon != "not_classified"] <- "classified"
+  liste <- sort(unique(inp$species))
+  for( i in liste){
+    dat <- inp[inp$species == i,]
+    plo2 <- plo+
+      ggplot2::geom_point(data = dat, 
+                          aes_string(x = "decimallongitude", y = "decimallatitude", color = "homepolygon"))+
+      ggplot2::ggtitle(i)
+    print(plo2)
+  }
 }
 
-.MapUnclassified <- function(x, buffer = 1, ...) {
+.MapUnclassified <- function(x, buffer = 1) {
   
   #pick unclassified species
   dat <- x$samples[x$samples$homepolygon == "not_classified", ]
