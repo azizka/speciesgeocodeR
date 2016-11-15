@@ -8,32 +8,23 @@ Plotting Species Richness in a Set of Polygons
 Illustrates the species number per polygon, based on and object of the class \code{spgeoOUT} (created by \code{\link{SpGeoCod}}). 
 }
 \usage{
-MapRichness(x, areanames = NA, leg = "continuous",
-            show.occ = F, lin.col = NA, lwd = 1, ...)
+MapRichness(x, buffer = 1, show.occ = F)
 }
 
 \arguments{
   \item{x}{
-an object of the class ''spgeoOUT''.
+an object of the class \sQuote{spgeoOUT}.
 }
-  \item{areanames}{
-a character string.  If the polygons in the spgeoIN object were derived from a shape file, this column indicates the name of the column used for area names.  If the polygons in the spgeoIN object were derived from a text file leave as default (Default = "").
-}
-  \item{leg}{
-Controls the plot legend and coloring scheme.  Must be either \dQuote{continuous} or \dQuote{discrete}, (default = continuous).
+  \item{buffer}{
+numeric. Indicating the buffer around the the data points whe plotting the map.
 }
   \item{show.occ}{
 logical.  Defines if the occurrence points should be added to the plot (default = F).
 }
-  \item{lin.col}{
-character string.  Defines the colour of polygon borders. If NA, the same colour as for the polygon is used (default = NA).
-}
-  \item{lwd}{
-numeric.  Line width of polygon lines.
-}
   \item{\dots}{
-Arguments to be passed to other methods, such as graphical parameters (see \code{\link{par}}).
+arguments to be passed to methods, such as graphical parameters.
 }
+
 }
 \value{
 A plotted map.

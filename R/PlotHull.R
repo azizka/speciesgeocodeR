@@ -26,13 +26,13 @@ PlotHull <- function(dat, select = "all", buffer = 1, bgmap,
                                        group = "group"), fill = col)
     
   } else {
-    dat.plo <- ggplot2::fortify(subset(dat, species %in% select))
+    dat.plo <- ggplot2::fortify(subset(dat, dat$species %in% select))
     plo <- plo+ 
       ggplot2::geom_polygon(data = dat.plo, 
                             aes_string(x = "long", y = "lat", group = "group"), 
                             fill = col)
     if (length(select) == 1) {
-      plo <- plo + ggplot2:::ggtitle(select)
+      plo <- plo + ggplot2::ggtitle(select)
     }
     plo
   }

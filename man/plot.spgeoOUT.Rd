@@ -8,9 +8,8 @@ Plot Method for SpgeoOUT Objects
 plot.spgeoOUT is the plotting method for objects of the class spgeoOUT.  Depending on the plottype argument the function can be used to get an overview over the data or plot all elements of the object.
 }
 \usage{
-\method{plot}{spgeoOUT}(x,  plottype = "summary", plotout = F,
-                        mode = c("percent", "total"),
-			moreborders = F, areanames = NULL, ...)
+\method{plot}{spgeoOUT}(x,  plottype = "summary", 
+                        mode = c("percent", "total"), ...)
 }
 
 \arguments{
@@ -20,20 +19,11 @@ an object of the class spgeoOUT
   \item{plottype}{
 a character string. Controls which data shall be plotted. Default is to \dQuote{summary}. See details for more information.
 }
-  \item{plotout}{
-logical.  If TRUE, no user-input is needed between the plots (par(ask = FALSE)), if  FALSE, user input is needed to browse between plots (par(ask = TRUE)).
-}
   \item{mode}{
 a character string.  Can be \dQuote{percent} or \dQuote{total} controls if percentage or total is shown for \code{plottype} = \dQuote{species}.  Default is \dQuote{percent}.
 }
-  \item{moreborders}{
-logical.  If TRUE additional borders are added to the maps. Default is FALSE.
-}
-  \item{areanames}{
-character. character string. If the polygons of the spgeoOUT object were derived from a shape file, this column indicates the name of the column used for area names.  See the SpeciesgeocodeR documentation for more information, if the polygons of the spgeoOUT object were derived from a text file leave as default (Default = "").
-}
   \item{\dots}{
-arguments to be passed to methods, such as graphical parameters (see \code{\link{par}}).
+arguments to be passed to methods, such as graphical parameters.
 }
 }
 \details{

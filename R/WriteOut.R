@@ -1,7 +1,7 @@
-WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "graphs", "maps", "nexus", "stats")) {
+WriteOut <- function(x, type = c("all", "BioGeoBEARS", "graphs", "maps", "nexus", "stats")) {
   
   if (is.list(x)) {
-    switch(writetype, all = {
+    switch(type, all = {
       .NexusOut(x)
       for (i in 1:length(x)) {
         .WriteTablesSpGeo(x[[i]], prefix = names(x)[i])
@@ -37,7 +37,7 @@ WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "graphs", "maps", "n
       .NexusOut(x)
     })
   } else {
-    switch(plottype, all = {
+    switch(type, all = {
       .NexusOut(x)
       .WriteTablesSpGeo(x)
       Spgc2BioGeoBEARS(x, file = "BioGeoBEARS.txt")
@@ -46,7 +46,7 @@ WriteOut <- function(x, writetype = c("all", "BioGeoBEARS", "graphs", "maps", "n
       .OutBarChartSpec(x, prefix = "")
       .OutMapAll(x, prefix = "")
       .OutMapPerSpecies(x, prefix = "")
-      .OutMapPerPoly(x, areanames = areanam, prefix = "")
+      .OutMapPerPoly(x, areanames = x$areanam, prefix = "")
     }, graphs = {
       .OutPlotSpPoly(x, prefix = "")
       .OutBarChartPoly(x, prefix = "")

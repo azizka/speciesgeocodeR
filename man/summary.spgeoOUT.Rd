@@ -8,17 +8,14 @@ Summary Method for SpgeoOUT
 summary method for objects of the class \code{spgeoOUT}
 }
 \usage{
-\method{summary}{spgeoOUT}(object, areanames = NA, ...)
+\method{summary}{spgeoOUT}(object, ...)
 }
 \arguments{
   \item{object}{
 an object of the class spgeoOUT
 }
-  \item{areanames}{
-a character string. Indicating the column containing the area names, if not specified the ID slot is displayed.
-}
   \item{\dots}{
-arguments to be passed to methods, such as graphical parameters (see par).
+arguments to be passed to methods.
 }
 }
 \details{

@@ -148,6 +148,8 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
     
     # Datasets
     
+    # Zoos
+    
     
     # exclude duplicates
     if (duplicates) {

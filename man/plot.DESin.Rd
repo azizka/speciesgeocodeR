@@ -8,7 +8,7 @@ Plot Method for DESin
 a set of plots to explore a DESin object
 }
 \usage{
-\method{plot}{DESin}(x, plottype = c("all", "samplelocations", "inputviz",
+\method{plot}{DESin}(x, plottype = c("all", "locations", "inputviz",
                  "replicates"), xlim = c(-180, 180), ylim = c(-90, 90),
                  pch = 1, ...)}
 

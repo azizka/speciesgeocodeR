@@ -9,7 +9,7 @@ MapRichness <- function(x, buffer = 1, show.occ = F) {
   bgmap <- ggplot2::fortify(bgmap)
   
   # link species number information with polygons
-  pol <- ggplot2::fortify(model = x$polygons)
+  pol.f <- ggplot2::fortify(model = x$polygons)
   pol <- merge(pol.f, x$polygons@data, by.x = "id", by.y = "row.names")
   pol$sppol <- as.integer(pol$sppol)
   

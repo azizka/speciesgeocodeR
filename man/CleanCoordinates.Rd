@@ -22,7 +22,7 @@ CleanCoordinates(x, countries = NULL, species = NULL, dataset = NULL,
 
 \arguments{
   \item{x}{
-a \code{matrix} or \code{data.frame} with two columns in the format: longitude, latitude, or a \code{data.frame} with three columns, where the third column is a character with country information in ISO3 format. If no country information is provided, the countrycheck test is skipped.
+a \code{matrix} or \code{data.frame} with two columns in the format: decimallongitude, decimallatitude.  
 }
   \item{countries}{
 character. A vector of the same length as x, with country information for each record in ISO3 format.  If set to NULL, the countries test is skipped.  Default = NULL 

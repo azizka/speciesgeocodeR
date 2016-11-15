@@ -8,18 +8,21 @@ Species Richness Raster from Range Polygons
 Calculate species richness for the specified grid based on an list of range polygons, as derived from \code{\link{CalcRange}}.
 }
 \usage{
-RangeRichness(ra, limits = c(-180, 180, -90, 90), reso = 1, terrestrial = FALSE)
+RangeRichness(x, ras, reso = 1, buffer = 1, terrestrial = FALSE)
 }
 
 \arguments{
-  \item{ra}{
+  \item{x}{
 A list of SpatialPolygons with species ranges.
 }
-  \item{limits}{
-numeric.  A vector with the limits of the grid in decimal degrees of the format c(xmin, xmax, ymin, ymax). Default is worldwide c(-180, 180, -90, 90).
+  \item{ras}{
+Template raster to rasterize x.
 }
   \item{reso}{
-numeric.  Resolution of the grid in minutes.
+numeric.  Resolution of the raster in decimal degree.  Only if ras is missing.
+}
+\item{buffer}{
+numerical.  The buffer around the polygon extent when plotting the map.
 }
   \item{terrestrial}{
 logical.  If TRUE, oceans are omitted.

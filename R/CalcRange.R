@@ -1,15 +1,13 @@
 CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape"), 
                       eoo.terrestrial = TRUE, aoo.gridsize = NULL, aoo.proj = NULL,
                       aoo.reps = 3, verbose = FALSE) {
-  
-  #enable the use of Darwin core and gbif simple csv
-  names(x) <- tolower(names(x))
-  
+
   # prepare input data
-  if (is.spgeoOUT(x)[1]) {
+  if (is.spgeoOUT(x)) {
     dat <- x$samples[, c("species", "decimallongitude", "decimallatitude")]
     dat$species <- as.character(dat$species)
   } else {
+    names(x) <- tolower(names(x))
     dat <- x[, c("species", "decimallongitude", "decimallatitude")]
     dat$species <- as.character(dat$species)
   }
@@ -53,7 +51,7 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
           stop("rgeos needed for eoo.terrestrial = T. Please install the package.", call. = FALSE)
         }
         #create landmass mask
-        cropper <- extent(SpatialPoints(dat.filt[,2:3]))
+        cropper <- raster::extent(sp::SpatialPoints(dat.filt[,2:3]))
         cropper <- cropper + 1
         cropper <- raster::crop(speciesgeocodeR::landmass, cropper)
         
@@ -65,7 +63,7 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
         
       }
       if (eoo.value[1] == "area") {
-        eoo.out <- lapply(eoo.list, function(k){round(geosphere::areaPolygon(k)/(1000 * 1000), 0)})
+        eoo.out <- lapply(eoo.out, function(k){round(geosphere::areaPolygon(k)/(1000 * 1000), 0)})
         eoo.out <- data.frame(do.call("rbind", eoo.out))
         names(eoo.out) <- "EOO"
         eoo.out <- rbind(eoo.out, data.frame(row.names = rownames(sortout), EOO = rep("NA", length(sortout))))

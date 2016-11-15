@@ -2,7 +2,7 @@ is.spatialvalid <- function(x){
   inherits(x, "spatialvalid")
 }
 
-plot.spatialvalid <- function(x, bgmap = NULL, clean = T, details = T) {
+plot.spatialvalid <- function(x, bgmap = NULL, clean = T, details = T, ...) {
   x <- data.frame(x)
   
   #prepare background
@@ -87,8 +87,8 @@ plot.spatialvalid <- function(x, bgmap = NULL, clean = T, details = T) {
   plo
 } 
 
-summary.spatialvalid <- function(x){
-  out <- apply(x[,-c(1,2)], 2, "!")
+summary.spatialvalid <- function(object, ...){
+  out <- apply(object[,-c(1,2)], 2, "!")
   out <- apply(out[,-c(1,2)], 2, "sum")
   return(out)
 }

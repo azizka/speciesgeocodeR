@@ -1,5 +1,5 @@
-\name{WwfLoad}
-\alias{WwfLoad}
+\name{WWFload}
+\alias{WWFload}
 
 \title{
 Load the WWF Terrestrial Ecoregions
@@ -8,7 +8,7 @@ Load the WWF Terrestrial Ecoregions
 Downloads a shape-file containing the terrestrial ecoregions as defined by Olson et al. 2001 from worldwildlife.org/publications/terrestrial-ecoregions-of-theworld, unpacks them and loads the into R.
 }
 \usage{
-WwfLoad(x = "")
+WWFload(x = "")
 }
 \arguments{
 \item{x}{the path to the folder where the shapes should be saved. If set to "" the files are saved to the working directory.}

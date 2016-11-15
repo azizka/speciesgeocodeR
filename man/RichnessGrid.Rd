@@ -7,7 +7,7 @@ Species Richness and Abundance Grids from Point Records
 Create a species richness or abundance grid, from a spgeoOUT object or a data.frame with species names and occurrence coordinates.
 }
 \usage{
-RichnessGrid(x, ras, reso = NULL, type = c("spnum", "abu"))
+RichnessGrid(x, ras, reso = 1, type = "spnum")
 }
 
 \arguments{

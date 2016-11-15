@@ -6,7 +6,7 @@ is.spgeoOUT <- function(x){
   inherits(x, "spgeoOUT")
 }
 
-plot.spgeoOUT <- function(x, plottype = "summary", mode = c("percent", "total")) {
+plot.spgeoOUT <- function(x, plottype = "summary", mode = c("percent", "total"), ...) {
   switch(plottype,
          summary = {
            layout(matrix(c(1, 1, 2, 2), 2, 2))

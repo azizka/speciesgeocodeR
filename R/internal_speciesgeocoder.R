@@ -23,10 +23,10 @@
                 ggplot2::geom_bar(data = datsubs, 
                                   aes_string(x = "rownames(datsubs)", y = "datsubs[,i]"),
                                   stat = "identity")+
-                theme_bw()+
-                xlab("Species")+
-                ylab("Number of occurrences")+
-                ggtitle(liste[i])
+                ggplot2::theme_bw()+
+                ggplot2::xlab("Species")+
+                ggplot2::ylab("Number of occurrences")+
+                ggplot2::ggtitle(liste[i])
             }
         }
     }
@@ -42,8 +42,8 @@
       dat.sub <- as.numeric(as.vector(dat.plo[i, ]))
       ggplot2::ggplot()+
         ggplot2::geom_bar(data = data.frame(dat.sub), 
-                          aes(x = names(x$spec_table), 
-                              y = dat.sub), stat = "identity")+
+                          aes_string(x = "names(x$spec_table)", 
+                              y = "dat.sub"), stat = "identity")+
         ggplot2::theme_bw()+
         ggplot2::ylab("Percent of occurrences")+ 
         ggtitle(rownames(dat.plo[i, ]))+
@@ -58,8 +58,8 @@
       dat.sub <- as.numeric(as.vector(dat.plo[i, ]))
       ggplot2::ggplot()+
         ggplot2::geom_bar(data = data.frame(dat.sub),
-                          aes(x = names(x$spec_table),
-                              y = dat.sub), stat = "identity")+
+                          aes_string(x = "names(x$spec_table)",
+                              y = "dat.sub"), stat = "identity")+
         ggplot2::theme_bw()+
         ggplot2::ylab("Number of occurrences")+ 
         ggtitle(rownames(dat.plo[i, ]))+
@@ -331,7 +331,7 @@
     bgmap <- ggplot2::fortify(bgmap)
     
     pols <- ggplot2::fortify(x$polygons)
-    pts <- subset(x$samples, homepolygon == "not_classified")
+    pts <- subset(x$samples, x$sampleshomepolygon == "not_classified")
     
     #plot results
     plo <- ggplot2::ggplot()+
@@ -455,7 +455,7 @@
         cat("Creating map per polygon: map_samples_per_polygon.pdf. \n")
     }
     pdf(file = paste(prefix, "map_samples_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .MapPerPoly(x, plotout = T)
+    .MapPerPoly(x, ...)
     dev.off()
 }
 
@@ -464,7 +464,7 @@
         cat("Creating map per species: map_samples_per_species.pdf. \n")
     }
     pdf(file = paste(prefix, "map_samples_per_species.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .MapPerSpecies(x, plotout = T, ...)
+    .MapPerSpecies(x, ...)
     dev.off()
 }
 
@@ -733,9 +733,9 @@
   return(spec_sum)
 } 
 
-.WriteTablesSpGeo <- function(x, prefix = "", verbose = FALSE, ...) {
+.WriteTablesSpGeo <- function(x, path = "", prefix = "", verbose = FALSE, ...) {
     if (class(x) == "spgeoOUT") {
-        write.table(x$samples, file = paste(prefix, "sample_classification_to_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
+        write.table(x$samples, file = file.path(path, paste(prefix, "sample_classification_to_polygon.txt", sep = "")), row.names = FALSE, sep = "\t", ...)
         write.table(x$spec_table, file = paste(prefix, "species_occurences_per_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
         write.table(x$polygon_table, file = paste(prefix, "speciesnumber_per_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
         write.table(x$samples[x$samples$homepolygon == "not_classified",], file = paste(prefix, "unclassified samples.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
