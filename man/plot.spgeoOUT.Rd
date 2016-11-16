@@ -8,7 +8,7 @@ Plot Method for SpgeoOUT Objects
 plot.spgeoOUT is the plotting method for objects of the class spgeoOUT.  Depending on the plottype argument the function can be used to get an overview over the data or plot all elements of the object.
 }
 \usage{
-\method{plot}{spgeoOUT}(x,  plottype = "summary", 
+\method{plot}{spgeoOUT}(x,  type = "summary", 
                         mode = c("percent", "total"), ...)
 }
 
@@ -54,7 +54,6 @@ plot(outp)
 plot(outp, plottype = "species")
 plot(outp, plottype = "polygons")
 plot(outp, plottype = "speciesrichness")
-plot(outp, plottype = "coexistence")
 plot(outp, plottype = "mapspecies")
 plot(outp, plottype = "mappolygons")
 plot(outp, plottype = "mapunclassified")

@@ -6,19 +6,14 @@ is.spgeoOUT <- function(x){
   inherits(x, "spgeoOUT")
 }
 
-plot.spgeoOUT <- function(x, plottype = "summary", mode = c("percent", "total"), ...) {
-  switch(plottype,
-         summary = {
-           layout(matrix(c(1, 1, 2, 2), 2, 2))
-           .MapAll(x)
-           .PlotSpPoly(x)
-           layout(matrix(1, 1, 1))
-         },
+plot.spgeoOUT <- function(x, type = "summary", mode = c("percent", "total"), ...) {
+  switch(type,
+         summary = .MapAll(x),
          species = .BarChartSpec(x, mode = mode),
          polygons = .BarChartPoly(x),
          speciesrichness = .PlotSpPoly(x),
          mapspecies = .MapPerSpecies(x),
-         mappolygond = .MapPerPoly(x, areanames = x$areanam),
+         mappolygons = .MapPerPoly(x, areanames = x$areanam),
          mapunclassified = .MapUnclassified(x),
          mapall = .MapAll(x)
   )

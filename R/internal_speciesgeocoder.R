@@ -32,7 +32,7 @@
     }
 }
 
-.BarChartSpec <- function(x, mode = c("percent", "total")) {
+.BarChartSpec <- function(x, mode = "percent") {
   match.arg(mode)
   switch(mode, 
          percent = {
@@ -220,7 +220,7 @@
         pols <- ggplot2::fortify(x$polygons)
         
         #plot results
-        plo <- ggplot2::ggplot()+
+          ggplot2::ggplot()+
           ggplot2::geom_polygon(data = bgmap, 
                                 aes_string(x = "long", y = "lat", group = "group"),
                                 fill = "grey60")+
@@ -235,7 +235,6 @@
           theme(
             legend.title = element_blank()
           )
-        return(plo)
 }
 
 .MapPerPoly <- function(x, areanames, buffer = 1) {
@@ -257,6 +256,7 @@
   #per polygon plots
   liste <- unique(as.character(x$polygons@data[,areanames]))
   
+  outp.li <- list()
   for(i in liste){
     #select polygon
     pols <- x$polygons[x$polygons[[areanames]] == i,]
@@ -271,9 +271,13 @@
                             aes_string(x = "long", y = "lat", group = "group"), 
                             fill = "grey90")+
       ggplot2::geom_point(data = pts,
-                          aes_string(x = "decimallongitude", y = "decimallatitude", colour = "species"))
-    print(plo2)
+                          aes_string(x = "decimallongitude", y = "decimallatitude", colour = "species"))+
+      ggplot2::ggtitle(i)+
+      theme(legend.position = "none")
+    
+    outp.li[[i]] <- plo2
   }
+  outp.li
 }
 
 .MapPerSpecies <- function(x, buffer = 1) {
@@ -350,7 +354,7 @@
 }
 
 .NexusOut <- function(dat, verbose = FALSE) {
-  if (is.list(dat)) {
+  if (!is.spgeoOUT(dat)) {
     tablist <- lapply(dat, function(x) x$spec_table)
     for (i in 1:length(tablist)) {
       names(tablist[[i]])[-1] <- paste(names(tablist)[i], names(tablist[[i]][-1]), sep = "_")
@@ -359,10 +363,10 @@
   } else {
     speciestab <- dat$spec_table
   }
-  if (verbose == FALSE) {
+  if (!verbose) {
     sink("species_classification.nex")
   }
-  if (verbose == TRUE) {
+  if (verbose) {
     sink("species_classification_verbose.nex")
   }
   cat("#NEXUS \n")
@@ -378,7 +382,7 @@
     cat("No point fell in any of the polygons specified")
     sink(NULL)
   } else {
-    aa <- gsub(" ", "_", names(speciestab)[-1])
+    aa <- gsub(" ", "_", names(speciestab))
     aa <- gsub("&", "_", aa)
     aa <- gsub("__", "_", aa)
     aa <- gsub("__", "_", aa)
@@ -389,25 +393,25 @@
     cat("\n")
     cat("\tmatrix\n")
     
-    dd <- as.matrix(speciestab[, -1])
+    dd <- as.matrix(speciestab)
     dd[dd > 0] <- 1
     
-    if (dim(dd)[2] > 1) {
+    if (ncol(dd) > 1) {
       dd <- data.frame(dd)
       dd$x <- apply(dd[, names(dd)], 1, paste, collapse = "")
     } else {
       dd <- data.frame(dd, x = dd)
     }
-    ff <- gsub(" ", "_", speciestab[, 1])
+    ff <- gsub(" ", "_", rownames(speciestab))
     
-    if (verbose == F) {
+    if (!verbose) {
       ee <- paste("\t\t", ff, "\t", dd$x, "\n", sep = "")
       cat(ee)
     }
     if (verbose) {
       gg <- vector()
-      jj <- speciestab[, -1]
-      for (i in 1:dim(jj)[2]) {
+      jj <- speciestab
+      for (i in 1:ncol(jj)) {
         hh <- paste(dd[, i], "[", jj[, i], "]", sep = "")
         gg <- data.frame(cbind(gg, hh))
       }
@@ -421,60 +425,84 @@
   }
 }
 
-.OutBarChartPoly <- function(x, prefix, verbose = FALSE, ...) {
+.OutBarChartPoly <- function(x, path, prefix, verbose = FALSE, ...) {
     if (verbose) {
         cat("Creating barchart per polygon: barchart_per_polygon.pdf. \n")
     }
-    pdf(file = paste(prefix, "barchart_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
+  if(missing(path)){
+    path <- getwd()
+  }
+    pdf(file = file.path(path, paste(prefix, "barchart_per_polygon.pdf", sep = "")),
+        paper = "special", width = 10.7, height = 7.2, onefile = T)
     .BarChartPoly(x)
     dev.off()
 }
 
-.OutBarChartSpec <- function(x, prefix, verbose = FALSE, ...) {
+.OutBarChartSpec <- function(x, path, prefix, verbose = FALSE, ...) {
     if (verbose) {
         cat("Creating barchart per species: barchart_per_species.pdf. \n")
     }
-    pdf(file = paste(prefix, "barchart_per_species.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
+  if(missing(path)){
+    path <- getwd()
+  }
+    pdf(file = file.path(path, paste(prefix, "barchart_per_species.pdf", sep = "")),
+        paper = "special", width = 10.7, height = 7.2, onefile = T)
     .BarChartSpec(x, mode = "percent")
     dev.off()
 }
 
-.OutMapAll <- function(x, prefix, areanames = "", verbose = FALSE, ...) {
+.OutMapAll <- function(x, path, prefix, areanames = "", verbose = FALSE, ...) {
     if (verbose) {
         cat("Creating overview map: map_samples_overview.pdf. \n")
     }
-    pdf(file = paste(prefix, "map_samples_overview.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T, 
+  if(missing(path)){
+    path <- getwd()
+  }
+    pdf(file = file.path(path, paste(prefix, "map_samples_overview.pdf", sep = "")),
+        paper = "special", width = 10.7, height = 7.2, onefile = T, 
         ...)
     .MapAll(x, ...)
     .MapUnclassified(x, ...)
     dev.off()
 }
 
-.OutMapPerPoly <- function(x, prefix, verbose = FALSE, ...) {
+.OutMapPerPoly <- function(x, path, prefix, verbose = FALSE, ...) {
     if (verbose) {
         cat("Creating map per polygon: map_samples_per_polygon.pdf. \n")
     }
-    pdf(file = paste(prefix, "map_samples_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
+  if(missing(path)){
+    path <- getwd()
+  }
+    pdf(file.path(path, file = paste(prefix, "map_samples_per_polygon.pdf", sep = "")),
+        paper = "special", width = 10.7, height = 7.2, onefile = T)
     .MapPerPoly(x, ...)
     dev.off()
 }
 
-.OutMapPerSpecies <- function(x, prefix, verbose = FALSE, ...) {
+.OutMapPerSpecies <- function(x, path, prefix, verbose = FALSE, ...) {
     if (verbose) {
         cat("Creating map per species: map_samples_per_species.pdf. \n")
     }
-    pdf(file = paste(prefix, "map_samples_per_species.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, onefile = T)
+  if(missing(path)){
+    path <- getwd()
+  }
+    pdf(file = file.path(path, paste(prefix, "map_samples_per_species.pdf", sep = "")),
+        paper = "special", width = 10.7, height = 7.2, onefile = T)
     .MapPerSpecies(x, ...)
     dev.off()
 }
 
-.OutPlotSpPoly <- function(x, prefix, verbose = FALSE, ...) {
+.OutPlotSpPoly <- function(x, path, prefix, verbose = FALSE, ...) {
     if (verbose) {
         cat("Creating species per polygon barchart: number_of_species_per_polygon.pdf. \n")
     }
-    pdf(file = paste(prefix, "number_of_species_per_polygon.pdf", sep = ""), paper = "special", width = 10.7, height = 7.2, 
+  if(missing(path)){
+    path <- getwd()
+  }
+    pdf(file = file.path(path, paste(prefix, "number_of_species_per_polygon.pdf", sep = "")),
+        paper = "special", width = 10.7, height = 7.2, 
         onefile = T)
-    .PlotSpPoly(x, ...)
+    .PlotSpPoly(x)
     dev.off()
 }
 
@@ -486,7 +514,7 @@
         }
       occ <- SpatialPoints(x$species_coordinates[, c(1, 2)])
 
-        outp <- as.character(over(occ, x$polygon)[,1])
+        outp <- as.character(over(occ, x$polygon)[, columnname])
         outp[is.na(outp)] <- "not_classified"
         return(outp)
     } else {
@@ -511,8 +539,9 @@
                       aes_string(x = "rownames(dat.plo)", y = "dat.plo[,1]"),
                       stat = "identity")+
     ggplot2::theme_bw()+ 
-    ggplot2::ylab("Number of Species per Polygon")+
-    ggplot2::theme(axis.title.x = element_blank())
+    ggplot2::ylab("Species")+
+    ggplot2::theme(axis.title.x = element_blank(),
+                   axis.text.x = element_text(angle = 90, hjust = 1))
 }
 
 .rasterSum <- function(x, ras, type) {
@@ -544,14 +573,23 @@
     coords <- data.frame(coords[complete.cases(coords), ])
   }
   
-  if (class(x) == "character" & length(grep(".txt", x)) > 0) {
+  if (is.character(x) & length(grep(".txt", x)) > 0) {
     coords <- read.table(x, sep = "\t", header = T, row.names = NULL)
   }
   
-  if (class(x) == "data.frame") {
-    coords <- x
-    rownames(coords) <- 1:nrow(coords)
+  if (is.data.frame(x)) {
     names(x) <- tolower(names(x))
+    if(ncol(x) > 3 & all(c("scientificname", "decimallatitude", "decimallongitude") %in% names(x))){
+      coords <- x[, c("species", "decimallongitude", "decimallatitude")]
+      rownames(coords) <- 1:nrow(coords)
+    }else{
+      coords <- x
+      rownames(coords) <- 1:nrow(coords)
+    }
+  if(ncol(coords) < 3){
+    stop(paste("wrong input format: \n", "Inputfile for coordinates must have at least three columns", 
+               sep = ""))
+  }
   }
   
   if (is.character(y) | is.data.frame(y)) {
@@ -601,19 +639,8 @@
     }
   }
   
-  if (class(y) == "SpatialPolygonsDataFrame" | class(y) == "SpatialPolygons") {
+  if (class(y) == "SpatialPolygonsDataFrame") {
     poly <- y
-  }
-  
-  if (ncol(coords) != 3) {
-    if (all(c("scientificName", "decimallatitude", "decimallongitude") %in% names(coords))) {
-      coords <- data.frame(species = coords$species, decimallongitude = coords$decimalLongitude, 
-                           decimallatitude = coords$decimalLatitude)
-      warning("more than 3 columns in point input. Assuming DarwinCore formatted file")
-    } else {
-      stop(paste("wrong input format: \n", "Inputfile for coordinates must have three columns", 
-                 sep = ""))
-    }
   }
   
   if (!is.numeric(coords[, 2]) || !is.numeric(coords[, 3])) {
@@ -644,6 +671,7 @@
   if (!is.character(coords[, 1]) && !is.factor(coords[, 1])) {
     warning("species name (column 1) should be a string or a factor")
   }
+  
   coords[, 1] <- as.factor(coords[, 1])
   coordi <- coords[, c(2, 3)]
   names(coordi) <- c("decimallongitude", "decimallatitude")
@@ -658,15 +686,9 @@
 } 
 
 .SpGeoCodH <- function(x, areanames = NULL, occ.thresh = 0) {
-  if (class(x) == "spgeoIN") {
-    if (class(x$polygons) == "SpatialPolygons") {
-      if ("NA" %in% names(x$polygons)) {
-        warning("the polygondata contain a polygon named NA. this can cause problems. Please rename")
-      }
-    }
     if (class(x$polygons) == "SpatialPolygonsDataFrame") {
       if (!areanames %in% names(x$polygons@data)){
-        stop(sprintf("column '%s' not found", "areanames"))
+        stop(sprintf("column '%s' not found", areanames))
       }  
       nam.test <- as.vector(unlist(x$polygons@data[, areanames]))
       if ("NA" %in% nam.test) {
@@ -695,11 +717,12 @@
     #SpatialPolygonsDataFrame with species number per polygon based on areanam
     pol.df <- as(x$polygons, "data.frame")
     nums <- data.frame(sppol)
-    nums$names <- gsub("[[:punct:]]", " ", as.character(rownames(nums)))
-    pol.df <- merge(pol.df, nums, sort=FALSE, by.x = areanames,
+    pol.df.m <- merge(pol.df, nums, sort=FALSE, by.x = areanames,
                     by.y = "row.names", all.x = TRUE)
-    pol.df <- subset(pol.df, select = -c(names))
-    pol <- SpatialPolygonsDataFrame(as(x$polygons, "SpatialPolygons"), data = pol.df)
+    pol.df.m <- pol.df.m[match(pol.df$biomenames, pol.df.m$biomenames),]
+    rownames(pol.df.m) <- rownames(pol.df)
+    pol.df.m[is.na(pol.df.m$sppol), "sppol"] <- 0
+    pol <- SpatialPolygonsDataFrame(as(x$polygons, "SpatialPolygons"), data = pol.df.m)
     
     #create output
     out <- list(samples = data.frame(species = x$species,
@@ -712,9 +735,6 @@
                 areanam = areanames)
     class(out) <- "spgeoOUT"
     return(out)
-  } else {
-    stop("Function is only defined for class spgeoIN")
-  }
 } 
 
 .SpSumH <- function(x, y, occ.thresh = occ.thresh) {
@@ -733,14 +753,18 @@
   return(spec_sum)
 } 
 
-.WriteTablesSpGeo <- function(x, path = "", prefix = "", verbose = FALSE, ...) {
-    if (class(x) == "spgeoOUT") {
-        write.table(x$samples, file = file.path(path, paste(prefix, "sample_classification_to_polygon.txt", sep = "")), row.names = FALSE, sep = "\t", ...)
-        write.table(x$spec_table, file = paste(prefix, "species_occurences_per_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-        write.table(x$polygon_table, file = paste(prefix, "speciesnumber_per_polygon.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-        write.table(x$samples[x$samples$homepolygon == "not_classified",], file = paste(prefix, "unclassified samples.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-        write.table(x$coexistence_classified, file = paste(prefix, "species_coexistence_matrix.txt", sep = ""), row.names = FALSE, sep = "\t", ...)
-    } else {
-        stop("this function is only defined for class \"spgeoOUT\"")
-    }
+.WriteTablesSpGeo <- function(x, path, prefix = "", verbose = FALSE) {
+      if(missing(path)){
+        path <- getwd()
+      }
+        write.table(x$samples, file = file.path(path, paste(prefix, "sample_classification_to_polygon.txt", sep = "")),
+                    row.names = FALSE, sep = "\t")
+        write.table(x$spec_table, file = file.path(path, paste(prefix, "species_occurences_per_polygon.txt", sep = "")), 
+                    row.names = FALSE, sep = "\t")
+        write.table(x$polygon_table, file = file.path(path, paste(prefix, "speciesnumber_per_polygon.txt", sep = "")),
+                    row.names = FALSE, sep = "\t")
+        write.table(x$samples[x$samples$homepolygon == "not_classified",], 
+                    file = file.path(path, paste(prefix, "unclassified samples.txt", sep = "")), row.names = FALSE, sep = "\t")
+        write.table(x$coexistence_classified, file = file.path(path, paste(prefix, "species_coexistence_matrix.txt", sep = "")),
+                    row.names = FALSE, sep = "\t")
 } 
