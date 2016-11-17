@@ -58,6 +58,7 @@
   
   country <- sp::over(x = pts, y = testpolys)[, "ISO2"]
   out <- as.character(country) == as.character(countries)
+  out[is.na(out)] <- TRUE
   
   return(out)
 }

@@ -23,9 +23,6 @@ summary.spgeoOUT <- function(object, ...) {
   suma <- paste(length(unique(object$species_in)), " species with ", dim(object$species_coordinates_in)[1], 
                 " occurrence points and ", length(object$polygons), " input polygons.", sep = "")
   coords <- summary(object$species_coordinates)
-  if (is.na(areanames) & length(object$areanam) != 0){
-    areanames <- object$areanam
-  }  
   if (is.na(object$areanam)){
     polys <- unlist(lapply(slot(object$polygons, "polygons"), function(x) slot(x, "ID")))
   }else{

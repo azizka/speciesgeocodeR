@@ -72,9 +72,12 @@
   conv.hull <- chull(x$decimallongitude, x$decimallatitude)
   dat2 <- x[conv.hull, ]
   dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
-  poly <- SpatialPolygons(list(Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))), proj4string = CRS("+proj=longlat +datum=WGS84"))
+  poly <- Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))
+  poly <- SpatialPolygons(list(poly), 
+                          proj4string = CRS("+proj=longlat +datum=WGS84"))
   return(poly)
 }
+
 
 .ConvertPoly <- function(x) {
   x <- read.table(x, sep = "\t")
@@ -103,52 +106,21 @@
 }
 
 .Cord2Polygon <- function(x) {
-    if (is.character(x)) {
-        tt <- read.table(x, sep = "\t")
-        if (nrow(tt) != 3) {
-            stop(paste("wrong input format: \n", "Inputobject must be a tab-delimited text file or a data.frame with three columns", 
-                sep = ""))
-        }
-        if (!is.numeric(tt[, 2]) || !is.numeric(tt[, 3])) {
-            stop(paste("wrong input format: \n", "Input coordinates (columns 2 and 3) must be numeric", sep = ""))
-        }
-        if (!is.character(tt[, 1]) && !is.factor(tt[, 1])) {
-            warning("input species (column 1) should be a string or a factor")
-        }
-        names(tt) <- c("species", "lon", "lat")
-        liste <- levels(tt$species)
-        col <- list()
-        for (i in 1:length(liste)) {
-            pp <- subset(tt, tt$species == liste[i])[, c(2, 3)]
-            pp <- Polygon(pp)
-            po <- Polygons(list(pp), ID = liste[i])
-            col[[i]] <- po
-        }
-        polys <- SpatialPolygons(col, proj4string = CRS("+proj=longlat +datum=WGS84"))
-    } else {
-        tt <- x
-        if (dim(tt)[2] != 3) {
-            stop(paste("wrong input format: \n", "Inputobject must be a tab-delimited text file or a data.frame with three columns", 
-                sep = ""))
-        }
-        if (!is.numeric(tt[, 2]) || !is.numeric(tt[, 3])) {
-            stop(paste("wrong input format: \n", "Input coordinates (columns 2 and 3) must be numeric", sep = ""))
-        }
-        if (!is.character(tt[, 1]) && !is.factor(tt[, 1])) {
-            warning("input species (column 1) should be a string or a factor")
-        }
-        names(tt) <- c("species", "lon", "lat")
-        liste <- levels(tt$species)
-        col <- list()
-        for (i in 1:length(liste)) {
-            pp <- subset(tt, tt$species == liste[i])[, c(2, 3)]
-            pp <- Polygon(pp)
-            po <- Polygons(list(pp), ID = liste[i])
-            col[[i]] <- po
-        }
-        polys <- SpatialPolygons(col, proj4string = CRS("+proj=longlat +datum=WGS84"))
-    }
-    return(polys)
+  if (is.character(x)) {
+    tt <- read.table(x, sep = "\t")
+  } else {
+    tt <- x
+  }
+  dat <- split(tt, f = tt[, 1])
+  col <- lapply(dat, function(k) {
+    pp <- Polygon(k[, 2:3])
+    po <- Polygons(list(pp), ID = unique(k[, 1]))
+  })
+  polys <- SpatialPolygons(col)
+  pol.data <- data.frame(unique(tt[, 1]), row.names = unique(tt[, 1]))
+  names(pol.data) <- names(x)[1]
+  polys <- SpatialPolygonsDataFrame(polys, data = pol.data)
+  return(polys)
 }
 
 .getEle <- function(x) {
@@ -557,7 +529,7 @@
 .ReadPoints <- function(x, y, areanames = NA, verbose = FALSE) {
   res <- list()
   
-  if (!is.character(x) && !is.data.frame(x)) {
+  if (all(!is.character(x),!is.data.frame(x))) {
     stop(sprintf("function not defined for class %s", dQuote(class(x))))
   }
   
@@ -579,7 +551,7 @@
   
   if (is.data.frame(x)) {
     names(x) <- tolower(names(x))
-    if(ncol(x) > 3 & all(c("scientificname", "decimallatitude", "decimallongitude") %in% names(x))){
+    if(ncol(x) > 3 & all(c("species", "decimallatitude", "decimallongitude") %in% names(x))){
       coords <- x[, c("species", "decimallongitude", "decimallatitude")]
       rownames(coords) <- 1:nrow(coords)
     }else{
@@ -602,38 +574,38 @@
       if (is.data.frame(y)) {
         polycord <- y
       }
-      if (dim(polycord)[2] != 3) {
+      if (ncol(polycord) != 3) {
         stop("Wrong input format;\ninputfile for polygons must be a tab-delimited text file with three columns")
       }
-      if (!is.numeric(polycord[, 2]) || !is.numeric(polycord[, 3])) {
+      if (!is.numeric(polycord[, "decimallongitude"]) || !is.numeric(polycord[, "decimallatitude"])) {
         stop("wrong input format:\nInput polygon coordinates (columns 2 and 3) must be numeric.")
       }
-      if (!is.character(polycord[, 1]) && !is.factor(polycord[, 1])) {
+      if (!is.character(polycord[, "species"]) && !is.factor(polycord[, "species"])) {
         warning("polygon identifier (column 1) should be a string or a factor")
       }
-      if (max(polycord[, 2]) > 180) {
+      if (max(polycord[, "decimallongitude"]) > 180) {
         warning(sprintf("check polygon input coordinates; file contains longitude values outside possible range in row: \n                      %s\n Coordinates set to maximum: 180.\n", 
                         rownames(polycord[polycord[, 2] > 180, ])))
-        polycord[polycord[, 2] > 180, 2] <- 180
+        polycord[polycord[, "decimallongitude"] > 180, "decimallongitude"] <- 180
       }
-      if (min(polycord[, 2]) < -180) {
+      if (min(polycord[, "decimallongitude"]) < -180) {
         warning(paste("check polygon input coordinates. File contains longitude values outside possible range in row: ", 
-                      rownames(polycord[polycord[, 2] < -180, ]), "\n", "Coordinates set to minimum: -180", 
+                      rownames(polycord[polycord[, "decimallongitude"] < -180, ]), "\n", "Coordinates set to minimum: -180", 
                       sep = ""))
-        polycord[polycord[, 2] < -180, ] <- -180
+        polycord[polycord[, "decimallongitude"] < -180, ] <- -180
         
       }
-      if (max(polycord[, 3]) > 90) {
+      if (max(polycord[, "decimallatitude"]) > 90) {
         warning(paste("check polygon input coordinates. File contains latitude values outside possible range in row:", 
-                      rownames(polycord[polycord[, 3] > 90, ]), "\n", "Coordinates set to maximum: 90", 
+                      rownames(polycord[polycord[, "decimallatitude"] > 90, ]), "\n", "Coordinates set to maximum: 90", 
                       sep = ""))
-        polycord[polycord[, 3] > 90, 3] <- 90
+        polycord[polycord[, "decimallatitude"] > 90, "decimallatitude"] <- 90
       }
-      if (min(polycord[, 3]) < -90) {
+      if (min(polycord[, "decimallatitude"]) < -90) {
         warning(paste("check polygon input coordinates. File contains latitude values outside possible range in row:", 
-                      rownames(polycord[polycord[, 3] < -90, ]), "\n", "Coordinates set to minimum: -90", 
+                      rownames(polycord[polycord[, "decimallatitude"] < -90, ]), "\n", "Coordinates set to minimum: -90", 
                       sep = ""))
-        polycord[polycord[, 3] < -90, 3] <- -90
+        polycord[polycord[, "decimallatitude"] < -90, "decimallatitude"] <- -90
       }
       poly <- .Cord2Polygon(polycord)
     }
@@ -643,36 +615,36 @@
     poly <- y
   }
   
-  if (!is.numeric(coords[, 2]) || !is.numeric(coords[, 3])) {
+  if (!is.numeric(coords[, "decimallongitude"]) || !is.numeric(coords[, "decimallatitude"])) {
     stop(paste("wrong input format: \n", "Input point coordinates (columns 2 and 3) must be numeric", 
                sep = ""))
   }
   
-  if (max(coords[, 2]) > 180) {
+  if (max(coords[, "decimallongitude"]) > 180) {
     warning(paste("longitude values outside possible range in row:", 
-                  rownames(coords[coords[, 2] > 180, ]), ". ", "Row deleted", sep = ""))
-    coords <- coords[!coords[, 2] > 180, ]
+                  rownames(coords[coords[, "decimallongitude"] > 180, ]), ". ", "Row deleted", sep = ""))
+    coords <- coords[!coords[, "decimallongitude"] > 180, ]
   }
-  if (min(coords[, 2]) < -180) {
+  if (min(coords[, "decimallongitude"]) < -180) {
     warning(paste("longitude values outside possible range in row: ", 
-                  rownames(coords[coords[, 2] < -180, ]), ". ", "Row deleted", sep = ""))
-    coords <- coords[!coords[, 2] < -180, ]
+                  rownames(coords[coords[, "decimallongitude"] < -180, ]), ". ", "Row deleted", sep = ""))
+    coords <- coords[!coords[, "decimallongitude"] < -180, ]
   }
-  if (max(coords[, 3]) > 90) {
+  if (max(coords[, "decimallatitude"]) > 90) {
     warning(paste("latitude values outside possible range in row:", 
-                  rownames(coords[coords[, 3] > 90, ]), ". ", "Row deleted", sep = ""))
-    coords <- coords[!coords[, 3] > 90, ]
+                  rownames(coords[coords[, "decimallatitude"] > 90, ]), ". ", "Row deleted", sep = ""))
+    coords <- coords[!coords[, "decimallatitude"] > 90, ]
   }
-  if (min(coords[, 3]) < -90) {
+  if (min(coords[, "decimallatitude"]) < -90) {
     warning(paste("latitude values outside possible range in row:", 
-                  rownames(coords[coords[,3] < -90, ]), ". ", "Row deleted", sep = ""))
-    coords <- coords[!coords[, 3] < -90, ]
+                  rownames(coords[coords[, "decimallatitude"] < -90, ]), ". ", "Row deleted", sep = ""))
+    coords <- coords[!coords[, "decimallatitude"] < -90, ]
   }
-  if (!is.character(coords[, 1]) && !is.factor(coords[, 1])) {
+  if (!is.character(coords[, "species"]) && !is.factor(coords[, "species"])) {
     warning("species name (column 1) should be a string or a factor")
   }
   
-  coords[, 1] <- as.factor(coords[, 1])
+  coords[, 1] <- as.factor(coords[, "species"])
   coordi <- coords[, c(2, 3)]
   names(coordi) <- c("decimallongitude", "decimallatitude")
   
@@ -717,9 +689,9 @@
     #SpatialPolygonsDataFrame with species number per polygon based on areanam
     pol.df <- as(x$polygons, "data.frame")
     nums <- data.frame(sppol)
-    pol.df.m <- merge(pol.df, nums, sort=FALSE, by.x = areanames,
+    pol.df.m <- merge(pol.df, nums, sort = FALSE, by.x = areanames,
                     by.y = "row.names", all.x = TRUE)
-    pol.df.m <- pol.df.m[match(pol.df$biomenames, pol.df.m$biomenames),]
+    pol.df.m <- pol.df.m[match(pol.df[, areanames], pol.df.m[, areanames]),]
     rownames(pol.df.m) <- rownames(pol.df)
     pol.df.m[is.na(pol.df.m$sppol), "sppol"] <- 0
     pol <- SpatialPolygonsDataFrame(as(x$polygons, "SpatialPolygons"), data = pol.df.m)

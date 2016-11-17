@@ -43,7 +43,12 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
       
       #calculate convex hull polygons
       inp <- split(dat.filt, f = dat.filt$species)
-      eoo.out <- lapply(inp, ".ConvHull")
+      eoo.out <- lapply(inp, function(k) speciesgeocodeR:::.ConvHull(k))
+      
+      nam <- names(eoo.out)
+      names(eoo.out) <- NULL
+      eoo.out <- do.call(bind, eoo.out)
+      eoo.out <- SpatialPolygonsDataFrame(eoo.out, data = data.frame(species = nam))
       
       #crop to landmass
       if (eoo.terrestrial) {
@@ -55,12 +60,13 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
         cropper <- cropper + 1
         cropper <- raster::crop(speciesgeocodeR::landmass, cropper)
         
-        eoo.list <- lapply(eoo.out, function(x) rgeos::gIntersection(x, cropper))
-        eoo.out <- do.call(raster::bind, eoo.list)
-        eoo.out <- sp::SpatialPolygonsDataFrame(Sr = eoo.out,
-                                                data = data.frame(species = names(eoo.list)),
-                                                FALSE)
-        
+        eoo.out <- rgeos::gIntersection(eoo.out, cropper, byid = T)
+        # eoo.list <- lapply(eoo.out, function(x) rgeos::gIntersection(x, cropper))
+        # eoo.out <- do.call(bind, eoo.list)
+        # nam <- names(eoo.out)
+        # names(eoo.out) <- NULL
+        # eoo.out <- do.call(bind, eoo.out)
+        # eoo.out <- SpatialPolygonsDataFrame(eoo.out, data = data.frame(species = nam))
       }
       if (eoo.value[1] == "area") {
         eoo.out <- lapply(eoo.out, function(k){round(geosphere::areaPolygon(k)/(1000 * 1000), 0)})

@@ -3,7 +3,7 @@ is.spatialvalid <- function(x){
 }
 
 plot.spatialvalid <- function(x, bgmap = NULL, clean = T, details = T, 
-                              pts.size = 1, font.size = 1, ...) {
+                              pts.size = 1, font.size = 10, ...) {
   x <- data.frame(x)
   
   #prepare background
@@ -90,7 +90,7 @@ plot.spatialvalid <- function(x, bgmap = NULL, clean = T, details = T,
                                   labels = c("clean", as.character(unique(pts$flag))[-1]))+
       ggplot2::theme(legend.title=element_blank(),
                      axis.title = element_text(size = font.size),
-                     legend.key.size = element_text(size = font.size))
+                     legend.text = element_text(size = font.size))
   }
   plo
 } 

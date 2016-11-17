@@ -49,7 +49,7 @@ pol.exmpl <-
                                        c(-24, -24, -13, -13, -24)))), ID = '2'))),            
     data.frame(areas = c("Polygon1", "Polygon2")))
 
-outp <- SpGeoCod(occ.exmpl, pol.exampl, areanames = 'areas')
+outp <- SpGeoCod(occ.exmpl, pol.exmpl, areanames = 'areas')
 plot(outp)
 plot(outp, plottype = "species")
 plot(outp, plottype = "polygons")
