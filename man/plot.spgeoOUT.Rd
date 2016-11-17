@@ -16,7 +16,7 @@ plot.spgeoOUT is the plotting method for objects of the class spgeoOUT.  Dependi
   \item{x}{
 an object of the class spgeoOUT
 }
-  \item{plottype}{
+  \item{type}{
 a character string. Controls which data shall be plotted. Default is to \dQuote{summary}. See details for more information.
 }
   \item{mode}{

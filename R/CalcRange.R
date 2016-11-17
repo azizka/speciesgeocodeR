@@ -43,7 +43,7 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
       
       #calculate convex hull polygons
       inp <- split(dat.filt, f = dat.filt$species)
-      eoo.out <- lapply(inp, function(k) speciesgeocodeR:::.ConvHull(k))
+      eoo.out <- lapply(inp, function(k) .ConvHull(k))
       
       nam <- names(eoo.out)
       names(eoo.out) <- NULL
@@ -61,18 +61,16 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
         cropper <- raster::crop(speciesgeocodeR::landmass, cropper)
         
         eoo.out <- rgeos::gIntersection(eoo.out, cropper, byid = T)
-        # eoo.list <- lapply(eoo.out, function(x) rgeos::gIntersection(x, cropper))
-        # eoo.out <- do.call(bind, eoo.list)
-        # nam <- names(eoo.out)
-        # names(eoo.out) <- NULL
-        # eoo.out <- do.call(bind, eoo.out)
-        # eoo.out <- SpatialPolygonsDataFrame(eoo.out, data = data.frame(species = nam))
-      }
+}
       if (eoo.value[1] == "area") {
-        eoo.out <- lapply(eoo.out, function(k){round(geosphere::areaPolygon(k)/(1000 * 1000), 0)})
-        eoo.out <- data.frame(do.call("rbind", eoo.out))
-        names(eoo.out) <- "EOO"
-        eoo.out <- rbind(eoo.out, data.frame(row.names = rownames(sortout), EOO = rep("NA", length(sortout))))
+        eoo.out <- round(geosphere::areaPolygon(eoo.out)/(1000 * 1000), 0)
+        eoo.out <- data.frame(row.names = nam, EOO = eoo.out)
+        
+        #add in species with to few points for a convex hull
+        miss.area <- rep("NA", length(sortout))
+        miss.sp <- rownames(sortout)
+        miss <- data.frame(row.names = miss.sp , EOO = miss.area)
+        eoo.out <- rbind(eoo.out, miss)
       }
     }
   }
@@ -108,23 +106,30 @@ CalcRange <- function(x, index = c("AOO", "EOO"), eoo.value = c("area", "shape")
     
     for (i in 1:aoo.reps) {
       rr <- aoo.extent + (((sqrt(aoo.gridsize))/aoo.reps) * (i - 1))
-      rr <- raster(rr, res = aoo.gridsize)
+      rr <- raster(rr)
+      res(rr) <- sqrt(aoo.gridsize)
       
       aoo <- lapply(occs, function(k) {
         pts <- SpatialPoints(k[, 2:3])
         uu <- rasterize(pts, rr, fun = "count")
         uu[uu > 1] <- 1
-        sum(getValues(uu), na.rm = T) * aoo.gridsize
+        out <- sum(getValues(uu), na.rm = T) * aoo.gridsize
+        return(out)
       })
       
       aoo.out[[i]] <- do.call("rbind.data.frame", aoo)
       names(aoo.out[[i]])[1] <- paste("rep", i, sep = "_")
+      
       
     }
     # find minimum value and create output object
     aoo.out <- do.call("cbind.data.frame", aoo.out)
     aoo.out <- data.frame(AOO = do.call(pmin, as.data.frame(aoo.out)))
     aoo.out <- rbind(aoo.out, data.frame(AOO = rep(aoo.gridsize, length(sings)), row.names = sings))
+    #add species names
+    nams <- sapply(occs, "[", 1)
+    nams <- unlist(lapply(nams, "[", 1))
+    rownames(aoo.out) <- nams
   }
   
   if ("EOO" %in% index & "AOO" %in% index) {
