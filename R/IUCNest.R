@@ -1,8 +1,7 @@
 IUCNest <- function(x, value = c("all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN500"), 
                     NT.thresh = c(30000, 3000), VU.thresh = c(20000, 2000), 
                     EN.thresh = c(5000,500), CR.thresh = c(100, 10)) {
-  
-  if (is(x) == "range.sizes") {
+
     AOO <- rep("DD", nrow(x))
     EOO <- rep("DD", nrow(x))
     both <- rep("DD", nrow(x))
@@ -72,7 +71,4 @@ IUCNest <- function(x, value = c("all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN
         out <- out[, -6]
       }
     }
-  } else {
-    stop("only defined for class 'range.sizes'")
-  }
 }

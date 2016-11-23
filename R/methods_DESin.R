@@ -44,7 +44,8 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
                                  rep("Both", length(times))))
   
   plo <- ggplot()+
-    geom_line(data = dat.plo, aes(x = time, y = mean, group = area,col = area))+
+    geom_line(data = dat.plo, 
+              aes_string(x = "time", y = "mean", group = "area", col =" area"))+
     scale_x_reverse()+
     xlab("Time")+
     ylab("Species")+
@@ -54,7 +55,8 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
   if (ribbon) {
     plo <- plo+
       geom_ribbon(data = dat.plo, 
-                  aes(x = time, ymax = upr, ymin = lwr, group = area, fill = area), 
+                  aes_string(x = "time", ymax = "upr", ymin = "lwr", 
+                             group = "area", fill = "area"), 
                   alpha = 1/5)
   }
   plo

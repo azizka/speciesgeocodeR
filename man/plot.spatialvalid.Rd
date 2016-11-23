@@ -8,7 +8,7 @@ Plot Method for spatialvalid
 a set of plots to explore class spatialvalid
 }
 \usage{
-\method{plot}{spatialvalid}(x, bgmap = NULL, clean = T, detail = T, 
+\method{plot}{spatialvalid}(x, bgmap = NULL, clean = T, details = T, 
               pts.size = 1, font.size = 10, ...)}
 
 \arguments{
@@ -21,11 +21,8 @@ an object of the class \code{SpatialPolygonsDataFrame} used as background map. D
   \item{clean}{
 logical.  If TRUE, non-flagged coordinates are included in the map.
 }
-  \item{detail}{
+  \item{details}{
 logical. If TRUE, occurences are colourcoded by the type of flag.
-}
-  \item{pch}{
-numerical. pch value passed to points.
 }
   \item{pts.size}{
 numerical. The point size for the plot.

@@ -99,7 +99,7 @@ a \code{data.frame} with alternative reference data for the centroid test. If se
 a \code{SpatialPolygonsDataFrame} as alternative reference for the seas test. If set to NULL, the \code{\link{landmass}} dataset is used.  Default = NULL.
 }
   \item{urban.ref}{
-a \code{SpatialPolygonsDataFrame} as alternative reference for the urban test. If set to NULL, the \code{\link{urbanareas}} dataset is used.  Default = NULL.
+a \code{SpatialPolygonsDataFrame} as alternative reference for the urban test. If set to NULL, the test is skipped. A reference gazetteer can be found at https://github.com/azizka/speciesgeocodeR.  Default = NULL.
 }
   \item{country.ref}{
 a \code{SpatialPolygonsDataFrame} as alternative reference for the countrycheck test. If set to NULL, the \code{\link{countryborders}} dataset is used.  Default = NULL.

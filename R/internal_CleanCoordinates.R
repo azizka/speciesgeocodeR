@@ -117,7 +117,7 @@
   limits <- extent(pts) + 1
   
   if (is.null(poly)) {
-    poly <- speciesgeocodeR::urbanareas
+    stop("No referencepolygons found. Set 'urban.ref'")
   }
   
   poly <- crop(poly, limits)

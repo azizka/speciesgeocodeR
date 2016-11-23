@@ -112,15 +112,15 @@ DESin <- function(x, recent, bin.size, reps = 3, verbose = F) {
   if(max(meas) != min(meas)){
     numb <- which(meas < max(meas))
     for(i in numb){
-      dat <- outp2[[i]]
-      repl <- nrow(dat) * (max(meas) - meas[i]) # how many NaNs are needed
-      dat.comb <- c(rep(NaN, times = repl), unlist(dat))
-      dat <- data.frame(matrix(dat.comb, 
-                    nrow = nrow(dat), 
+      dat.int <- outp2[[i]]
+      repl <- nrow(dat.int) * (max(meas) - meas[i]) # how many NaNs are needed
+      dat.comb <- c(rep(NaN, times = repl), unlist(dat.int))
+      dat.int <- data.frame(matrix(dat.comb, 
+                    nrow = nrow(dat.int), 
                     ncol = max(meas), byrow = F))
-      names(dat) <- names(outp2[[which(meas == max(meas))[1]]])
-      rownames(dat) <- rownames(outp2[[i]])
-      outp2[[i]] <- dat
+      names(dat.int) <- names(outp2[[which(meas == max(meas))[1]]])
+      rownames(dat.int) <- rownames(outp2[[i]])
+      outp2[[i]] <- dat.int
     }
     }
 
