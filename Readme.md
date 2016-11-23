@@ -8,7 +8,7 @@ SpeciesgeocodeR is an R-package for the preparation for geographic point occurre
 * Species richness maps
 * Range size calculations
 
-Short instructions are given below, see the [wiki pages](https://github.com/azizka/speciesgeocodeR/wiki) for more information and detailed tutorials. For comments, questions and bug reports, please use [speciesgeocodeRatgooglegroups](speciesgeocodeR@googlegroups)
+Short instructions are given below, see the [wiki pages](https://github.com/azizka/speciesgeocodeR/wiki) for more information and detailed tutorials. For comments, questions and bug reports, please use [speciesgeocodeRatgooglegroups](speciesgeocodeR@googlegroups).
 
 #Automated cleaning of geographic coordinates
 Biological collection data from public databases are prone to various common geographic errors resulting from erroneous data entry or imprecise geo-referencing. The `CleanCoordinates` function of speciesgeocodeR can automatically flag some of the most common problems, if supplied with a data.frame with lat/lon coordinates and optionally species and country information.  
@@ -83,5 +83,5 @@ Other versions of speciesgeocodeR include:
 2. A equivalent python package written by Mats T\"opel https://github.com/mtop/speciesgeocoder
 
 #Citation
-T\"opel M, Calió MF, Zizka A, Scharn R, Silvestro D, Antonelli A (2016) SpeciesGeoCoder: Fast Categorisation of Species Occurrences for Analyses of Biodiversity, Biogeography, Ecology and Evolution. Systematic Biology.
+Töpel M, Calió MF, Zizka A, Scharn R, Silvestro D, Antonelli A (2016) SpeciesGeoCoder: Fast Categorisation of Species Occurrences for Analyses of Biodiversity, Biogeography, Ecology and Evolution. Systematic Biology.
 

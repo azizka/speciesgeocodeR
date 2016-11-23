@@ -14,6 +14,7 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
   area2 <- lapply(x[["DES_replicates"]], function(k) {
     k[is.na(k)] <- 0
     k[k != 2] <- 0
+    k[k == 2] <- 1
     colSums(k)
   })
   area2 <- do.call("rbind.data.frame", area2)
@@ -21,6 +22,7 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
   areaB <- lapply(x[["DES_replicates"]], function(k) {
     k[is.na(k)] <- 0
     k[k != 3] <- 0
+    k[k == 3] <- 1
     colSums(k)
   })
   areaB <- do.call("rbind.data.frame", areaB)
@@ -86,6 +88,6 @@ summary.DESin <- function(object, ...) {
 write.DESin <- function(x, file) {
   for (i in 1:length(x[["DES_replicates"]])) {
     write.table(x[["DES_replicates"]][[i]], paste(file, "_rep", i, ".txt", sep = ""), na = "NaN", 
-                sep = "\t", row.names = F, quote = F)
+                sep = "\t", row.names = T, quote = F)
   }
 }
