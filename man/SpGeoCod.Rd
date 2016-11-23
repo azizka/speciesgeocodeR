@@ -1,5 +1,8 @@
 \name{SpGeoCod}
 \alias{SpGeoCod}
+\alias{is.spgeoOUT}
+\alias{as.data.frame.spgeoOUT}
+\alias{summary.spgeoOUT}
 
 \title{
 Point to Polygon Classification from Text Files

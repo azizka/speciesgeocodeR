@@ -1,4 +1,4 @@
-DESin <- function(x, recent, bin.size, reps = 1, verbose = F) {
+DESin <- function(x, recent, bin.size, reps = 3, verbose = F) {
   
   # load data
   if (is.data.frame(x)) {
@@ -6,15 +6,16 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = F) {
   }else{
     dat <- read.table(x, sep = "\t", header = T, row.names = NULL)
   }
+  names(dat) <- tolower(names(dat))
   
-  nes <- c("scientificName", "earliestAge", "latestAge", "higherGeography")
+  nes <- c("species", "earliestage", "latestage", "area")
   if(!all(nes %in% names(dat))){
     stop(sprintf("did not find column %s. Check input data", nes[!nes %in% names(dat)]))
   }
   
-  if(! "midpointAge" %in% names(dat)){
-    dat$midpointAge <- (dat$earliestAge + dat$latestAge)/2
-    warning("column midpointAge not found, calculating from earliestAge and latestAge")
+  if(! "midpointage" %in% names(dat)){
+    dat$midpointage <- (dat$earliestage + dat$latestage)/2
+    warning("column midpointage not found, calculating from earliestage and latestage")
   }
   
   # load and prepare recent data
@@ -24,17 +25,19 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = F) {
     rece <- read.table(recent, header = T, sep = "\t", stringsAsFactors = F, row.names = NULL)
   }
   
-  nes <- c("scientificName", "higherGeography")
+  names(rece) <- tolower(names(rece))
+  
+  nes <- c("species", "area")
   if(!all(nes %in% names(rece))){
     stop(sprintf("did not find column %s. Check input data", nes[!nes %in% names(rece)]))
   }
   
-  rece$higherGeography <- as.character(rece$higherGeography)
-  rece[rece$higherGeography == unique(rece$higherGeography)[1], "higherGeography"] <- 1
-  rece[rece$higherGeography == unique(rece$higherGeography)[2], "higherGeography"] <- 2
+  rece$area <- as.character(rece$area)
+  rece[rece$area == unique(rece$area)[1], "area"] <- 1
+  rece[rece$area == unique(rece$area)[2], "area"] <- 2
   rece <- unique(rece)
-  rece$higherGeography <- as.numeric(rece$higherGeography)
-  rece <- aggregate(higherGeography ~ scientificName, data = rece, sum)
+  rece$area <- as.numeric(rece$area)
+  rece <- aggregate(area ~ species, data = rece, sum)
   
   # code fossil data
   outp <- list()
@@ -44,26 +47,27 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = F) {
     }
     
     # simulate random age between min and max
-    dat$age <- sapply(seq(1, length(dat$scientificName)), function(x) stats::runif(1, max = dat$earliestAge[x], 
-                                                                            min = dat$latestAge[x]))
+    dat$age <- sapply(seq(1, nrow(dat)), 
+                      function(x) stats::runif(1, max = dat$earliestage[x],
+                                               min = dat$latestage[x]))
     
     # define age class cutter and cut ages into timebins
     cutter <- seq(0, max(dat$age), bin.size)
     dat$timeint <- as.numeric(as.character(cut(dat$age, breaks = cutter, 
                                                digits = 5, labels = cutter[-length(cutter)])))
     
-    # code the presence in each regions per scientificName
-    dat.list <- split(dat, dat$scientificName)
+    # code the presence in each regions per species
+    dat.list <- split(dat, dat$species)
     binned <- lapply(dat.list, function(x) {
-      dat.out <- data.frame(timebin = cutter, higherGeography1 = rep(0, length(cutter)), 
-                            higherGeography2 = rep(0, length(cutter)))
-      if (length(x$higherGeography == unique(dat$higherGeography)[1]) > 0) {
-        dat.out[dat.out$timebin %in% x[x$higherGeography == unique(dat$higherGeography)[1], 
-                                       "timeint"], "higherGeography1"] <- 1
+      dat.out <- data.frame(timebin = cutter, area1 = rep(0, length(cutter)), 
+                            area2 = rep(0, length(cutter)))
+      if (length(x$area == unique(dat$area)[1]) > 0) {
+        dat.out[dat.out$timebin %in% x[x$area == unique(dat$area)[1], 
+                                       "timeint"], "area1"] <- 1
       }
-      if (length(x$higherGeography == unique(dat$higherGeography)[2]) > 0) {
-        dat.out[dat.out$timebin %in% x[x$higherGeography == unique(dat$higherGeography)[2], 
-                                       "timeint"], "higherGeography2"] <- 2
+      if (length(x$area == unique(dat$area)[2]) > 0) {
+        dat.out[dat.out$timebin %in% x[x$area == unique(dat$area)[2], 
+                                       "timeint"], "area2"] <- 2
       }
       presence <- rowSums(dat.out[, 2:3])
       return(presence)
@@ -90,17 +94,42 @@ DESin <- function(x, recent, bin.size, reps = 1, verbose = F) {
     out <- rev(out)
     outp[[i]] <- out
   }
+
   
   # combine recent and fossil data
   outp2 <- lapply(outp, function(x) {
-    outo <- merge(x, rece, by.x = "row.names", by.y = "scientificName", all.x = T)
-    outo$higherGeography[is.na(outo$higherGeography)] <- 0
-    names(outo)[1] <- "scientificName"
+    outo <- merge(x, rece, by.x = "row.names", by.y = "species", all.x = T)
+    outo$area[is.na(outo$area)] <- 0
+    rownames(outo) <- outo[, 1]
+    outo <- outo[, -1]
     names(outo)[ncol(outo)] <- 0
     return(outo)
   })
   
-  outp <- list(dat, rece, outp2, bin.size)
-  class(outp) <- "DESin"
+  #make sure all replicates civer the same time spann, i.e. add additional columns before the first time column
+  meas <- sapply(outp2, "ncol")
+  
+  if(max(meas) != min(meas)){
+    numb <- which(meas < max(meas))
+    for(i in numb){
+      dat <- outp2[[i]]
+      repl <- nrow(dat) * (max(meas) - meas[i]) # how many NaNs are needed
+      dat.comb <- c(rep(NaN, times = repl), unlist(dat))
+      dat <- data.frame(matrix(dat.comb, 
+                    nrow = nrow(dat), 
+                    ncol = max(meas), byrow = F))
+      names(dat) <- names(outp2[[which(meas == max(meas))[1]]])
+      rownames(dat) <- rownames(outp2[[i]])
+      outp2[[i]] <- dat
+    }
+    }
+
+  #create output object
+  outp <- list(input_fossils = dat,
+               input_recent = rece,
+               DES_replicates = outp2,
+               bin_size = bin.size)
+  names(outp) <- c("input_fossils","input_recent","DES_replicates","bin_size") 
+  class(outp) <- c("DESin", "list")
   return(outp)
 }

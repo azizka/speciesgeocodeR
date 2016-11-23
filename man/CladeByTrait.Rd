@@ -14,45 +14,37 @@ CladeByTrait(x, tree, prefix, min_clade_size, max_clade_size,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-%%     ~~Describe \code{x} here~~
+a data.frame, with two columns: species, and the binary trait of interest (1 = present, 0 = absent, NA values permitted).
 }
   \item{tree}{
-%%     ~~Describe \code{tree} here~~
+the phylogenetic tree from which the clades shall be extracted in phylo format.  
 }
   \item{prefix}{
-%%     ~~Describe \code{prefix} here~~
+a character string.  A prefix for the output file names.  
 }
   \item{min_clade_size}{
-%%     ~~Describe \code{min_clade_size} here~~
+numerical.  The minimum number of tips in the resulting clades.  
 }
   \item{max_clade_size}{
-%%     ~~Describe \code{max_clade_size} here~~
+numerical.  The maximum number of tips in the resulting clades. 
 }
   \item{monophyly_threshold}{
-%%     ~~Describe \code{monophyly_threshold} here~~
+numerical.  The number of species in a clade permitted not to exhibit the calde of interest.
 }
   \item{summary}{
-%%     ~~Describe \code{summary} here~~
+logical. IF TRUE a summary file is written to disk.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
+A set of nexus files and plots in the working directory
 }
 
 \examples{
-
+sp.nam <-  unique(paste(sample(letters, size = 250, replace = TRUE), 
+sample(letters, size = 250, replace = TRUE), sep = ""))
+tr.dat <- sample(c(0,1), size = length(sp.nam), replace = TRUE)
+trait <- data.frame(species = sp.nam, trait = tr.dat)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+\keyword{ datgen }% use one of  RShowDoc("KEYWORDS")

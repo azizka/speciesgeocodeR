@@ -1,5 +1,7 @@
 \name{CleanCoordinates}
 \alias{CleanCoordinates}
+\alias{summary.spatialvalid}
+\alias{is.spatialvalid}
 
 \title{
 Geographic Cleaning of Coordinates from Biologic Collections
@@ -131,6 +133,7 @@ exmpl <- data.frame(species = sample(letters, size = 250, replace = TRUE),
 
 test <- CleanCoordinates(exmpl[, 2:3],species = exmpl[, 1], verbose = FALSE)
 
+summary(test)
 plot(test)
 }
 \keyword{ datagen }

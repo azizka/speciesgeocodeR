@@ -1,5 +1,6 @@
 \name{DESin}
 \alias{DESin}
+\alias{is.DESin}
 
 \title{
 Create input files for DES-PyRate
@@ -38,19 +39,17 @@ An object of the S3-class \dQuote{DESin}, which is a list containing the input a
 \code{\link{plot.DESin}}, \code{\link{summary.DESin}},\code{\link{write.DESin}}
 }
 \examples{
-fos <- data.frame(scientificName = rep(letters[1:4],25),
+fos <- data.frame(species= rep(letters[1:4],25),
                   earliestAge = runif(100, min = 60, max = 100),
                   latestAge = runif(100, min = 0, max = 60),
-                  higherGeography = sort(rep(c("A", "B"), 50)))
+                  area = sort(rep(c("A", "B"), 50)))
 
-rec <- data.frame(scientificName = c(letters[1:4], letters[1:2]),
-                  higherGeography = c(rep("A",4), rep("B", 2)))
+rec <- data.frame(species = c(letters[1:4], letters[1:2]),
+                  area = c(rep("A",4), rep("B", 2)))
 
 exp1 <- DESin(fos, rec, bin.size = 2, reps = 3)
 
 summary(exp1)
-
-par(ask = TRUE)
 plot(exp1)
 
 \dontrun{

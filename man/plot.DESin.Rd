@@ -8,33 +8,23 @@ Plot Method for DESin
 a set of plots to explore a DESin object
 }
 \usage{
-\method{plot}{DESin}(x, plottype = c("all", "locations", "inputviz",
-                 "replicates"), xlim = c(-180, 180), ylim = c(-90, 90),
-                 pch = 1, ...)}
+\method{plot}{DESin}(x, ribbon = TRUE, ...)}
 
 \arguments{
   \item{x}{
 an object of the class DESin.
 }
-  \item{plottype}{
-the type of plot.
+  \item{ribbon}{
+logical. If TRUE, the minium and maximum species numbers per timebin over all replicates are shown as a ribbon around the mean.
 }
-  \item{xlim}{
-The x-axes limits for the plotting in degrees longitude.
-}
-  \item{ylim}{
-The x-axes limits for the plotting in degrees latitude.
-}
-  \item{pch}{
-numerical. pch value passed to points.
-}
+
   \item{\dots}{
 other arguments passed to \code{plot}
 }
 }
 
 \value{
-a series of exploratory plots.
+a plot showing the mean species number per timebin over all replicates.
 }
 
 \seealso{
