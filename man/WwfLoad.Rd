@@ -27,11 +27,12 @@ ecoregions of the world: A new map of life on earth. \emph{BioScience}, \bold{51
 }
 
 \note{
-See the speciesgeocodeR documentation for further information and examples.
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
 }
+
 \examples{
 \dontrun{
-wwf_eco <- WwfLoad()
+wwf_eco <- WWFload()
 plot(wwf_eco)
 names(wwf_eco)}
 }

@@ -9,7 +9,7 @@ plot.spgeoOUT is the plotting method for objects of the class spgeoOUT.  Dependi
 }
 \usage{
 \method{plot}{spgeoOUT}(x,  type = "summary", 
-                        mode = c("percent", "total"), ...)
+                        mode = "percent", ...)
 }
 
 \arguments{
@@ -51,12 +51,9 @@ pol.exmpl <-
 
 outp <- SpGeoCod(occ.exmpl, pol.exmpl, areanames = 'areas')
 plot(outp)
-plot(outp, plottype = "species")
-plot(outp, plottype = "polygons")
-plot(outp, plottype = "speciesrichness")
-plot(outp, plottype = "mapspecies")
-plot(outp, plottype = "mappolygons")
-plot(outp, plottype = "mapunclassified")
-plot(outp, plottype = "mapall")
+plot(outp, type = "species")
+plot(outp, type = "polygons")
+plot(outp, type = "speciesrichness")
+plot(outp, type = "mapall")
 }
 \keyword{ methods }

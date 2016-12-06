@@ -15,17 +15,22 @@ RichnessGrid <- function(x, ras, reso = 1, type = "spnum") {
     if (!requireNamespace("rgbif", quietly = TRUE)) {
       stop("rgbif needed for species name option. Please install it.", call. = FALSE)
     }
-    splist <- strsplit(x, " ")
     coords <- rgbif::occ_search(scientificName = x, 
-                                return = "data", limit = 2e+05, hasCoordinate = T, 
-                                spatialIssues = F, 
+                                return = "data", 
+                                limit = 2e+05, 
+                                hasCoordinate = T, 
+                                hasGeospatialIssue = F, 
                                 fields = c("species", "decimalLongitude", "decimalLatitude"))
-    coords <- do.call("rbind", coords)
-    names(coords) <- tolower(names(coords))
+    if(length(x) == 1){
+      coords <- do.call("cbind.data.frame", coords)
+    }else{
+      coords <- do.call("rbind.data.frame", coords)
+    }
     coords <- data.frame(coords[complete.cases(coords), ])
+    names(coords) <- tolower(names(coords))
     x <- coords
-    warning(paste(nrow(inp), 
-                  "geo-referenced records found in GBIF. No data cleaning was performed", sep = " "))
+    warning(paste(nrow(x), 
+                  "geo-referenced records found in GBIF.", sep = " "))
   }
   
   # Create raster

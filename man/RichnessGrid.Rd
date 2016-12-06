@@ -27,20 +27,22 @@ character string indicating the type of data displayed: \dQuote{spnum} = number 
 \value{
 a \code{\link{raster}} object.
 }
+
+\note{
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
+}
+
 \seealso{
  \code{\link{MapRichness}}, \code{\link{RangeRichness}}.
 }
 \examples{
 # for x = data.frame
 data(lemurs)
-e <- c(-125, -105, 30, 50)
-dat <- RichnessGrid(lemurs, e, reso = 60, type = "spnum")
+dat <- RichnessGrid(lemurs, reso = 1, type = "spnum")
 
 # for x = character string
-e <- c(-125, -105, 30, 50)
-
 \dontrun{
-dat <- RichnessGrid("Indri indri", e, reso = 60, type = "spnum")
+dat <- RichnessGrid(c("Indri indri", "Lemur catta"), reso = 1, type = "spnum")
 }
 }
 \keyword{ spatial }

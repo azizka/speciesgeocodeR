@@ -36,9 +36,15 @@ numeric. Thresholds for categorization to critically endangered, in the form (EO
 \details{
 The value argument defines the type of assessment in the output: \dQuote{AOO} = assessment based on the AOO, \dQuote{EOO} = assessment based on the EOO, \dQuote{both} = assessment based on AOO and EOO, \dQuote{IUCN50} = a extra column where the assessment is converted into a probability of extinction within the next 50 years, \dQuote{IUCN100} = a extra column where the assessment is converted into a probability of extinction within the next 100 years, \dQuote{IUCN500} = a extra column where the assessment is converted into a probability of extinction within the next 500 years.  See Mooers et al. 2008 for reference on the conversion. 
 }
+
 \value{
 a data.frame, the number of columns depend on the value argument (see details).
 }
+
+\note{
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
+}
+
 \references{
 IUCN Standards and Petitions Subcommittee 2014 Guidelines for using the IUCN Red List categories and criteria. Version 11. Prepared by the Standards and Petitions Subcommittee. Downloadable from: http://www.iucnredlist.org/documents/RedListGuidelines.pdf.
 

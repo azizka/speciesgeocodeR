@@ -35,6 +35,10 @@ logical. If TRUE, the progress is reported
 An object of the S3-class \dQuote{DESin}, which is a list containing the input and output data
 }
 
+\note{
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
+}
+
 \seealso{
 \code{\link{plot.DESin}}, \code{\link{summary.DESin}},\code{\link{write.DESin}}
 }

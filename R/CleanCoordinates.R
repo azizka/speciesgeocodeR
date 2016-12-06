@@ -142,6 +142,8 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
       gbf <- rep(NA, dim(x)[1])
     }
     
+    # Native area
+    
     # Botanical Gardens
     
     # Museums

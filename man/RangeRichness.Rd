@@ -33,14 +33,18 @@ logical.  If TRUE, oceans are omitted.
 a \code{\link{raster}} object.
 }
 
+\note{
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
+}
+
 \examples{
 #simulate example occurrences
 occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
                        decimallongitude = runif(n = 250, min = 42, max = 51),
                        decimallatitude = runif(n = 250, min = -26, max = -11))
 
-rang <- CalcRange(lemurs, value = "shape")
+rang <- CalcRange(occ.exmpl, index = "EOO", eoo.value = "shape")
 sprich <- RangeRichness(rang)
-MapGrid(sprich)
+plot(sprich)
 }
 \keyword{spatial}
