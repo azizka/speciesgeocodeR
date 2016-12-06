@@ -13,7 +13,7 @@ PlotHull <- function(dat, select = "all", buffer = 1, bgmap,
   plo <- ggplot2::ggplot()+
     ggplot2::geom_polygon(data = bgmap, 
                           aes_string(x = "long", y = "lat", group = "group"), 
-                          fill = "white")+
+                          fill = "white", color = "grey20")+
     ggplot2::coord_fixed()+ 
     ggplot2::theme_bw()
   

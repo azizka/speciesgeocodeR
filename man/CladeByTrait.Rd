@@ -40,6 +40,10 @@ logical. IF TRUE a summary file is written to disk.
 A set of nexus files and plots in the working directory
 }
 
+\note{
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
+}
+
 \examples{
 sp.nam <-  unique(paste(sample(letters, size = 250, replace = TRUE), 
 sample(letters, size = 250, replace = TRUE), sep = ""))

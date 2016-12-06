@@ -32,8 +32,13 @@ character string indicating the colour of the polygons. Default is to transparen
 \details{
 If \code{type} is set to \dQuote{separate}, set \code{par(ask = T)} to see all maps.
 }
+
 \value{
 A plot or a set of plots.
+}
+
+\note{
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
 }
 
 \examples{
@@ -43,7 +48,7 @@ occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
                        decimallatitude = runif(n = 250, min = -26, max = -11))
 
 
-dat <- CalcRange(occ.exmpl, index = c("AOO", "EOO"), eoo.value = "area", eoo.terrestrial = FALSE)
+dat <- CalcRange(occ.exmpl, index = "EOO", eoo.value = "shape", eoo.terrestrial = FALSE)
 PlotHull(dat)
 }
 \keyword{ spatial }

@@ -32,8 +32,9 @@ A plotted map.
 \seealso{
  \code{\link{RichnessGrid}}, \code{\link{RangeRichness}}.
 }
+
 \note{
-See the speciesgeocodeR tutorial for further information and examples.
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
 }
 
 \examples{

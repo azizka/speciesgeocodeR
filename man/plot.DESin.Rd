@@ -31,13 +31,13 @@ a plot showing the mean species number per timebin over all replicates.
 \code{\link{DESin}}, \code{\link{summary.DESin}},\code{\link{write.DESin}}
 }
 \examples{
-fos <- data.frame(scientificName = rep(letters[1:4],25),
+fos <- data.frame(species = rep(letters[1:4],25),
                   earliestAge = runif(100, min = 60, max = 100),
                   latestAge = runif(100, min = 0, max = 60),
-                  higherGeography = sort(rep(c("A", "B"), 50)))
+                  area = sort(rep(c("A", "B"), 50)))
 
-rec <- data.frame(scientificName = c(letters[1:4], letters[1:2]),
-                  higherGeography = c(rep("A",4), rep("B", 2)))
+rec <- data.frame(species = c(letters[1:4], letters[1:2]),
+                  area = c(rep("A",4), rep("B", 2)))
 
 exp1 <- DESin(fos, rec, bin.size = 2, reps = 3)
 

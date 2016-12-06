@@ -3,7 +3,6 @@ Spgc2BioGeoBEARS <- function(x, phyl = NULL, file = NULL, true.areas = T,
   
   # reformat input
   dat <- x$spec_table
-  rownames(dat) <- dat[, 1]
   dat <- data.frame(dat[, -1])
   
   # set occurrences to logical
@@ -59,5 +58,5 @@ Spgc2BioGeoBEARS <- function(x, phyl = NULL, file = NULL, true.areas = T,
                           sep = "_"))
   }
   
-  return(list(BioGeoBEARS_command = command_string, BioGeoBEARS_matrix = dat))
+  # return(list(BioGeoBEARS_command = command_string, BioGeoBEARS_matrix = dat))
 } 

@@ -121,8 +121,9 @@ Depending on the output argument:
 \item{\dQuote{cleaned}}{a \code{data.frame} of cleaned coordinates if \code{species = NULL} or a \code{data.frame} with cleaned coordinates and species ID otherwise}
 }
 }
+
 \note{
-See package vignette for details and examples. 
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
 }
 
 \examples{

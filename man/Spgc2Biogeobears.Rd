@@ -35,6 +35,10 @@ This will create a file in the working directory.
 A file in the working directory and a list.
 }
 
+\note{
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
+}
+
 \author{
 Alexander Zizka, Ruud Scharn
 }

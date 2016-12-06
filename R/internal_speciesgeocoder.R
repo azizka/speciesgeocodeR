@@ -4,14 +4,13 @@
   return(x)
 }
 
-#barchart of occurrence per polygon per species
 .BarChartPoly <- function(x) {
     liste <- names(x$spec_table[-1])
     leng <- length(liste)
     if (leng == 0) {
         cat("No point fell in any polygon")
     } else {
-        for (i in 2:leng) {
+        for (i in 1:leng) {
             subs <- subset(x$spec_table, x$spec_table[, i] > 0)
             datsubs <- subs[order(subs[, i]), ]
             if (nrow(subs) == 0) {
@@ -19,7 +18,7 @@
                 text(3, 6, labels = "No species occurred in this polygon.", adj = 0)
                 title(liste[i])
             } else {
-              ggplot()+
+              out <- ggplot()+
                 ggplot2::geom_bar(data = datsubs, 
                                   aes_string(x = "rownames(datsubs)", y = "datsubs[,i]"),
                                   stat = "identity")+
@@ -27,6 +26,7 @@
                 ggplot2::xlab("Species")+
                 ggplot2::ylab("Number of occurrences")+
                 ggplot2::ggtitle(liste[i])
+              print(out)
             }
         }
     }
@@ -40,7 +40,7 @@
     leng <- length(rownames(dat.plo))
     for (i in 1:leng) {
       dat.sub <- as.numeric(as.vector(dat.plo[i, ]))
-      ggplot2::ggplot()+
+      out <- ggplot2::ggplot()+
         ggplot2::geom_bar(data = data.frame(dat.sub), 
                           aes_string(x = "names(x$spec_table)", 
                               y = "dat.sub"), stat = "identity")+
@@ -48,6 +48,7 @@
         ggplot2::ylab("Percent of occurrences")+ 
         ggtitle(rownames(dat.plo[i, ]))+
         theme(axis.title.x = element_blank())
+      print(out)
     }
   }, 
   total = {
@@ -67,17 +68,63 @@
     }
   })
 }
-
-.ConvHull <- function(x){
-  conv.hull <- chull(x$decimallongitude, x$decimallatitude)
-  dat2 <- x[conv.hull, ]
-  dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
-  poly <- Polygons(list(Polygon(dat2)), ID = paste(x[1, 1], "_convhull", sep = ""))
-  poly <- SpatialPolygons(list(poly), 
-                          proj4string = CRS("+proj=longlat +datum=WGS84"))
+.ConvHull <- function(x, type){
+  if(type == "euclidean"){
+    conv.hull <- chull(x$decimallongitude, x$decimallatitude)
+    dat2 <- x[conv.hull, ]
+    out <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
+  }
+  
+  if(type == "pseudospherical"){
+    cv <- chull(x$decimallongitude, x$decimallatitude)
+    dat2 <- x[cv, ]
+    dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
+    
+    out <- geosphere::makePoly(dat2)
+  }
+  poly <- sp::Polygons(list(Polygon(out)), ID = paste(x[1, 1], "_convhull", sep = ""))
+  poly <- sp::SpatialPolygons(list(poly),
+                              proj4string = CRS("+proj=longlat +datum=WGS84"))
   return(poly)
 }
 
+.ConvArea <- function(x, reps = 100, repfrac = 0.3, repsize = NULL, terrestrial, type, cropper){
+  
+  if(!is.null(repfrac)){
+    if(repfrac > 1){
+      stop("'repfrac' must be between 0 and 1")
+    }
+    repsize = round(nrow(x) * repfrac)
+    if(repsize < 5){
+      repsize <- 5
+      warning("'repfrac' to small, repsize set to 5")
+    }
+  }
+  
+  if(nrow(x) > repsize){
+    samp <- as.list(data.frame((replicate(reps, sample(1:nrow(x), size = repsize, replace = F)))))
+    samp <- lapply(samp, function(k){x[k,]})
+    pols <- lapply(samp, ".ConvHull", type = type)
+    nam <- names(pols)
+    names(pols) <- NULL
+    pols <- do.call(bind, pols)
+    pols <- SpatialPolygonsDataFrame(pols, data = data.frame(species = nam))
+    if(terrestrial){
+      pols <- rgeos::gIntersection(pols, cropper, byid = T)
+    }
+    pol.area <- geosphere::areaPolygon(pols)
+    pol.area <- median(pol.area)
+  }else{
+    pols <- .ConvHull(x, type = type)
+    if(terrestrial){
+      pols <- rgeos::gIntersection(pols, cropper, byid = T)
+      pols <- gBuffer(pols, byid = T, width = 0)
+    }
+    pol.area <- geosphere::areaPolygon(pols)
+  }
+  pol.area <- round(pol.area / (1000 * 1000), 0)
+  return(pol.area)
+}
 
 .ConvertPoly <- function(x) {
   x <- read.table(x, sep = "\t")
@@ -192,7 +239,7 @@
         pols <- ggplot2::fortify(x$polygons)
         
         #plot results
-          ggplot2::ggplot()+
+          plo <- ggplot2::ggplot()+
           ggplot2::geom_polygon(data = bgmap, 
                                 aes_string(x = "long", y = "lat", group = "group"),
                                 fill = "grey60")+
@@ -207,11 +254,13 @@
           theme(
             legend.title = element_blank()
           )
+          print(plo)
 }
 
-.MapPerPoly <- function(x, areanames, buffer = 1) {
+.MapPerPoly <- function(x,  buffer = 1) {
   #background plot data
   e <- raster::extent(SpatialPoints(x$samples[, 2:3])) + buffer
+  areanames <- x$areanam
   
   bgmap <- speciesgeocodeR::landmass
   bgmap <- raster::crop(bgmap, e)
@@ -245,11 +294,11 @@
       ggplot2::geom_point(data = pts,
                           aes_string(x = "decimallongitude", y = "decimallatitude", colour = "species"))+
       ggplot2::ggtitle(i)+
-      theme(legend.position = "none")
+      theme(legend.position = "right")
     
     outp.li[[i]] <- plo2
   }
-  outp.li
+  lapply(outp.li, "print")
 }
 
 .MapPerSpecies <- function(x, buffer = 1) {
@@ -321,7 +370,7 @@
                           aes_string(x = "decimallongitude", y = "decimallatitude", color = "species"))+
       ggplot2::coord_fixed()+ 
       ggplot2::theme_bw()
-    return(plo)
+    print(plo)
   }
 }
 
@@ -397,7 +446,7 @@
   }
 }
 
-.OutBarChartPoly <- function(x, path, prefix, verbose = FALSE, ...) {
+.OutBarChartPoly <- function(x, path, prefix, verbose = FALSE) {
     if (verbose) {
         cat("Creating barchart per polygon: barchart_per_polygon.pdf. \n")
     }
@@ -406,7 +455,7 @@
   }
     pdf(file = file.path(path, paste(prefix, "barchart_per_polygon.pdf", sep = "")),
         paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .BarChartPoly(x)
+  suppressMessages(.BarChartPoly(x))
     dev.off()
 }
 
@@ -419,11 +468,34 @@
   }
     pdf(file = file.path(path, paste(prefix, "barchart_per_species.pdf", sep = "")),
         paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .BarChartSpec(x, mode = "percent")
+    suppressMessages(.BarChartSpec(x, mode = "percent"))
     dev.off()
 }
 
-.OutMapAll <- function(x, path, prefix, areanames = "", verbose = FALSE, ...) {
+.OutBayArea <- function(x, prefix){
+  
+  #taxon to area classification
+  dat <- x[["spec_table"]]
+  dat[dat > 0] <- 1
+  dat[, 1] <- rownames(dat)
+  out <- rbind(c(nrow(dat), ncol(dat[, -1]), ""), dat)
+  out[, 1] <- paste(out[, 1], " ", sep = "")
+  
+  write.table(out, paste(prefix, "bayarea_data.txt", sep = "_"), sep = "", na = "", 
+              col.names = F, row.names = F, quote = F)
+  
+  #area coordinates
+  coor <- x[["polygons"]]
+  coor <- data.frame(sp::coordinates(coor))
+  coor <- coor[, c(2, 1)]
+  coor <- rbind(c("# 0.0", ""), coor)
+  
+  write.table(coor, paste(prefix, "bayarea_areas.txt", sep = "_"), sep = "\t", na = "", 
+              col.names = F, row.names = F, quote = F)
+  
+}
+
+.OutMapAll <- function(x, path, prefix, areanames = "", verbose = FALSE) {
     if (verbose) {
         cat("Creating overview map: map_samples_overview.pdf. \n")
     }
@@ -431,14 +503,13 @@
     path <- getwd()
   }
     pdf(file = file.path(path, paste(prefix, "map_samples_overview.pdf", sep = "")),
-        paper = "special", width = 10.7, height = 7.2, onefile = T, 
-        ...)
-    .MapAll(x, ...)
-    .MapUnclassified(x, ...)
+        paper = "special", width = 10.7, height = 7.2, onefile = T)
+    suppressMessages(.MapAll(x))
+    suppressMessages(.MapUnclassified(x))
     dev.off()
 }
 
-.OutMapPerPoly <- function(x, path, prefix, verbose = FALSE, ...) {
+.OutMapPerPoly <- function(x, path, prefix, verbose = FALSE) {
     if (verbose) {
         cat("Creating map per polygon: map_samples_per_polygon.pdf. \n")
     }
@@ -447,11 +518,11 @@
   }
     pdf(file.path(path, file = paste(prefix, "map_samples_per_polygon.pdf", sep = "")),
         paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .MapPerPoly(x, ...)
+    suppressMessages(.MapPerPoly(x))
     dev.off()
 }
 
-.OutMapPerSpecies <- function(x, path, prefix, verbose = FALSE, ...) {
+.OutMapPerSpecies <- function(x, path, prefix, verbose = FALSE) {
     if (verbose) {
         cat("Creating map per species: map_samples_per_species.pdf. \n")
     }
@@ -460,11 +531,11 @@
   }
     pdf(file = file.path(path, paste(prefix, "map_samples_per_species.pdf", sep = "")),
         paper = "special", width = 10.7, height = 7.2, onefile = T)
-    .MapPerSpecies(x, ...)
+    .MapPerSpecies(x)
     dev.off()
 }
 
-.OutPlotSpPoly <- function(x, path, prefix, verbose = FALSE, ...) {
+.OutPlotSpPoly <- function(x, path, prefix, verbose = FALSE) {
     if (verbose) {
         cat("Creating species per polygon barchart: number_of_species_per_polygon.pdf. \n")
     }
@@ -474,7 +545,7 @@
     pdf(file = file.path(path, paste(prefix, "number_of_species_per_polygon.pdf", sep = "")),
         paper = "special", width = 10.7, height = 7.2, 
         onefile = T)
-    .PlotSpPoly(x)
+    suppressMessages(.PlotSpPoly(x))
     dev.off()
 }
 
@@ -506,7 +577,7 @@
 
 .PlotSpPoly <- function(x) {
   dat.plo <- data.frame(x$polygon_table)
-  ggplot()+
+  out <- ggplot()+
     ggplot2::geom_bar(data = dat.plo, 
                       aes_string(x = "rownames(dat.plo)", y = "dat.plo[,1]"),
                       stat = "identity")+
@@ -514,6 +585,7 @@
     ggplot2::ylab("Species")+
     ggplot2::theme(axis.title.x = element_blank(),
                    axis.text.x = element_text(angle = 90, hjust = 1))
+  print(out)
 }
 
 .rasterSum <- function(x, ras, type) {
@@ -538,10 +610,17 @@
       stop("rgbif needed for species name option. Please install it.", 
            call. = FALSE)
     }
-    coords <- rgbif::occ_search(scientificName = x, return = "data", limit = 2e+05, 
-                                hasCoordinate = T, spatialIssues = F, fields = c("species", "decimalLongitude", 
-                                                                                 "decimalLatitude"))
-    coords <- do.call("rbind", coords)
+    coords <- rgbif::occ_search(scientificName = x, 
+                                return = "data", 
+                                limit = 2e+05, 
+                                hasCoordinate = T, 
+                                hasGeospatialIssue = F, 
+                                fields = c("species", "decimalLongitude", "decimalLatitude"))
+    if(length(x) == 1){
+      coords <- do.call("cbind.data.frame", coords)
+    }else{
+      coords <- do.call("rbind.data.frame", coords)
+    }
     coords <- data.frame(coords[complete.cases(coords), ])
   }
   
@@ -732,11 +811,9 @@
         write.table(x$samples, file = file.path(path, paste(prefix, "sample_classification_to_polygon.txt", sep = "")),
                     row.names = FALSE, sep = "\t")
         write.table(x$spec_table, file = file.path(path, paste(prefix, "species_occurences_per_polygon.txt", sep = "")), 
-                    row.names = FALSE, sep = "\t")
+                    row.names = TRUE, sep = "\t")
         write.table(x$polygon_table, file = file.path(path, paste(prefix, "speciesnumber_per_polygon.txt", sep = "")),
-                    row.names = FALSE, sep = "\t")
+                    row.names = TRUE, sep = "\t", col.names = FALSE)
         write.table(x$samples[x$samples$homepolygon == "not_classified",], 
                     file = file.path(path, paste(prefix, "unclassified samples.txt", sep = "")), row.names = FALSE, sep = "\t")
-        write.table(x$coexistence_classified, file = file.path(path, paste(prefix, "species_coexistence_matrix.txt", sep = "")),
-                    row.names = FALSE, sep = "\t")
 } 

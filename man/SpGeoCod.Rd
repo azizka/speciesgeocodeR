@@ -42,13 +42,13 @@ Further arguments to be passed to \code{GeoClean}.
 An object of the class spgeoOUT.
 }
 \note{
-See the speciesgeocodeR tutorial for further information and examples.
+See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
 }
 \examples{
 data(lemurs)
 data(mdg_poly)
 
-outp <- SpGeoCod(lemurs, mdg_poly)
+outp <- SpGeoCod(lemurs, mdg_poly, areanames = "species")
 }
 
 \keyword{ spatial }
