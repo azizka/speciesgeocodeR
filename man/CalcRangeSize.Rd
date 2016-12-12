@@ -44,7 +44,7 @@ If method == euclidean, planar (projected, or local scale) coordinates are expec
 
 }
 
-\value{A data.frame of range sizes in sqkm.}
+\value{A data.frame of range sizes in skqm.}
 
 \note{
 See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
