@@ -1,13 +1,18 @@
 RichnessGrid <- function(x, ras, reso = 1, type = "spnum") {
-  names(x) <- tolower(names(x))
-  
   # Input spgeoOUT objects
   if (is.spgeoOUT(x)) {
     x <- x$samples
   }
   # Input data.frame
   if (is.data.frame(x)) {
-    x <- subset(x, select = c("species", "decimallongitude", "decimallatitude"))
+    names(x) <- tolower(names(x))
+    if(!c("species", "decimallongitude", "decimallatitude") %in% names(x)){
+      x <- x[, 1:3]
+      names(x) <- c("species", "decimallongitude", "decimallatitude")
+    }else{
+      x <- subset(x, select = c("species", "decimallongitude", "decimallatitude"))
+    }
+    
   }
   
   # Input character string, downloading from gbif

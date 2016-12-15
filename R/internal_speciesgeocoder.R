@@ -88,13 +88,13 @@
   return(poly)
 }
 
-.ConvArea <- function(x, reps = 100, repfrac = 0.3, repsize = NULL, terrestrial, type, cropper){
+.ConvArea <- function(x, reps = 100, repfrac = 0.3, repsize = NULL, terrestrial, biome, type, cropper){
   
   if(!is.null(repfrac)){
     if(repfrac > 1){
       stop("'repfrac' must be between 0 and 1")
     }
-    repsize = round(nrow(x) * repfrac)
+    repsize <- round(nrow(x) * repfrac)
     if(repsize < 5){
       repsize <- 5
       warning("'repfrac' to small, repsize set to 5")
@@ -112,12 +112,36 @@
     if(terrestrial){
       pols <- rgeos::gIntersection(pols, cropper, byid = T)
     }
+    if(!is.null(biome)){
+      if(!BIOME %in% names (biome)){
+        stop("'BIOME' not found in 'biome'")
+      }
+      pts <- sp::SpatialPoints(x[,c("decimallongitude", "decimallatitude")])
+      biome <- raster::crop(biome, extent(pts))
+      test <- sp::over(pts, biome)
+      overl <- biome[biome$BIOME %in% test$BIOME,]
+      overl <- aggregate(overl)
+      pols <- rgeos::gIntersection(pols, overl, byid = T)
+      pols <- gBuffer(pols, byid = T, width = 0)
+    }
     pol.area <- geosphere::areaPolygon(pols)
     pol.area <- median(pol.area)
   }else{
     pols <- .ConvHull(x, type = type)
     if(terrestrial){
       pols <- rgeos::gIntersection(pols, cropper, byid = T)
+      pols <- gBuffer(pols, byid = T, width = 0)
+    }
+    if(!is.null(biome)){
+      if(!BIOME %in% names (biome)){
+        stop("'BIOME' not found in 'biome'")
+      }
+      pts <- sp::SpatialPoints(x[,c("decimallongitude", "decimallatitude")])
+      biome <- raster::crop(biome, extent(pts))
+      test <- sp::over(pts, biome)
+      overl <- biome[biome$BIOME %in% test$BIOME,]
+      overl <- aggregate(overl)
+      pols <- rgeos::gIntersection(pols, overl, byid = T)
       pols <- gBuffer(pols, byid = T, width = 0)
     }
     pol.area <- geosphere::areaPolygon(pols)

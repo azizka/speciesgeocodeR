@@ -72,6 +72,5 @@ CalcRange <- function(x, method, terrestrial = F) {
     
     out <- rgeos::gIntersection(out, cropper, byid = T)
   }
-  
   return(out)
 }

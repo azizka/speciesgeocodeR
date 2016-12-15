@@ -1,4 +1,4 @@
-CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, 
+CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, biome = NULL, eco = NULL,
                           convex.reps = 100, convex.repfrac = 0.3, convex.repsize = NULL, 
                           aoo.reps = 3, aoo.proj = NULL, aoo.gridsize = NULL, 
                           verbose = F) {
@@ -33,7 +33,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F,
     cropper <- cropper + 1
     cropper <- raster::crop(speciesgeocodeR::landmass, cropper)
   }
-  
+
   # area calculations Euclidean convex hull
   if (method == "eoo_euclidean") {
     # species with less than 3 records
@@ -66,7 +66,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F,
       # calcualte polygon area
       are <- lapply(inp, ".ConvArea", reps = convex.reps, 
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
-                    type = "euclidean", cropper = cropper)
+                    type = "euclidean", cropper = cropper, biome = biome)
       out <- do.call("rbind.data.frame", are)
       names(out) <- "eoo.euc"
       
@@ -270,5 +270,30 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F,
       out <- round(out / 1000, 0) 
     }
   }
+  
+  if (method == "ecoregion"){
+    if (!requireNamespace("rgeos", quietly = TRUE)) {
+      stop("Package 'rgeos' not found. Please install.", call. = FALSE)
+    }
+    if(is.null(eco)){
+      warning("'eco' not specified, dovnloading wwf ecoregions")
+    }
+    pts <- sp::SpatialPoints(dat)
+    eco.calc <- crop(eco, extent(pts))
+    
+    # split by species
+    inp <- split(dat, f = dat.filt$species)
+    
+    out <- lapply(inp, function(k){
+      pts <- SpatialPoints(k[, c("decimallongitude", "decimallatitude")])
+      out <- over(pts, eco.calc)
+      out <- sum(areaPolygon(eco[eco$ECO_ID %in% out$ECO_ID,]))
+    })
+    
+    out <- do.call("rbind.data.frame", out)
+    names(out) <- "ecoregion.size"
+    out <- round(out / (1000 * 1000), 0) 
+  }
+  
   return(out)
 }
