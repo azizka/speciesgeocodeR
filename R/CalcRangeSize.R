@@ -110,7 +110,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
       # calcualte polygon area
       are <- lapply(inp, ".ConvArea", reps = convex.reps, 
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
-                    type = "pseudospherical", cropper = cropper)
+                    type = "pseudospherical", cropper = cropper, biome = biome)
       out <- do.call("rbind.data.frame", are)
       names(out) <- "eoo.sph"
       
@@ -187,7 +187,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     out <- aoo.out
     out <- round(out / (1000 * 1000), 0)
     }else{
-      out <- data.frame(AOO = rep(round(aoo.grid.size / (1000 * 1000), 0), length(sings)), row.names = sings) 
+      out <- data.frame(AOO = rep(round(aoo.gridsize / (1000 * 1000), 0), length(sings)), row.names = sings) 
     }
   }
   
@@ -278,16 +278,23 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     if(is.null(eco)){
       warning("'eco' not specified, dovnloading wwf ecoregions")
     }
-    pts <- sp::SpatialPoints(dat)
-    eco.calc <- crop(eco, extent(pts))
+    pts <- sp::SpatialPoints(dat[c("decimallongitude", "decimallatitude")])
+    eco.calc <- raster::crop(eco, raster::extent(pts))
+    if(is.null(eco.calc)){
+      eco.calc <- eco
+    }
     
     # split by species
-    inp <- split(dat, f = dat.filt$species)
+    inp <- split(dat, f = dat$species)
     
     out <- lapply(inp, function(k){
       pts <- SpatialPoints(k[, c("decimallongitude", "decimallatitude")])
       out <- over(pts, eco.calc)
-      out <- sum(areaPolygon(eco[eco$ECO_ID %in% out$ECO_ID,]))
+      if(all(is.na(out))){
+        out <- NA
+      }else{
+        out <- sum(areaPolygon(eco[eco$ECO_ID %in% out$ECO_ID,]))
+      }
     })
     
     out <- do.call("rbind.data.frame", out)

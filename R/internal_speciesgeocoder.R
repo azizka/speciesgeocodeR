@@ -113,7 +113,7 @@
       pols <- rgeos::gIntersection(pols, cropper, byid = T)
     }
     if(!is.null(biome)){
-      if(!BIOME %in% names (biome)){
+      if(!"BIOME" %in% names(biome)){
         stop("'BIOME' not found in 'biome'")
       }
       pts <- sp::SpatialPoints(x[,c("decimallongitude", "decimallatitude")])
@@ -133,7 +133,7 @@
       pols <- gBuffer(pols, byid = T, width = 0)
     }
     if(!is.null(biome)){
-      if(!BIOME %in% names (biome)){
+      if(!"BIOME" %in% names(biome)){
         stop("'BIOME' not found in 'biome'")
       }
       pts <- sp::SpatialPoints(x[,c("decimallongitude", "decimallatitude")])
