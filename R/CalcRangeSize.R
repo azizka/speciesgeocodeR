@@ -1,7 +1,7 @@
-CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, biome = NULL, eco = NULL,
-                          convex.reps = 100, convex.repfrac = 0.3, convex.repsize = NULL, 
-                          aoo.reps = 3, aoo.proj = NULL, aoo.gridsize = NULL, 
-                          verbose = F) {
+CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, biome = NULL,
+                          eco = NULL, convex.reps = 100, convex.repfrac = 0.3, 
+                          convex.repsize = NULL, aoo.reps = 3, aoo.proj = NULL, 
+                          aoo.gridsize = NULL, verbose = F) {
   
   if (!requireNamespace("geosphere", quietly = TRUE)) {
     stop("Package 'geosphere' not found. Please install.", call. = FALSE)
@@ -276,7 +276,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
       stop("Package 'rgeos' not found. Please install.", call. = FALSE)
     }
     if(is.null(eco)){
-      warning("'eco' not specified, dovnloading wwf ecoregions")
+      warning("'eco' not specified, downloading wwf ecoregions")
     }
     pts <- sp::SpatialPoints(dat[c("decimallongitude", "decimallatitude")])
     eco.calc <- raster::crop(eco, raster::extent(pts))

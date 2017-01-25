@@ -12,13 +12,15 @@ Cleaning geographic coordinates by multiple empirical tests to flag potentially 
 \usage{
 CleanCoordinates(x, countries = NULL, species = NULL, dataset = NULL, 
                  validity = T, zeros = T, capitals = T, centroids = T,
-                 seas = T, urban = F, countrycheck = T, outliers = T, GBIF = T, 
-                 duplicates = F, verbose = T,
+                 seas = T, urban = F, countrycheck = F, outliers = F, GBIF = T, 
+                 institutions = T, duplicates = F, verbose = T,
                  output = c("spatialvalid", "summary", "cleaned"),
-                 zeros.rad = 0.5, capitals.rad = 0.05, outliers.mtp = 25, 
-                 outliers.td = NULL, centroids.rad = 0.01, capitals.ref = NULL, 
+                 zeros.rad = 0.5, capitals.rad = 0.05, inst.rad = 0.001, 
+                 outliers.mtp = 25, outliers.td = NULL, centroids.rad = 0.01, 
+                 capitals.ref = NULL, 
                  centroids.detail = c("both", "country", "provinces"),
-                 centroids.ref = NULL, seas.ref = NULL, urban.ref = NULL, 
+                 centroids.ref = NULL, inst.ref = NULL, 
+                 seas.ref = NULL, urban.ref = NULL, 
                  country.ref = NULL, report = F)
 }
 
@@ -39,13 +41,13 @@ character. A vector of the same length as x, with the dataset of origin for each
 logical. If TRUE, tests for non-numeric or missing coordinates and coordinates exceeding the global extent (lon/lat, WGS84). Default = TRUE
 }
   \item{zeros}{
-logical. If TRUE, tests for plain zeros, equal latitude and longitude and a rectangle around the point 0/0. The sidelength of the rectangle defined by \code{zeros.rad}.  Default = TRUE.
+logical. If TRUE, tests for plain zeros, equal latitude and longitude and a radius around the point 0/0. The radius is \code{zeros.rad}.  Default = TRUE.
 }
   \item{capitals}{
-logical. If TRUE, tests a rectangle around adm-0 capitals. The side length of the rectangle is \code{capitals.rad} * 2. Default = TRUE.
+logical. If TRUE, tests a radiusaround adm-0 capitals. The radius is \code{capitals.rad}. Default = TRUE.
 }
   \item{centroids}{
-logical. If TRUE, tests a rectangle around country centroids. The side length of the rectangle is \code{centroids.rad} * 2. Default = TRUE.
+logical. If TRUE, tests a radius around country centroids. The radius is \code{centroids.rad}. Default = TRUE.
 }
   \item{seas}{
 logical. If TRUE, tests if coordinates fall into the ocean.  Default = TRUE.
@@ -60,7 +62,10 @@ logical.  If TRUE, tests if coordinates are from the country indicated in the co
 logical. If TRUE, tests each species for outlier records. Depending on the \code{outliers.mtp} and \code{outliers.td} arguments  either flags records that are a minimum distance away from all other records of this species (\code{outliers.td}) or records that are outside a multiple of the interquartile range of minimum distances to the next neighbour of this species (\code{outliers.mtp}).  Default = TRUE. 
 }
   \item{GBIF}{
-logical.  If TRUE, tests a one-degree rectangel around the GBIF headquarters in Copenhagen, Denmark.  Default = TRUE.
+logical.  If TRUE, tests a one-degree radius around the GBIF headquarters in Copenhagen, Denmark.  Default = TRUE.
+}
+  \item{institutions}{
+logical. If TRUE, tests a radius around known biodiveristy institutions from \code{instiutions}. The radius is \code{inst.rad}. Default = TRUE.
 }
   \item{duplicates}{
 logical.  If TRUE, tests for duplicate records. THis checks for identical coordinates or if a species vector is provided for identical coordinates within a species. All but the first records are flagged as duplicates.  Default = FALSE.
@@ -72,10 +77,13 @@ logical.  If TRUE the progress of testing is reported (to stdout).  Default = TR
 character. Defining the output value. See the value section for details.  Default = \dQuote{\code{spatialvalid}}.
 }
   \item{zeros.rad}{
-numeric. The side length of the rectangle around 0/0 in degrees. Default = 0.5.
+numeric. The radius around 0/0 in degrees. Default = 0.5.
 }
   \item{capitals.rad}{
-numeric. The side length of the rectangle around capital coordinates in degrees. Default = 0.1
+numeric. The radius around capital coordinates in degrees. Default = 0.1
+}
+  \item{inst.rad}{
+numeric. The radius around biodiveristy institutions coordinates in degrees. Default = 0.001
 }
   \item{outliers.mtp}{
 numeric. The multiplier for the interquartile range of the outlier test.  If NULL \code{outliers.td} is used.  Default = 25.
@@ -97,6 +105,9 @@ a \code{data.frame} with alternative reference data for the centroid test. If se
 }
   \item{seas.ref}{
 a \code{SpatialPolygonsDataFrame} as alternative reference for the seas test. If set to NULL, the \code{\link{landmass}} dataset is used.  Default = NULL.
+}
+  \item{inst.ref}{
+\code{data.frame} with alternative reference data for the biodiversity institution test. If set to NULL, the \code{institutions} dataset is used.  Alternatives must be identical in structure.  Default = NULL.
 }
   \item{urban.ref}{
 a \code{SpatialPolygonsDataFrame} as alternative reference for the urban test. If set to NULL, the test is skipped. A reference gazetteer can be found at https://github.com/azizka/speciesgeocodeR.  Default = NULL.

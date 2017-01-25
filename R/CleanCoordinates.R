@@ -2,24 +2,43 @@
 # add a dataset test
 # include warning message in case the standard landmass is used
 
-CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL, validity = T, zeros = T, capitals = T, centroids = T, seas = T, urban = F, countrycheck = T, outliers = T, 
-                             GBIF = T, duplicates = F, verbose = T, output = c("spatialvalid", "summary", "cleaned"), zeros.rad = 0.5, capitals.rad = 0.05, outliers.mtp = 25, outliers.td = NULL, centroids.rad = 0.01, 
-                             capitals.ref = NULL, centroids.detail = c("both", "country", "provinces"), centroids.ref = NULL, seas.ref = NULL, urban.ref = NULL, country.ref = NULL, report = F) {
+CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL,
+                             validity = T, zeros = T, capitals = T, centroids = T,
+                             seas = T, urban = F, countrycheck = F, outliers = F, 
+                             GBIF = T, institutions = T, duplicates = F, verbose = T,
+                             output = c("spatialvalid", "summary", "cleaned"), 
+                             zeros.rad = 0.5, capitals.rad = 0.05, inst.rad = 0.001, 
+                             outliers.mtp = 25, outliers.td = NULL, centroids.rad = 0.01, 
+                             capitals.ref = NULL, 
+                             centroids.detail = c("both", "country", "provinces"), 
+                             centroids.ref = NULL, inst.ref = NULL,  seas.ref = NULL, 
+                             urban.ref = NULL, country.ref = NULL, report = F) {
   
   match.arg(output)
   match.arg(centroids.detail)
 
   if (is.matrix(x) | is.data.frame(x)) {
     if (dim(x)[2] != 2) {
-      warning("wrong input format, x needs to be a data.frame or matrix with two columns")
+      if("decimallongitude" %in% names(x) & "decimallatitude" %in% names(x)) {
+        x <- x[, c("decimallongitude", "decimallatitude")]
+        warning("more than two columns, input guessed from column names")
+      }
+      if("decimalLongitude" %in% names(x) & "decimalLatitude" %in% names(x)) {
+        x <- x[, c("decimalLongitude", "decimalLatitude")]
+        warning("more than two columns, input guessed from column names")
+        }
+      if("longitude" %in% names(x) & "latitude" %in% names(x)) {
+        x <- x[, c("longitude", "latitude")]
+          warning("more than two columns, input guessed from column names")
+      }
     }
-    if (is.null(countries)) {
+    if (is.null(countries) & countrycheck) {
       countrycheck <- FALSE
       warning("inputformat matrix, countrycheck set to FALSE")
     }
-    if (is.null(species)) {
+    if (is.null(species) & outliers) {
       outliers <- FALSE
-      warning("species == NULL, outliers test skipped")
+      warning("is.null(species), outliers test skipped")
     }
     
     names(x) <- c("decimallongitude", "decimallatitude")
@@ -142,16 +161,19 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
       gbf <- rep(NA, dim(x)[1])
     }
     
-    # Native area
-    
-    # Botanical Gardens
-    
-    # Museums
-    
-    # Datasets
-    
-    # Zoos
-    
+    #Biodiveristy institution
+    if (institutions) {
+      if (verbose) {
+        cat("running institutions test\n")
+      }
+      
+      inst <- .Institutions(x, testdist = inst.rad, buffer = 1, referencedat = inst.ref)
+      if (verbose) {
+        cat(sprintf("flagged %s records \n", sum(!inst)))
+      }
+    } else {
+      inst <- rep(NA, dim(x)[1])
+    }
     
     # exclude duplicates
     if (duplicates) {
@@ -169,11 +191,13 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
     } else {
       dpl <- rep(NA, dim(x)[1])
     }
+  }else{
+    stop("wrong input format, x needs to be a data.frame or matrix with two columns")
   }
   
   #prepare output data
   
-  out <- list(val, zer, cap, cen, sea, urb, con, otl, gbf, dpl)
+  out <- list(val, zer, cap, cen, sea, urb, con, otl, gbf, inst, dpl)
   out <- Filter(function(x) !all(is.na(x)), out)
   out <- Reduce("&", out)
   
@@ -188,7 +212,7 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
   if (output[1] == "spatialvalid") {
     out <- data.frame(x, validity = val, zeros = zer, capitals = cap, centroids = cen, 
                       sea = sea, urban = urb, countrycheck = con, outliers = otl, 
-                      gbif = gbf, duplicates = dpl, summary = out)
+                      gbif = gbf, institution = inst, duplicates = dpl, summary = out)
     out <- Filter(function(x) !all(is.na(x)), out)
     class(out) <- c("spatialvalid", "data.frame", class(out))
   }
@@ -196,14 +220,14 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
     if (is.null(species)) {
       out <- data.frame(x, validity = val, zeros = zer, capitals = cap, centroids = cen, 
                         sea = sea, urban = urb, countrycheck = con, outliers = otl, 
-                        gbif = gbf, duplicates = dpl, 
+                        gbif = gbf, institution = inst, duplicates = dpl, 
                         summary = out)
       out <- Filter(function(x) !all(is.na(x)), out)
       out <- out[, 1:2]
     } else {
       out <- data.frame(x, species = species, validity = val, zeros = zer, capitals = cap, 
                         centroids = cen, sea = sea, urban = urb, countrycheck = con, 
-                        outliers = otl, gbif = gbf, 
+                        outliers = otl, gbif = gbf, institution = inst, 
                         duplicates = dpl, summary = out)
       out <- Filter(function(x) !all(is.na(x)), out)
       out <- out[, 1:3]

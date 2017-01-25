@@ -130,7 +130,7 @@
     pols <- .ConvHull(x, type = type)
     if(terrestrial){
       pols <- rgeos::gIntersection(pols, cropper, byid = T)
-      pols <- gBuffer(pols, byid = T, width = 0)
+      pols <- rgeos::gBuffer(pols, byid = T, width = 0)
     }
     if(!is.null(biome)){
       if(!"BIOME" %in% names(biome)){
@@ -142,7 +142,7 @@
       overl <- biome[biome$BIOME %in% test$BIOME,]
       overl <- aggregate(overl)
       pols <- rgeos::gIntersection(pols, overl, byid = T)
-      pols <- gBuffer(pols, byid = T, width = 0)
+      pols <- rgeos::gBuffer(pols, byid = T, width = 0)
     }
     pol.area <- geosphere::areaPolygon(pols)
   }

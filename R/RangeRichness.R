@@ -2,7 +2,7 @@ RangeRichness <- function(x, ras, reso = 1, buffer = 1, terrestrial = FALSE) {
   
   #enable spgeoOUT object as input
   if(is.spgeoOUT(x)){
-    x <- CalcRange(x, index = "EOO", eoo.value = "shape")
+    x <- CalcRange(x, method = "pseudospherical")
   }
 
   # create backround raster

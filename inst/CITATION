@@ -1,11 +1,11 @@
 note <- sprintf("R package version %s", meta$Version)
 
-bibentry(bibtype = "article",
+bibentry(bibtype = "manual",
          title = "speciesgeocodeR. Version 2.0",
          author = c(person("Alexander", "Zizka"),
                     person("Alexandre", "Antonelli")),
          year = "2016",
-         url = "https://CRAN.R-project.org/package=speciesgeocodeR")
+         url = {"https://CRAN.R-project.org/package=speciesgeocodeR"})
 		 
 		 
 		 bibentry(bibtype = "article",
@@ -20,5 +20,5 @@ bibentry(bibtype = "article",
          year = "2016",
 		 volume = 0,
 		 pages = {0-0},
-		 url = {http://sysbio.oxfordjournals.org/content/early/2016/08/26/sysbio.syw064}
+		 url = {"http://sysbio.oxfordjournals.org/content/early/2016/08/26/sysbio.syw064"}
 		 )
