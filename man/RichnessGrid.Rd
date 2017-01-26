@@ -12,10 +12,10 @@ RichnessGrid(x, ras, reso = 1, type = "spnum")
 
 \arguments{
   \item{x}{
-an object of the class \code{data.frame} or \code{spgeoIN} or \code{spgeoOUT} or \code{character string}.  If x is a \code{data.frame}, it must consist of three columns, indicating species name, longitude and latitude.  If x is a character string, it can be the name of a tab delimited text file, with three columns indicating species name, longitude and latitude or a vector of species names.  In the latter case the GBIF database is search for geo-referenced occurrences.
+an object of the class  \code{spgeoOUT}.  If x is a \code{data.frame}, it must consist of three columns, indicating species name, longitude and latitude. 
 }
   \item{ras}{
-a raster object defining the extent and resolution for the 
+an object of the class \code{raster} defining the extent and resolution for the richness grid.  If missing,  estimated from the data.
 }
   \item{reso}{
 numeric.  resolution of the raster in decimal degree, only speciefy if ras is missing.
@@ -40,9 +40,5 @@ See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tu
 data(lemurs)
 dat <- RichnessGrid(lemurs, reso = 1, type = "spnum")
 
-# for x = character string
-\dontrun{
-dat <- RichnessGrid(c("Indri indri", "Lemur catta"), reso = 1, type = "spnum")
-}
 }
 \keyword{ spatial }

@@ -29,10 +29,10 @@ MapRichness <- function(x, buffer = 1, show.occ = F) {
     )
   
   if (show.occ) {
-    plo.out+
+    plo.out <- plo.out+
       ggplot2::geom_point(data = x$samples, 
                           aes_string(x = "decimallongitude", y = "decimallatitude"),
                  col = "red")
   }
-  return(plo.out)
+  print(plo.out)
 }

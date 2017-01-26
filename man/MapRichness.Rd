@@ -21,10 +21,6 @@ numeric. Indicating the buffer around the the data points whe plotting the map.
   \item{show.occ}{
 logical.  Defines if the occurrence points should be added to the plot (default = F).
 }
-  \item{\dots}{
-arguments to be passed to methods, such as graphical parameters.
-}
-
 }
 \value{
 A plotted map.

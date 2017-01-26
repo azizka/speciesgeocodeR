@@ -16,13 +16,15 @@ Biological collection data from public databases are prone to various common geo
 ```{r, evaluate = F}
 library(speciesgeocodeR)
 data(lemurs)
-data(mdg_poly)
+data(mdg_biomes)
 
 #see the function help for a vast set of options
-flags <- CleanCoordinates(lemurs[,"decimallongitude", "decimallatitude"], species = "species")
+flags <- CleanCoordinates(lemurs, species = "species")
+
 #visualize the results
 summary(flags)
 plot(flags)
+
 # to exclude all flagged records (make sure this is what you want)
 cleaned.df <- lemurs[flags$summary, ]
 ```
@@ -30,12 +32,12 @@ cleaned.df <- lemurs[flags$summary, ]
 Most biogeographic methods require a discrete area classification of species. speciesgeocodeR, enables the quick and reproducible classification of point occurrences into discrete areas based on a `data.frame` with species names and lat/long coordinates and a `spatialPolygonsDataFrame` with the target areas using the `SpGeoCod` function. Elevation and a minimum occurrence threshold can optionally be included. A vast set of visualizations are available via the `type` argument of the `plot` method. The results can be exported in various formats suitable for biogeographic analyses software using the `WriteOut` function.
 
 ```{r, evaluate = F}
-class <- SpGeoCod(lemurs, mdg_poly, areanames = "species")
+sp.class <- SpGeoCod(lemurs, mdg_biomes, areanames = "name")
 
-summary(Class)
-plot(class)
-plot(class, type = "speciesrichness")
-WriteOut(class, type = "nexus")
+summary(sp.class)
+plot(sp.class)
+plot(sp.class, type = "speciesrichness")
+WriteOut(sp.class, type = "nexus")
 ```
 
 #Species Richness
@@ -51,9 +53,17 @@ plot(sp.ras)
 On a *local to regional* scale speciesgeocodeR can calculate species range size as a alpha hull based on a `data.frame` of point occurrences. The `CalcRange` function can return range polygons for each species in the dataset, or calculate range sizes in sqkm (Extent of Occurrence and Area of Occupancy). The output can be used to calculate a species richness grid based on the range sizes using the `RangeRichness` function.
 
 ```{r, evaluate = F}
-rang <- CalcRange(class, index = "EOO", eoo.value = "shape")
-sprich <- RangeRichness(rang, reso =0.1)
-plot(sprich)
+#calculate range shapes
+rang <- CalcRange(lemurs, method = "pseudospherical")
+plot(rang)
+
+#species richness from ranges
+sp.rich <- RangeRichness(rang, reso = 0.1)
+plot(sp.rich)
+
+#calculate range size
+rang <- CalcRangeSize(lemurs, method = "eoo_pseudospherical")
+head(rang)
 ```
 #Input for the Pyrates DES model
 SpeciesgeocodeR can create ready-to-use input files for the [Silvestro et al.] DES model, based on a `data.frame` with fossil occurrence and a `data.frame` with recent range size of the study species using the `DESin` function.
@@ -83,5 +93,5 @@ Other versions of speciesgeocodeR include:
 2. A equivalent python package written by Mats T\"opel https://github.com/mtop/speciesgeocoder
 
 #Citation
-Töpel M, Calió MF, Zizka A, Scharn R, Silvestro D, Antonelli A (2016) SpeciesGeoCoder: Fast Categorisation of Species Occurrences for Analyses of Biodiversity, Biogeography, Ecology and Evolution. Systematic Biology.
+Töpel M, Zizka A, Calió MF, Scharn R, Silvestro D, Antonelli A (2016) SpeciesGeoCoder: Fast Categorisation of Species Occurrences for Analyses of Biodiversity, Biogeography, Ecology and Evolution. Systematic Biology.
 

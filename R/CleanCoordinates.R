@@ -29,7 +29,7 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
         }
       if("longitude" %in% names(x) & "latitude" %in% names(x)) {
         x <- x[, c("longitude", "latitude")]
-          warning("more than two columns, input guessed from column names")
+          warning("more than two columns, coordinates guessed from column names")
       }
     }
     if (is.null(countries) & countrycheck) {

@@ -32,7 +32,7 @@
     }
 }
 
-.BarChartSpec <- function(x, mode = "percent") {
+.BarChartSpec <- function(x, mode = c("percent", "total")) {
   match.arg(mode)
   switch(mode, 
          percent = {
@@ -57,7 +57,7 @@
     
     for (i in 1:leng) {
       dat.sub <- as.numeric(as.vector(dat.plo[i, ]))
-      ggplot2::ggplot()+
+      out <- ggplot2::ggplot()+
         ggplot2::geom_bar(data = data.frame(dat.sub),
                           aes_string(x = "names(x$spec_table)",
                               y = "dat.sub"), stat = "identity")+
@@ -65,6 +65,7 @@
         ggplot2::ylab("Number of occurrences")+ 
         ggtitle(rownames(dat.plo[i, ]))+
         theme(axis.title.x = element_blank())
+      print(out)
     }
   })
 }
@@ -380,7 +381,6 @@
     bgmap <- ggplot2::fortify(bgmap)
     
     pols <- ggplot2::fortify(x$polygons)
-    pts <- subset(x$samples, x$sampleshomepolygon == "not_classified")
     
     #plot results
     plo <- ggplot2::ggplot()+
@@ -390,7 +390,7 @@
       ggplot2::geom_polygon(data = pols,  
                             aes_string(x = "long", y = "lat", group = "group"), 
                             fill = rgb(0, 100,0, 100, maxColorValue = 255))+
-      ggplot2::geom_point(data = pts, 
+      ggplot2::geom_point(data = dat, 
                           aes_string(x = "decimallongitude", y = "decimallatitude", color = "species"))+
       ggplot2::coord_fixed()+ 
       ggplot2::theme_bw()
@@ -613,8 +613,8 @@
 }
 
 .rasterSum <- function(x, ras, type) {
-    po <- SpatialPoints(x[, 2:3])
-    ras_sub <- rasterize(po, ras, fun = "count")
+    po <- sp::SpatialPoints(x[, 2:3])
+    ras_sub <- raster::rasterize(po, ras, fun = "count")
     if(type == "div"){
       ras_sub[ras_sub >= 1] <- 1
     }

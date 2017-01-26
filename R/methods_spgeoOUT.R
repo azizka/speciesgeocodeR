@@ -6,7 +6,7 @@ is.spgeoOUT <- function(x){
   inherits(x, "spgeoOUT")
 }
 
-plot.spgeoOUT <- function(x, type = "summary", mode = "percent", ...) {
+plot.spgeoOUT <- function(x, type = "summary", mode = "percent") {
   switch(type,
          summary = .MapAll(x),
          species = .BarChartSpec(x, mode = mode),
