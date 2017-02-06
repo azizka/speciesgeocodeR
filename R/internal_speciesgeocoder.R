@@ -89,20 +89,21 @@
   return(poly)
 }
 
-.ConvArea <- function(x, reps = 100, repfrac = 0.3, repsize = NULL, terrestrial, biome, type, cropper){
+.ConvArea <- function(x, reps = 100, repfrac = 0.3, repsize = NULL, 
+                      terrestrial, biome, type, cropper){
   
   if(!is.null(repfrac)){
     if(repfrac > 1){
       stop("'repfrac' must be between 0 and 1")
     }
-    repsize <- round(nrow(x) * repfrac)
+    repsize <- round(nrow(x[!duplicated(x),]) * repfrac)
     if(repsize < 5){
       repsize <- 5
       warning("'repfrac' to small, repsize set to 5")
     }
   }
   
-  if(nrow(x) > repsize){
+  if(nrow(x[!duplicated(x),]) > repsize){
     samp <- as.list(data.frame((replicate(reps, sample(1:nrow(x), size = repsize, replace = F)))))
     samp <- lapply(samp, function(k){x[k,]})
     pols <- lapply(samp, ".ConvHull", type = type)

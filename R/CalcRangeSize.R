@@ -6,8 +6,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
   if (!requireNamespace("geosphere", quietly = TRUE)) {
     stop("Package 'geosphere' not found. Please install.", call. = FALSE)
   }
-  
-  
+
   # fix different input data types data.frame
   if (is.data.frame(x)) {
     dat <- x[, c("species", "decimallongitude", "decimallatitude")]
@@ -37,10 +36,11 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
   # area calculations Euclidean convex hull
   if (method == "eoo_euclidean") {
     # species with less than 3 records
-    filt <- table(dat$species)
+    filt <- dat[!duplicated(dat),]
+    filt <- table(filt$species)
     sortout <- filt[filt <= 2]
     filt <- filt[filt > 2]
-    dat.filt <- subset(dat, dat$species %in% as.character(names(filt)))
+    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences:", 
@@ -73,19 +73,19 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
       # add species with not enought points as NA
       miss.area <- rep("NA", length(sortout))
       miss.sp <- rownames(sortout)
-      miss <- data.frame(row.names = miss.sp, area = miss.area)
+      miss <- data.frame(row.names = miss.sp, eoo.euc = miss.area)
       out <- rbind(out, miss)
-      names(out) <- "eoo_euc"
     }
   }
   
   # Pseudospherical
   if (method == "eoo_pseudospherical") {
     # species with less than 3 records
-    filt <- table(dat$species)
+    filt <- dat[!duplicated(dat),]
+    filt <- table(filt$species)
     sortout <- filt[filt <= 2]
     filt <- filt[filt > 2]
-    dat.filt <- subset(dat, dat$species %in% as.character(names(filt)))
+    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences, excluded from output:",
@@ -117,10 +117,9 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
       # add species with not enought points as NA
       miss.area <- rep("NA", length(sortout))
       miss.sp <- rownames(sortout)
-      miss <- data.frame(row.names = miss.sp, area = miss.area)
+      miss <- data.frame(row.names = miss.sp, eoo.sph = miss.area)
       out <- rbind(out, miss)
-      names(out) <- "eoo_sph"
-    }
+      }
   }
   
   # AOO
@@ -161,12 +160,12 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     
     for (i in 1:aoo.reps) {
       rr <- aoo.extent + (((sqrt(aoo.gridsize))/aoo.reps) * (i - 1))
-      rr <- raster(rr)
+      rr <- raster::raster(rr)
       res(rr) <- sqrt(aoo.gridsize)
       
       aoo <- lapply(occs, function(k) {
         pts <- SpatialPoints(k[, 2:3])
-        uu <- rasterize(pts, rr, fun = "count")
+        uu <- raster::rasterize(pts, rr, fun = "count")
         uu[uu > 1] <- 1
         out <- sum(getValues(uu), na.rm = T) * aoo.gridsize
         return(out)
@@ -176,15 +175,12 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     }
     # find minimum value and create output object
     aoo.out <- do.call("cbind.data.frame", aoo.out)
-    aoo.out <- data.frame(AOO = do.call(pmin, as.data.frame(aoo.out)))
-    aoo.out <- rbind(aoo.out, 
-                     data.frame(AOO = rep(aoo.gridsize, length(sings)), 
-                                row.names = sings))
-    # add species names
-    nams <- sapply(occs, "[", 1)
-    nams <- unlist(lapply(nams, "[", 1))
-    rownames(aoo.out) <- nams
-    out <- aoo.out
+    aoo.out <- data.frame(AOO = do.call(pmin, as.data.frame(aoo.out)),
+                          row.names = rownames(aoo.out))
+    out <- rbind(aoo.out,
+                 data.frame(AOO = rep(aoo.gridsize, length(sings)),
+                            row.names = sings))
+
     out <- round(out / (1000 * 1000), 0)
     }else{
       out <- data.frame(AOO = rep(round(aoo.gridsize / (1000 * 1000), 0), length(sings)), row.names = sings) 
@@ -197,7 +193,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     filt <- table(dat$species)
     sortout <- filt[filt <= 2]
     filt <- filt[filt > 2]
-    dat.filt <- subset(dat, dat$species %in% as.character(names(filt)))
+    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences, excluded from output:",
@@ -233,7 +229,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     filt <- table(dat$species)
     sortout <- filt[filt <= 2]
     filt <- filt[filt > 2]
-    dat.filt <- subset(dat, dat$species %in% as.character(names(filt)))
+    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences, excluded from output:",
@@ -271,12 +267,13 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     }
   }
   
+  #ecoregion
   if (method == "ecoregion"){
     if (!requireNamespace("rgeos", quietly = TRUE)) {
-      stop("Package 'rgeos' not found. Please install.", call. = FALSE)
+      stop("Package 'rgeos' not found. Please install", call. = FALSE)
     }
     if(is.null(eco)){
-      warning("'eco' not specified, downloading wwf ecoregions")
+      warning("'eco' not specified. Please download the WWF ecoregions")
     }
     pts <- sp::SpatialPoints(dat[c("decimallongitude", "decimallatitude")])
     eco.calc <- raster::crop(eco, raster::extent(pts))
@@ -293,7 +290,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
       if(all(is.na(out))){
         out <- NA
       }else{
-        out <- sum(areaPolygon(eco[eco$ECO_ID %in% out$ECO_ID,]))
+        out <- sum(geosphere::areaPolygon(eco[eco$ECO_ID %in% out$ECO_ID,]))
       }
     })
     

@@ -21,7 +21,7 @@ CalcRange <- function(x, method, terrestrial = F) {
   sortout <- filt[filt <= 2]
   filt <- filt[filt > 2]
   
-  dat.filt <- subset(dat, dat$species %in% as.character(names(filt)))
+  dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
   
   if (length(sortout) > 0) {
     warning("found species with < 3 occurrences, excluded from output:", paste("\n", names(sortout)))
@@ -33,7 +33,7 @@ CalcRange <- function(x, method, terrestrial = F) {
   inp <- split(dat.filt, f = dat.filt$species)
   
   #test for occurrences spanning > 180 degrees
-  test <- lapply(inp,function(k){SpatialPoints(k[,2:3])})
+  test <- lapply(inp, function(k){SpatialPoints(k[,2:3])})
   test <- lapply(test, "extent")
   test <- lapply(test, function(k){(k@xmax + 180) - (k@xmin +180)})
   test <- unlist(lapply(test, function(k){k >= 180}))
