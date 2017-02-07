@@ -8,10 +8,20 @@ DESin <- function(x, recent, bin.size, reps = 3, verbose = F) {
   }
   names(dat) <- tolower(names(dat))
   
+  if("scientificname" %in% names(dat)){
+    names(dat) <- gsub("scientificName", "species", names(dat))
+  }
+  
+  if("higherGeography" %in% names(dat)){
+    names(dat) <- gsub("higherGeography", "area", names(dat))
+  }
+  
   nes <- c("species", "earliestage", "latestage", "area")
   if(!all(nes %in% names(dat))){
     stop(sprintf("did not find column %s. Check input data", nes[!nes %in% names(dat)]))
   }
+  
+  #CHECK IF this is still necessary, and why the summary method still uses midpoints
   
   if(! "midpointage" %in% names(dat)){
     dat$midpointage <- (dat$earliestage + dat$latestage)/2
@@ -33,8 +43,8 @@ DESin <- function(x, recent, bin.size, reps = 3, verbose = F) {
   }
   
   rece$area <- as.character(rece$area)
-  rece[rece$area == unique(rece$area)[1], "area"] <- 1
-  rece[rece$area == unique(rece$area)[2], "area"] <- 2
+  rece[rece$area == sort(unique(rece$area))[1], "area"] <- 1
+  rece[rece$area == sort(unique(rece$area))[2], "area"] <- 2
   rece <- unique(rece)
   rece$area <- as.numeric(rece$area)
   rece <- aggregate(area ~ species, data = rece, sum)
@@ -61,11 +71,11 @@ DESin <- function(x, recent, bin.size, reps = 3, verbose = F) {
     binned <- lapply(dat.list, function(x) {
       dat.out <- data.frame(timebin = cutter, area1 = rep(0, length(cutter)), 
                             area2 = rep(0, length(cutter)))
-      if (length(x$area == unique(dat$area)[1]) > 0) {
+      if (length(x$area == sort(unique(dat$area)[1])) > 0) {
         dat.out[dat.out$timebin %in% x[x$area == unique(dat$area)[1], 
                                        "timeint"], "area1"] <- 1
       }
-      if (length(x$area == unique(dat$area)[2]) > 0) {
+      if (length(x$area == sort(unique(dat$area)[2])) > 0) {
         dat.out[dat.out$timebin %in% x[x$area == unique(dat$area)[2], 
                                        "timeint"], "area2"] <- 2
       }

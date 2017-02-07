@@ -47,10 +47,14 @@
 }
 
 .CountryCheck <- function(x, countries, poly = NULL) {
+  if (!requireNamespace("rnaturalearth", quietly = TRUE)) {
+    stop("rnaturalearth needed for countries test option. Please install", 
+         call. = FALSE)
+  }
   pts <- SpatialPoints(x)
   
   if (is.null(poly)) {
-    testpolys <- speciesgeocodeR::countryborders
+    testpolys <- rnaturalearth::ne_countries(scale = "medium")
   } else {
     testpolys <- poly
   }

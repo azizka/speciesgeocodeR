@@ -43,7 +43,7 @@ CleanCoordinates <- function(x, countries = NULL, species = NULL, dataset = NULL
     
     names(x) <- c("decimallongitude", "decimallatitude")
     
-    # Run tests Validity, check if coordinataes fit to lat/long system, this has to be run all the time, as otherwise the other tests don´t work
+    # Run tests Validity, check if coordinates fit to lat/long system, this has to be run all the time, as otherwise the other tests don't work
     if (verbose) {
       cat("running validity test\n")
     }

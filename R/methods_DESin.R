@@ -65,7 +65,7 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
 summary.DESin <- function(object, ...) {
   ares <- split(object[["input_fossils"]], f = object[["input_fossils"]]$area)
   
-  outp.nams <- c("Timerange_min", "Timerange_max", "Number of records", 
+  outp.nams <- c("Minimum_age", "Maximum_age", "Number of records", 
                  "Mean record age", "Number of taxa",  "Mean taxon age")
   area.1 = c(round(min(ares[[1]]$midpointage), 1), 
              round(max(ares[[1]]$midpointage), 1), 
@@ -81,7 +81,7 @@ summary.DESin <- function(object, ...) {
              round(mean(aggregate(ares[[2]]$midpointage, by = list(ares[[2]]$species), min)$x), 1))
   
   list(Number_of_areas = length(ares), 
-       Data = data.frame(row.names = outp.nams, 
+       Input_Data = data.frame(row.names = outp.nams, 
                          Area_1 = area.1,
                          Area_2 = area.2), 
        Number_of_Replicates = length(object[["DES_replicates"]]))

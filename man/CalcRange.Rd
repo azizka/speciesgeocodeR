@@ -21,7 +21,7 @@ CalcRange(x, method, terrestrial = F)
 \details{
 Be careful with the polygons when using lat/long data, convex hulls on a spehere are not easily defined. The function is limited to occurrence records on one hemisphere, spanning less than 180 degrees longitude and not crossing the 180/0 boundary!
 
-If method == euclidean, planar (projected, or local scale) coordinates are expected. If method == \sQuote{pseudospherical} the \code{geosphere::makePoly} is used to define the convex hull. In the latter case, to create the polygon intermediate points are added on a sphere between two coordinates.
+If method == \sQuote{euclidean}, planar (projected, or local scale) coordinates are expected. If method == \sQuote{pseudospherical} the \code{geosphere::makePoly} is used to define the convex hull. In the latter case, to create the polygon intermediate points are added on a sphere between two coordinates.
 
 }
 

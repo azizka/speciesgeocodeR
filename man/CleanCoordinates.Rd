@@ -113,7 +113,7 @@ a \code{SpatialPolygonsDataFrame} as alternative reference for the seas test. If
 a \code{SpatialPolygonsDataFrame} as alternative reference for the urban test. If set to NULL, the test is skipped. A reference gazetteer can be found at https://github.com/azizka/speciesgeocodeR.  Default = NULL.
 }
   \item{country.ref}{
-a \code{SpatialPolygonsDataFrame} as alternative reference for the countrycheck test. If set to NULL, the \code{\link{countryborders}} dataset is used.  Default = NULL.
+a \code{SpatialPolygonsDataFrame} as alternative reference for the countrycheck test. If set to NULL, the \code{rnaturalearth:ne_countries('medium')} dataset is used.  Default = NULL.
 }
   \item{report}{
 logical or character.  If TRUE a report file is written to the working directory, summarizing the cleaning results. If a character, the path to which the file should be written.  Default = F.

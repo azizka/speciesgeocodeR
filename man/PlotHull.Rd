@@ -48,7 +48,7 @@ occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
                        decimallatitude = runif(n = 250, min = -26, max = -11))
 
 
-dat <- CalcRange(occ.exmpl, index = "EOO", eoo.value = "shape", eoo.terrestrial = FALSE)
+dat <- CalcRange(occ.exmpl, method = "pseudospherical", terrestrial = FALSE)
 PlotHull(dat)
 }
 \keyword{ spatial }

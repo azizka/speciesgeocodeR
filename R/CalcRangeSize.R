@@ -2,6 +2,13 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                           eco = NULL, convex.reps = 100, convex.repfrac = 0.3, 
                           convex.repsize = NULL, aoo.reps = 3, aoo.proj = NULL, 
                           aoo.gridsize = NULL, verbose = F) {
+  base::match.arg(arg = method, 
+                  choices = c("eoo_euclidean", 
+                              "eoo_pseudospherical",
+                              "aoo",
+                              "maxdist",
+                              "qdist",
+                              "ecoregion"))
   
   if (!requireNamespace("geosphere", quietly = TRUE)) {
     stop("Package 'geosphere' not found. Please install.", call. = FALSE)
@@ -37,29 +44,29 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
   if (method == "eoo_euclidean") {
     # species with less than 3 records
     filt <- dat[!duplicated(dat),]
-    filt <- table(filt$species)
+    filt <- base::table(filt$species)
     sortout <- filt[filt <= 2]
     filt <- filt[filt > 2]
-    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
+    dat.filt <- base::droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences:", 
-              paste("\n", names(sortout)))
+              base::paste("\n", names(sortout)))
     }
     if (nrow(dat.filt) == 0) {
       warning("no species with more than 2 occurrences found")
-      out <- data.frame(eoo_euc = NA)
+      out <- base::data.frame(eoo_euc = NA)
     }else{
       
       # split by species
       inp <- split(dat.filt, f = dat.filt$species)
       
       #test for occurrences spanning > 180 degrees
-      test <- lapply(inp,function(k){SpatialPoints(k[,2:3])})
-      test <- lapply(test, "extent")
+      test <- lapply(inp,function(k){sp::SpatialPoints(k[,2:3])})
+      test <- lapply(test, function(k) raster::extent(k))
       test <- lapply(test, function(k){(k@xmax + 180) - (k@xmin +180)})
       test <- unlist(lapply(test, function(k){k >= 180}))
-      if(any(test)){
+      if(base::any(test)){
         stop("data includes species spanning >180 degrees.")
       }
       
@@ -67,14 +74,14 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
       are <- lapply(inp, ".ConvArea", reps = convex.reps, 
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
                     type = "euclidean", cropper = cropper, biome = biome)
-      out <- do.call("rbind.data.frame", are)
+      out <- base::do.call("rbind.data.frame", are)
       names(out) <- "eoo.euc"
       
       # add species with not enought points as NA
       miss.area <- rep("NA", length(sortout))
-      miss.sp <- rownames(sortout)
-      miss <- data.frame(row.names = miss.sp, eoo.euc = miss.area)
-      out <- rbind(out, miss)
+      miss.sp <- base::rownames(sortout)
+      miss <- base::data.frame(row.names = miss.sp, eoo.euc = miss.area)
+      out <- base::rbind(out, miss)
     }
   }
   
@@ -100,7 +107,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
       
       #test for occurrences spanning > 180 degrees
       test <- lapply(inp,function(k){SpatialPoints(k[,2:3])})
-      test <- lapply(test, "extent")
+      test <- lapply(test, function(k) raster::extent(k))
       test <- lapply(test, function(k){(k@xmax + 180) - (k@xmin +180)})
       test <- unlist(lapply(test, function(k){k >= 180}))
       if(any(test)){

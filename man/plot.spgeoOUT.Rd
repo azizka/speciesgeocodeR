@@ -8,7 +8,7 @@ Plot Method for SpgeoOUT Objects
 plot.spgeoOUT is the plotting method for objects of the class spgeoOUT.  Depending on the type argument the function can be used to get an overview over the data or plot all elements of the object.
 }
 \usage{
-\method{plot}{spgeoOUT}(x,  type = "summary", mode = "percent")
+\method{plot}{spgeoOUT}(x,  type = "summary", mode = "percent", ...)
 }
 
 \arguments{
@@ -20,6 +20,9 @@ a character string. Controls which data shall be plotted. Default is to \dQuote{
 }
   \item{mode}{
 a character string.  Can be \dQuote{percent} or \dQuote{total} controls if percentage or total is shown for \code{type} = \dQuote{species}.  Default is \dQuote{percent}.
+}
+  \item{\dots}{
+additional arguments passed to other methods
 }
 }
 \details{
@@ -47,8 +50,6 @@ pol.exmpl <-
 
 outp <- SpGeoCod(occ.exmpl, pol.exmpl, areanames = 'areas')
 plot(outp)
-plot(outp, type = "species")
-plot(outp, type = "polygons")
 plot(outp, type = "speciesrichness")
 plot(outp, type = "mapall")
 }

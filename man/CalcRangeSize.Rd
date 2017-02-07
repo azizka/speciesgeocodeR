@@ -58,7 +58,8 @@ occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
                        decimallongitude = runif(n = 250, min = 42, max = 51),
                        decimallatitude = runif(n = 250, min = -26, max = -11))
 
-CalcRangeSize(occ.exmpl, method = 'eoo_euclidian', terrestrial = FALSE)
+CalcRangeSize(occ.exmpl, method = 'eoo_euclidean', terrestrial = FALSE, 
+              convex.reps = 2)
 CalcRangeSize(occ.exmpl, method = 'maxdist', terrestrial = FALSE)
 }
 \keyword{ spatial }

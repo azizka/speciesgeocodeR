@@ -12,8 +12,8 @@ Preparation of species occurrences and distribution data for the use in phylogen
 \tabular{ll}{
 Package: \tab speciesgeocodeR\cr
 Type: \tab Package\cr
-Version: \tab 1.04\cr
-Date: \tab 2015-10-17\cr
+Version: \tab 2.0-2\cr
+Date: \tab 2017-02-07\cr
 License: \tab GPL-3\cr
 }
 The core functions of the package can be  used via the wrapper function \code{\link{SpGeoCod}}, with two input text files and one single command.  In addition to this the package includes a set of functions to visualize geographic distribution data and diversity.

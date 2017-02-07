@@ -71,13 +71,13 @@
 }
 .ConvHull <- function(x, type){
   if(type == "euclidean"){
-    conv.hull <- chull(x$decimallongitude, x$decimallatitude)
+    conv.hull <- grDevices::chull(x$decimallongitude, x$decimallatitude)
     dat2 <- x[conv.hull, ]
     out <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
   }
   
   if(type == "pseudospherical"){
-    cv <- chull(x$decimallongitude, x$decimallatitude)
+    cv <- grDevices::chull(x$decimallongitude, x$decimallatitude)
     dat2 <- x[cv, ]
     dat2 <- rbind(dat2[, c(2, 3)], dat2[1, c(2, 3)])
     
@@ -109,8 +109,8 @@
     pols <- lapply(samp, ".ConvHull", type = type)
     nam <- names(pols)
     names(pols) <- NULL
-    pols <- do.call(bind, pols)
-    pols <- SpatialPolygonsDataFrame(pols, data = data.frame(species = nam))
+    pols <- do.call(raster::bind, pols)
+    pols <- sp::SpatialPolygonsDataFrame(pols, data = data.frame(species = nam))
     if(terrestrial){
       pols <- rgeos::gIntersection(pols, cropper, byid = T)
     }

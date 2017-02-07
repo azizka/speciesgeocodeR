@@ -1,4 +1,4 @@
-#speciesgeocodeR v. 2.0
+#speciesgeocodeR v. 2.0-3
 
 SpeciesgeocodeR is an R-package for the preparation for geographic point occurrence data in biogeographic analyses. A major focus is on securing data quality and providing ready to use output for biogeographic software. The main functions include:
 

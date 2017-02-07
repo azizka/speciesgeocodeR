@@ -46,9 +46,9 @@ See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tu
 }
 \examples{
 data(lemurs)
-data(mdg_poly)
+data(mdg_biomes)
 
-outp <- SpGeoCod(lemurs, mdg_poly, areanames = "species")
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name")
 }
 
 \keyword{ spatial }
