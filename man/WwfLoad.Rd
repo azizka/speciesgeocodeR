@@ -15,7 +15,7 @@ WWFload(x = "")
 }
 
 \value{
-An object of the class \code{SpatialPolygonsDataframe}
+A \code{SpatialPolygonsDataframe} with global biomes and evoregions.
 }
 \references{
 Olson, D. M., Dinerstein, E. ,Wikramanayake,  E. D., Burgess,  N. D., Powel, G. V. N., Underwood,  E. C.,

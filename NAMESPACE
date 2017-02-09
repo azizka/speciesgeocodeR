@@ -14,7 +14,7 @@ S3method(summary, spgeoOUT)
 
 import(graphics)
 importFrom("grDevices", chull, dev.off, heat.colors, pdf, rainbow, rgb)
-importFrom("methods", as, is, slot)
+importFrom("methods", as, is, slot, "slot<-")
 importFrom("stats", complete.cases, median, aggregate, runif, na.omit)
 importFrom("utils", read.table, write.table, download.file, unzip, data)
 importFrom("rgeos", gIntersection, gBuffer)

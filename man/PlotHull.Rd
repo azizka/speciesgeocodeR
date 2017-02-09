@@ -5,7 +5,7 @@
 Plotting Species Ranges
 }
 \description{
-Plots species distribution ranges derived with \code{\link{CalcRange}} in the geographic context.
+Plots species distribution ranges approximated with \code{\link{CalcRange}} in the geographic context.
 }
 \usage{
 PlotHull(dat, select = "all", buffer = 1, bgmap,
@@ -14,7 +14,7 @@ PlotHull(dat, select = "all", buffer = 1, bgmap,
 
 \arguments{
 \item{dat}{
-a list of \sQuote{SpatialPolygons} objects created with \code{\link{CalcRange}}.
+a list of \code{'SpatialPolygons'} objects created with \code{\link{CalcRange}}.
 }
 \item{select}{
 a character string indicating which elements of the list to plot. Can be one or multiple species names. Default = \dQuote{all}.
@@ -23,10 +23,10 @@ a character string indicating which elements of the list to plot. Can be one or 
 numerical.  The buffer around the polygon extent when plotting the map.
 }
 \item{bgmap}{
-a SpatialPolygonsDataFrame as background map for the plots. Default is \code{\link{landmass}}
+a \code{SpatialPolygonsDataFrame} as background map for the plots. Default = \code{\link{landmass}}.
 }
 \item{col}{
-character string indicating the colour of the polygons. Default is to transparent red.
+a character string indicating the colour of the polygons. Default is to transparent red.
 }
 }
 \details{

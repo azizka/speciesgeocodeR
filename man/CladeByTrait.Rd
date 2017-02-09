@@ -46,7 +46,7 @@ See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tu
 
 \examples{
 sp.nam <-  unique(paste(sample(letters, size = 250, replace = TRUE), 
-sample(letters, size = 250, replace = TRUE), sep = ""))
+                  sample(letters, size = 250, replace = TRUE), sep = ""))
 tr.dat <- sample(c(0,1), size = length(sp.nam), replace = TRUE)
 trait <- data.frame(species = sp.nam, trait = tr.dat)
 }

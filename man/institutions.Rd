@@ -5,7 +5,7 @@
 Geographic coordinates and addresses of biodiversity institutions.
 }
 \description{
-A global gazetteer for biodiviersity institutions from various sources, including among others zoos, museums, botanical gardens, GBIF contributors and herbaria.
+A global gazetteer for biodiviersity institutions from various sources, including zoos, museums, botanical gardens, GBIF contributors, herbaria, university collections.
 }
 \usage{data("institutions")}
 \format{

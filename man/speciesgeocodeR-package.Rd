@@ -3,20 +3,20 @@
 \alias{speciesgeocodeR}
 \docType{package}
 \title{
-Prepare Species Distributions for the Use in Phylogenetic Analyses
+Data cleaning, Range size calculation and phylogenetic analyses with biological collection records
 }
 \description{
-Preparation of species occurrences and distribution data for the use in phylogenetic analyses. SpeciesgeocodeR is built for data cleaning, data exploration and data analysis and especially suited for biogeographical and ecological questions on large datasets. The package includes the easy creation of summary-tables and -graphs and geographical maps, the automatic cleaning of geographic occurrence data, the calculating of coexistence matrices and species ranges (EOO) as well as mapping diversity in geographic areas. See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
+Data cleaning of species occurrence records by automated flagging of problems common to biodiversity data from biological collections. Range shape and range size estimation of species from geographic occurrences records based on convex hulls, area of occupancy, WWF ecoregions and various distance measures. Preparation of species occurrences and distribution data for the use in phylogenetic analyses. Visualization of species richness patterns. SpeciesgeocodeR is especially suited for biogeographical and ecological questions on large datasets. The package includes the easy creation of summary-tables and -graphs and geographical maps. See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tutorials.
 }
 \details{
 \tabular{ll}{
 Package: \tab speciesgeocodeR\cr
 Type: \tab Package\cr
-Version: \tab 2.0-2\cr
-Date: \tab 2017-02-07\cr
+Version: \tab 2.0-4\cr
+Date: \tab 2017-02-09\cr
 License: \tab GPL-3\cr
 }
-The core functions of the package can be  used via the wrapper function \code{\link{SpGeoCod}}, with two input text files and one single command.  In addition to this the package includes a set of functions to visualize geographic distribution data and diversity.
+The core functions of the package can be used via \code{\link{CleanCoordinates}},\code{\link{CalcRangeSize}} and \code{\link{SpGeoCod}} based on a \code{data.frame} of species names and occurrence coordinates  In addition to this the package includes easy methods for data visualization and producing output tailored for phylogenetic analyses.
 }
 \author{
 Alexander Zizka
@@ -27,11 +27,11 @@ Maintainer: Alexander Zizka, alexander.zizka@bioenv.gu.se
 \keyword{package}
 
 \examples{
-\dontrun{
 data(lemurs)
-data(mdg_poly)
+data(mdg_biomes)
 
-SpGeoCod(lemurs, mdg_poly)
-}
+CleanCoordinates(lemurs[,2:3])
+CalcRangeSize(lemurs, convex.reps = 10)
+SpGeoCod(lemurs, mdg_biomes, areanames = "name")
 
 }

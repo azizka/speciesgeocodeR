@@ -2,7 +2,7 @@
 \alias{plot.spatialvalid}
 
 \title{
-Plot Method for spatialvalid
+Plot Method for spatialvalid. A plot to visualize the flags from CleanCoordinates
 }
 \description{
 a set of plots to explore class spatialvalid
@@ -13,10 +13,10 @@ a set of plots to explore class spatialvalid
 
 \arguments{
   \item{x}{
-an object of the class spatialvalid as from \code{\link{CleanCoordinates}}.
+an object of the class \code{spatialvalid} as from \code{\link{CleanCoordinates}}.
 }
   \item{bgmap}{
-an object of the class \code{SpatialPolygonsDataFrame} used as background map. Default is \code{\link{landmass}}
+an object of the class \code{SpatialPolygonsDataFrame} used as background map. Default = \code{\link{landmass}}
 }
   \item{clean}{
 logical.  If TRUE, non-flagged coordinates are included in the map.
@@ -36,7 +36,7 @@ additional arguments passed to other methods
 }
 
 \value{
-a series of exploratory plots, depending on the type argument: all", "locations", "inputviz", "replicates".
+A plot of the records flagged as potentially erroneous by \code{\link{CleanCoordinates}}.
 }
 
 \seealso{

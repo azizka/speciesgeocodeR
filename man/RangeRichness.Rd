@@ -13,10 +13,10 @@ RangeRichness(x, ras, reso = 1, buffer = 1, terrestrial = FALSE)
 
 \arguments{
   \item{x}{
-A list of SpatialPolygons with species ranges.
+a list of SpatialPolygons with species ranges.
 }
   \item{ras}{
-Template raster to rasterize x.
+template raster to rasterize x. If missing, the raster is constructed using the data extent and \code{reso}.
 }
   \item{reso}{
 numeric.  Resolution of the raster in decimal degree.  Only if ras is missing.
@@ -30,7 +30,7 @@ logical.  If TRUE, oceans are omitted.
 }
 
 \value{
-a \code{\link{raster}} object.
+a \code{\link{raster}} object with species number per gridcell.
 }
 
 \note{

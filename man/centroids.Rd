@@ -13,7 +13,7 @@ A gazetteer of country and province centroids.
   \describe{
     \item{\code{adm1_code}}{a factor; province code.}
     \item{\code{iso3}}{a factor; country ISO-3 code.}
-    \item{\code{name}}{a factor; unit name.}
+    \item{\code{name}}{a factor; name of the country or province.}
     \item{\code{type}}{a character vector; country or province.}
     \item{\code{longitude}}{a numeric vector}
     \item{\code{latitude}}{a numeric vector}

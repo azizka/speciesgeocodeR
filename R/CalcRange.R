@@ -1,6 +1,9 @@
 CalcRange <- function(x, method, terrestrial = F) {
   # x = object of class data.frame, spgeOUT, SpatialPOints, method = c('euclidean', 'pseudospherical'), terrestrial = logical,
   
+  base::match.arg(arg = method, 
+                  choices = c("euclidean", "pseudospherical"))
+  
   # check for geosphere package
   if (!requireNamespace("geosphere", quietly = TRUE)) {
     stop("Package 'geosphere' not found. Please install the package.", call. = FALSE)

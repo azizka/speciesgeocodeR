@@ -109,7 +109,12 @@
     pols <- lapply(samp, ".ConvHull", type = type)
     nam <- names(pols)
     names(pols) <- NULL
-    pols <- do.call(raster::bind, pols)
+    if(length(pols) >1){
+      pols <- do.call(raster::bind, pols)
+    }else{
+      slot(slot(pols[[1]], "polygons")[[1]], "ID") <- "1"
+      pols <- pols[[1]]
+    }
     pols <- sp::SpatialPolygonsDataFrame(pols, data = data.frame(species = nam))
     if(terrestrial){
       pols <- rgeos::gIntersection(pols, cropper, byid = T)

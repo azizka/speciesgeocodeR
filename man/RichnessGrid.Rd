@@ -4,7 +4,7 @@
 Species Richness and Abundance Grids from Point Records
 }
 \description{
-Create a species richness or abundance grid, from a spgeoOUT object or a data.frame with species names and occurrence coordinates.
+A species richness or record abundance grid.
 }
 \usage{
 RichnessGrid(x, ras, reso = 1, type = "spnum")
@@ -12,7 +12,7 @@ RichnessGrid(x, ras, reso = 1, type = "spnum")
 
 \arguments{
   \item{x}{
-an object of the class  \code{spgeoOUT}.  If x is a \code{data.frame}, it must consist of three columns, indicating species name, longitude and latitude. 
+an object of the class  \code{spgeoOUT} or a \code{data.frame}.  If x is a \code{data.frame}, it must comprise three columns,: \sQuote{species}, \sQuote{longitude} and \sQuote{latitude}. 
 }
   \item{ras}{
 an object of the class \code{raster} defining the extent and resolution for the richness grid.  If missing,  estimated from the data.

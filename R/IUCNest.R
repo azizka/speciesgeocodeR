@@ -1,6 +1,8 @@
-IUCNest <- function(x, value = c("all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN500"), 
+IUCNest <- function(x, value = "all", 
                     NT.thresh = c(30000, 3000), VU.thresh = c(20000, 2000), 
                     EN.thresh = c(5000,500), CR.thresh = c(100, 10)) {
+  
+  match.arg(value, choices = c("all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN500"))
 
     AOO <- rep("DD", nrow(x))
     EOO <- rep("DD", nrow(x))

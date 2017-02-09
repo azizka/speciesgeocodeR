@@ -16,7 +16,7 @@ MapRichness(x, buffer = 1, show.occ = F)
 an object of the class \sQuote{spgeoOUT}.
 }
   \item{buffer}{
-numeric. Indicating the buffer around the the data points whe plotting the map.
+numeric. Indicating the buffer around the the data rectangel when plotting the map.
 }
   \item{show.occ}{
 logical.  Defines if the occurrence points should be added to the plot (default = F).
@@ -34,22 +34,10 @@ See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tu
 }
 
 \examples{
-#simulate example occurrences
-occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
-                       decimallongitude = runif(n = 250, min = 42, max = 51),
-                       decimallatitude = runif(n = 250, min = -26, max = -11))
+data(lemurs)
+data(mdg_biomes)
 
-#simulate example areas
-pol.exmpl <- 
-  SpatialPolygonsDataFrame(
-    SpatialPolygons(
-      list(Polygons(list(Polygon(cbind(c(44, 46, 46, 44, 44),
-                                       c(-24, -24, -13, -13, -24)))), ID = '1'),
-           Polygons(list(Polygon(cbind(c(47, 50, 50, 47, 47),
-                                       c(-24, -24, -13, -13, -24)))), ID = '2'))),            
-    data.frame(areas = c("Polygon1", "Polygon2")))
-
-outp <- SpGeoCod(occ.exmpl, pol.exmpl, areanames = 'areas')
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = 'name')
 MapRichness(outp)
 }
 \keyword{ spatial }

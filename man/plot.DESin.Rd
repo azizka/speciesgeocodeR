@@ -5,7 +5,7 @@
 Plot Method for DESin
 }
 \description{
-a set of plots to explore a DESin object
+Plotting method for class DESin. Plots the number of species through time, after randomization.
 }
 \usage{
 \method{plot}{DESin}(x, ribbon = TRUE, ...)}

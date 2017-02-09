@@ -5,7 +5,7 @@
 Distribution of Lemur Species
 }
 \description{
-A \code{data.frame} with point occurrences of 17 Lemur species from Madagascar as example for the input format.  The data is from www.gbif.org.
+A \code{data.frame} with point occurrences of 17 Lemur species from Madagascar.  The data is from www.gbif.org.
 }
 \usage{data("lemurs")}
 \format{

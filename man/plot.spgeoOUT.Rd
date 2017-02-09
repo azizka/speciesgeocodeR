@@ -5,7 +5,7 @@
 Plot Method for SpgeoOUT Objects
 }
 \description{
-plot.spgeoOUT is the plotting method for objects of the class spgeoOUT.  Depending on the type argument the function can be used to get an overview over the data or plot all elements of the object.
+The plotting method for objects of the class spgeoOUT.  Depending on the \code{type} argument the function can be used to get an overview over the data or plot all elements of the object.
 }
 \usage{
 \method{plot}{spgeoOUT}(x,  type = "summary", mode = "percent", ...)
@@ -26,7 +26,7 @@ additional arguments passed to other methods
 }
 }
 \details{
-The output will be different depending on the type argument. \code{type} = \dQuote{summary}: a map with all occurrence points and polygons (the red points were not classified to any polygon), the species number for all polygons, and if available, a heatplot visualizing the coexistence matrix; \code{type} = \dQuote{species}: a bar chart for each input species showing the number of occurrences in each polygon; \code{type} = \dQuote{polygons}: a bar chart for each input-polygon showing the number of occurrences for each species in the polygon; \code{type} = \dQuote{speciesrichness}: a bar chart showing species number per polygon; \code{type} = \dQuote{mapspecies}: one map per species showing all occurrence points in all polygons; \code{type} = \dQuote{mappolygons}: a series of maps, showing each polygon and its close environment, with all samples classified to this polygon. Species are color-coded; \code{type} = \dQuote{mapunclassified}: a map with all sample points  that could not be classified to any polygon; \code{type} = \dQuote{mapall}: a map of all occurrence points in the object.
+The output will be different depending on the type argument. \code{type} = \dQuote{summary}: a map with all occurrence points and polygons (red points not classified to any polygon), the species number for all polygons, and if available, a heatplot visualizing the coexistence matrix; \code{type} = \dQuote{species}: a bar chart for each input species showing the number of occurrences in each polygon; \code{type} = \dQuote{polygons}: a bar chart for each input-polygon showing the number of occurrences for each species in the polygon; \code{type} = \dQuote{speciesrichness}: a bar chart showing species number per polygon; \code{type} = \dQuote{mapspecies}: one map per species showing all occurrence points in all polygons; \code{type} = \dQuote{mappolygons}: a series of maps, showing each polygon and its close environment, with all samples classified to this polygon. Species are color-coded; \code{type} = \dQuote{mapunclassified}: a map with all sample points  that could not be classified to any polygon; \code{type} = \dQuote{mapall}: a map of all occurrence points in the object.
 }
 
 \seealso{
@@ -34,21 +34,10 @@ The output will be different depending on the type argument. \code{type} = \dQuo
 }
 \examples{
 #simulate example occurrences
-occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
-                       decimallongitude = runif(n = 250, min = 42, max = 51),
-                       decimallatitude = runif(n = 250, min = -26, max = -11))
+data(lemurs)
+data(mdg_biomes)
 
-#simulate example areas
-pol.exmpl <- 
-  SpatialPolygonsDataFrame(
-    SpatialPolygons(
-      list(Polygons(list(Polygon(cbind(c(44, 46, 46, 44, 44),
-                                       c(-24, -24, -13, -13, -24)))), ID = '1'),
-           Polygons(list(Polygon(cbind(c(47, 50, 50, 47, 47),
-                                       c(-24, -24, -13, -13, -24)))), ID = '2'))),            
-    data.frame(areas = c("Polygon1", "Polygon2")))
-
-outp <- SpGeoCod(occ.exmpl, pol.exmpl, areanames = 'areas')
+outp <- SpGeoCod(lemurs, mdg_biomes, areanames = 'name')
 plot(outp)
 plot(outp, type = "speciesrichness")
 plot(outp, type = "mapall")
