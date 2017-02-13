@@ -74,7 +74,10 @@ CalcRange <- function(x, method = "pseudospherical", terrestrial = F) {
     cropper <- cropper + 1
     cropper <- raster::crop(speciesgeocodeR::landmass, cropper)
     
-    out <- rgeos::gIntersection(out, cropper, byid = T)
+    out2 <- rgeos::gIntersection(out, cropper, byid = T)
+    dat.add <- out@data
+    rownames(dat.add) <- getSpPPolygonsIDSlots(out2)
+    out <- SpatialPolygonsDataFrame(out2, data = dat.add)
   }
   return(out)
 }
