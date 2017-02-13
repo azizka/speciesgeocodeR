@@ -1,4 +1,4 @@
-CalcRange <- function(x, method, terrestrial = F) {
+CalcRange <- function(x, method = "pseudospherical", terrestrial = F) {
   # x = object of class data.frame, spgeOUT, SpatialPOints, method = c('euclidean', 'pseudospherical'), terrestrial = logical,
   
   base::match.arg(arg = method, 
@@ -12,6 +12,7 @@ CalcRange <- function(x, method, terrestrial = F) {
   # fix different input data types
   ## data.frame
   if (is.data.frame(x)) {
+    names(x) <- tolower(names(x))
     dat <- x[, c("species", "decimallongitude", "decimallatitude")]
   }
   ## spgeoOUt

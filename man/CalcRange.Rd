@@ -10,7 +10,7 @@ Calculate range polygons based on convex hulls from occurrence points. Includes 
 }
 
 \usage{
-CalcRange(x, method, terrestrial = F)
+CalcRange(x, method = "pseudospherical", terrestrial = F)
 }
 
 \arguments{
