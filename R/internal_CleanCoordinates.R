@@ -162,6 +162,7 @@
   } else {
     testpolys <- poly
   }
+  proj4string(pts) <- proj4string(testpolys)
   land <- over(x = pts, y = testpolys)[, 1]
   out <- !is.na(land)
   
