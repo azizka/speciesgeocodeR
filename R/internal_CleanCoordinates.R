@@ -58,6 +58,10 @@
   } else {
     testpolys <- poly
   }
+  if(is.na(proj4string(testpolys))){
+    warning("Guessing WGS84 CRS for 'country.ref'")
+    proj4string(testpolys) <- proj4string(pts)
+  }
   if(proj4string(pts) != proj4string(testpolys)){
     warning("Guessing WGS84 CRS for the records")
     proj4string(pts) <- proj4string(testpolys)
@@ -165,6 +169,10 @@
     testpolys <- crop(testpolys, extent(pts) + 1)
   } else {
     testpolys <- poly
+  }
+  if(is.na(proj4string(testpolys))){
+    warning("Guessing WGS84 CRS for 'seas.ref'")
+    proj4string(testpolys) <- proj4string(pts)
   }
   if(proj4string(pts) != proj4string(testpolys)){
     warning("Guessing identical CRS between records and 'seas.ref'")
