@@ -58,7 +58,11 @@
   } else {
     testpolys <- poly
   }
-  proj4string(pts) <- proj4string(testpolys)
+  if(proj4string(pts) != proj4string(testpolys)){
+    warning("Guessing WGS84 CRS for the records")
+    proj4string(pts) <- proj4string(testpolys)
+  }
+  
   testpolys <- crop(testpolys, extent(pts))
   
   country <- sp::over(x = pts, y = testpolys)[, "ISO3"]
@@ -162,7 +166,11 @@
   } else {
     testpolys <- poly
   }
-  proj4string(pts) <- proj4string(testpolys)
+  if(proj4string(pts) != proj4string(testpolys)){
+    warning("Guessing identical CRS between records and 'seas.ref'")
+    proj4string(pts) <- proj4string(testpolys)
+  }
+
   land <- over(x = pts, y = testpolys)[, 1]
   out <- !is.na(land)
   
