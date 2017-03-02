@@ -58,6 +58,7 @@
   } else {
     testpolys <- poly
   }
+  proj4string(pts) <- proj4string(testpolys)
   testpolys <- crop(testpolys, extent(pts))
   
   country <- sp::over(x = pts, y = testpolys)[, "ISO3"]
