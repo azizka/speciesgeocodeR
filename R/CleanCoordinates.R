@@ -51,11 +51,11 @@ CleanCoordinates <- function(x, countries, species, dataset,
   if(missing(urban.ref)){
     urban.ref <- NULL
   }
-  
 
   #Check function input
   if (is.matrix(x) | is.data.frame(x)) {
     if (dim(x)[2] != 2) {
+      x <- as.data.frame(x)
       if("decimallongitude" %in% names(x) & "decimallatitude" %in% names(x)) {
         x <- x[, c("decimallongitude", "decimallatitude")]
         warning("more than two columns, input guessed from column names")
