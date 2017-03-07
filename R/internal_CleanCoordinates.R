@@ -30,6 +30,9 @@
     if (testtype[1] == "province") {
       referencedat <- referencedat[referencedat$type == "province", ]
     }
+  }else{
+    proj4string(referencedat) <- NA
+    warning("assumning lat/lon for centroids.ref")
   }
   
   limits <- raster::extent(dat) + buffer
@@ -55,16 +58,10 @@
   
   if (is.null(poly)) {
     testpolys <- rnaturalearth::ne_countries(scale = "medium")
-  } else {
+  }else{
     testpolys <- poly
-  }
-  if(is.na(proj4string(testpolys))){
-    warning("Guessing WGS84 CRS for 'country.ref'")
-    proj4string(testpolys) <- proj4string(pts)
-  }
-  if(proj4string(pts) != proj4string(testpolys)){
-    warning("Guessing WGS84 CRS for the records")
-    proj4string(pts) <- proj4string(testpolys)
+    proj4string(referencedat) <- NA
+    warning("assumning lat/lon for country.ref")
   }
   
   testpolys <- crop(testpolys, extent(pts))
@@ -131,6 +128,9 @@
   
   if (is.null(poly)) {
     stop("No referencepolygons found. Set 'urban.ref'")
+  }else{
+    proj4string(poly) <- NA
+    warning("assumning lat/lon for urban.ref")
   }
   
   poly <- crop(poly, limits)
@@ -168,15 +168,9 @@
     testpolys <- speciesgeocodeR::landmass
     testpolys <- crop(testpolys, extent(pts) + 1)
   } else {
+    proj4string(poly) <- NA
+    warning("Assumning lat/lon for seas.ref")
     testpolys <- poly
-  }
-  if(is.na(proj4string(testpolys))){
-    warning("Guessing WGS84 CRS for 'seas.ref'")
-    proj4string(testpolys) <- proj4string(pts)
-  }
-  if(proj4string(pts) != proj4string(testpolys)){
-    warning("Guessing identical CRS between records and 'seas.ref'")
-    proj4string(pts) <- proj4string(testpolys)
   }
 
   land <- over(x = pts, y = testpolys)[, 1]
@@ -206,6 +200,9 @@
   dat <- sp::SpatialPoints(x)
   if (is.null(referencedat)) {
     referencedat <- speciesgeocodeR::institutions
+  }else{
+    proj4string(referencedat) <- NA
+    warning("assumning lat/lon for inst.ref")
   }
   
   limits <- raster::extent(dat) + buffer

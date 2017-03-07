@@ -11,15 +11,15 @@ Cleaning geographic coordinates by multiple empirical tests to flag potentially 
 }
 \usage{
 CleanCoordinates(x, countries, species, dataset,
-                             output = "spatialvalid", report = F, capitals = T,
-                             centroids = T, countrycheck = F, duplicates = F, 
-                             GBIF = T, institutions = T, outliers = F, seas = T, 
-                             urban = F, validity = T, zeros = T, verbose = T,
-                             capitals.rad = 0.05, centroids.rad = 0.01, 
-                             centroids.detail = "both", inst.rad = 0.001, 
-                             outliers.mtp = 25, outliers.td = NULL, zeros.rad = 0.5, 
-                             capitals.ref, centroids.ref, country.ref,
-                             inst.ref, seas.ref, urban.ref)
+                output = "spatialvalid", report = F, capitals = T,
+                centroids = T, countrycheck = F, duplicates = F, 
+                GBIF = T, institutions = T, outliers = F, seas = T,
+                urban = F, validity = T, zeros = T, verbose = T,
+                capitals.rad = 0.05, centroids.rad = 0.01,
+                centroids.detail = "both", inst.rad = 0.001,
+                outliers.mtp = 25, outliers.td = NULL, zeros.rad = 0.5,
+                capitals.ref, centroids.ref, country.ref,
+                inst.ref, seas.ref, urban.ref)
 }
 
 \arguments{
