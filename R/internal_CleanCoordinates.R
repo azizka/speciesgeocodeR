@@ -2,6 +2,9 @@
   dat <- sp::SpatialPoints(x)
   if (is.null(referencedat)) {
     referencedat <- speciesgeocodeR::capitals
+  }else{
+    proj4string(referencedat) <- ""
+    warning("assuming lat/lon for centroids.ref")
   }
   
   limits <- raster::extent(dat) + buffer
@@ -31,8 +34,8 @@
       referencedat <- referencedat[referencedat$type == "province", ]
     }
   }else{
-    proj4string(referencedat) <- NA
-    warning("assumning lat/lon for centroids.ref")
+    proj4string(referencedat) <- ""
+    warning("assuming lat/lon for centroids.ref")
   }
   
   limits <- raster::extent(dat) + buffer
@@ -60,13 +63,14 @@
     testpolys <- rnaturalearth::ne_countries(scale = "medium")
   }else{
     testpolys <- poly
-    proj4string(referencedat) <- NA
-    warning("assumning lat/lon for country.ref")
+    
+    warning("assuming lat/lon for country.ref")
   }
   
+  proj4string(testpolys) <- ""
   testpolys <- crop(testpolys, extent(pts))
   
-  country <- sp::over(x = pts, y = testpolys)[, "ISO3"]
+  country <- sp::over(x = pts, y = testpolys)[, "iso_a3"]
   out <- as.character(country) == as.character(countries)
   out[is.na(out)] <- TRUE
   
@@ -129,7 +133,7 @@
   if (is.null(poly)) {
     stop("No referencepolygons found. Set 'urban.ref'")
   }else{
-    proj4string(poly) <- NA
+    proj4string(poly) <- ""
     warning("assumning lat/lon for urban.ref")
   }
   
@@ -168,8 +172,8 @@
     testpolys <- speciesgeocodeR::landmass
     testpolys <- crop(testpolys, extent(pts) + 1)
   } else {
-    proj4string(poly) <- NA
-    warning("Assumning lat/lon for seas.ref")
+    proj4string(poly) <- ""
+    warning("Assuming lat/lon for seas.ref")
     testpolys <- poly
   }
 
@@ -200,17 +204,16 @@
   dat <- sp::SpatialPoints(x)
   if (is.null(referencedat)) {
     referencedat <- speciesgeocodeR::institutions
-  }else{
-    proj4string(referencedat) <- NA
-    warning("assumning lat/lon for inst.ref")
   }
   
   limits <- raster::extent(dat) + buffer
   
   # subset of testdatset according to limits
+  referencedat <- referencedat[!is.na(referencedat$decimallongitude) &
+                                 !is.na(referencedat$decimallatitude),]
   referencedat <- raster::crop(SpatialPoints(referencedat[, c("decimallongitude", "decimallatitude")]), limits)
   
-  if(is.null(referencedat)){ # incase no bdinstitutions
+  if(is.null(referencedat)){ # in case no bdinstitutions
     out <- rep(TRUE, nrow(x))
   }else{
     referencedat <- rgeos::gBuffer(referencedat, width = testdist, byid = T)
