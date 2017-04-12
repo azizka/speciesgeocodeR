@@ -197,6 +197,9 @@
   # lat == long
   out[which(x$decimallongitude == x$decimallatitude)] <- FALSE
   
+  # #abs lat == abs lon
+  # out[which(x$decimallongitude == x$decimallatitude)] <- FALSE
+  
   return(out)
 } 
 

@@ -146,5 +146,5 @@ test <- CleanCoordinates(exmpl[, 2:3],species = exmpl[, 1], verbose = FALSE)
 summary(test)
 plot(test)
 }
-\keyword{ datgen }
+\keyword{ Coordinate cleaning }
 

@@ -1,8 +1,8 @@
 Package: speciesgeocodeR
 Type: Package
 Title: Prepare Species Distributions for the Use in Phylogenetic Analyses
-Version: 2.0-4
-Date: 2017-02-09
+Version: 2.0-5
+Date: 2017-04-12
 Author: Alexander Zizka [aut, cre]
 Maintainer: Alexander Zizka <alexander.zizka@bioenv.gu.se>
 Description: Preparation of species occurrences and distribution data for the use in phylogenetic analyses. SpeciesgeocodeR is built for data cleaning, data exploration and data analysis and especially suited for biogeographical and ecological questions on large datasets. The package includes the easy creation of summary-tables and -graphs and geographical maps, the automatic cleaning of geographic occurrence data, the calculating of coexistence matrices and species ranges (EOO) as well as mapping diversity in geographic areas.

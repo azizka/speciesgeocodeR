@@ -1,6 +1,6 @@
 \name{CladeByTrait}
 \alias{CladeByTrait}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
 Extract clades based on trait values
 }
@@ -32,12 +32,15 @@ numerical.  The maximum number of tips in the resulting clades.
 numerical.  The number of species in a clade permitted not to exhibit the calde of interest.
 }
   \item{summary}{
-logical. IF TRUE a summary file is written to disk.
+logical. If TRUE a summary file is written to disk.
 }
 }
 
 \value{
 A set of nexus files and plots in the working directory
+}
+\author{
+Alexander Zizka, Ruud Scharn
 }
 
 \note{
@@ -46,7 +49,8 @@ See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tu
 
 \examples{
 sp.nam <-  unique(paste(sample(letters, size = 250, replace = TRUE), 
-                  sample(letters, size = 250, replace = TRUE), sep = ""))
+                        sample(letters, size = 250, replace = TRUE),
+			sep = ""))
 tr.dat <- sample(c(0,1), size = length(sp.nam), replace = TRUE)
 trait <- data.frame(species = sp.nam, trait = tr.dat)
 }
