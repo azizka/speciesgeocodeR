@@ -40,5 +40,5 @@ data(mdg_biomes)
 outp <- SpGeoCod(lemurs, mdg_biomes, areanames = 'name')
 MapRichness(outp)
 }
-\keyword{ spatial }
-\keyword{ hplot }
+\keyword{Diversity pattern}
+\keyword{Visualisation}

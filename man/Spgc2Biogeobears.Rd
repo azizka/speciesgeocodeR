@@ -13,7 +13,7 @@ Spgc2BioGeoBEARS(x, phyl = NULL, file = NULL, true.areas = T, true.species = T)
 
 \arguments{
   \item{x}{
-an object of the clas \code{'spgeoOUT'}
+an object of the class \code{'spgeoOUT'}
 }
   \item{phyl}{
 an object of the class \code{phylo}. An optional phylogeny to be used with BioGeoBEARS, to align species. 
@@ -52,7 +52,6 @@ data(mdg_poly)
 outp <- SpGeoCod(lemurs, mdg_poly)
 conv <- Spgc2BioGeoBEARS(outp)
 }
-
 }
 
-\keyword{ datgen }
+\keyword{Area classification}

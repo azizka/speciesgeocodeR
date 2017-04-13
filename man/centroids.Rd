@@ -32,4 +32,4 @@ CENTRAL INTELLIGENCE AGENCY (2014) \emph{The World Factbook}, Washington, DC.
 data(centroids)
 str(centroids)
 }
-\keyword{datasets}
+\keyword{gazetteers}

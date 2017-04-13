@@ -25,4 +25,4 @@ A \code{data.frame} with point occurrences of 17 Lemur species from Madagascar. 
 data(lemurs)
 str(lemurs)
 }
-\keyword{datasets}
+\keyword{Example data}

@@ -37,4 +37,4 @@ exp1 <- DESin(fos, rec, bin.size = 2, reps = 3)
 summary(exp1)
 }
 
-\keyword{ methods }
+\keyword{ Area classification }

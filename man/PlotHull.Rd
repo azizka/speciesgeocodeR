@@ -51,5 +51,6 @@ occ.exmpl<- data.frame(species = sample(letters, size = 250, replace = TRUE),
 dat <- CalcRange(occ.exmpl, method = "pseudospherical", terrestrial = FALSE)
 PlotHull(dat)
 }
-\keyword{ spatial }
-\keyword{ hplot }
+\keyword{ Range size }
+\keyword{ Visualisation }
+

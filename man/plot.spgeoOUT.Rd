@@ -42,4 +42,5 @@ plot(outp)
 plot(outp, type = "speciesrichness")
 plot(outp, type = "mapall")
 }
-\keyword{ methods }
+
+\keyword{ Visualisation }

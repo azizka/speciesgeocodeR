@@ -3,10 +3,10 @@
 \alias{is.DESin}
 
 \title{
-Create input files for DES-PyRate
+Create Input Files for DES-PyRate
 }
 \description{
-Creat the input for the DES model implemented in PyRate, from tables of fossil and current species distributions. 
+Creat the input for the DES model implemented in PyRate from tables of fossil and current species distributions. 
 }
 \usage{
 DESin(x, recent, bin.size, reps = 3, verbose = F)
@@ -21,10 +21,10 @@ a \code{data.frame} or the path to a tab delimited table with the recent distrib
 
 }
 \item{bin.size}{
-numerical. The size of the DES-time bins in the same unit as fossil ages, but usually million years.
+numeric. The size of the DES-time bins in the same unit as fossil ages, but usually million years.
 }
 \item{reps}{
-numerical. The number of replicated output files. Replication arises from the uncertainty in fossil age. For each replicate the age of the fossil is sampled from a uniform distribution between the earliestAge and the latestAge.
+numeric. The number of replicated output files. Replication arises from the uncertainty in fossil age. For each replicate the age of the fossil is sampled from a uniform distribution between the earliestAge and the latestAge.
 }
 \item{verbose}{
 logical. If TRUE, the progress is reported
@@ -32,7 +32,7 @@ logical. If TRUE, the progress is reported
 }
 
 \value{
-An object of the S3-class \dQuote{DESin}, which is a list containing the input and output data
+An object of the class \code{DESin}, which is a list containing the input and output data
 }
 
 \note{
@@ -62,4 +62,5 @@ write.DES.in(exp1, file = "Example1_DES_in")
 }
 }
 
-\keyword{ datgen }
+\keyword{ Area classification }
+\keyword{ PyRate }

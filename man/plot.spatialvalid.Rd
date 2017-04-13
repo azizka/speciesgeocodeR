@@ -2,10 +2,10 @@
 \alias{plot.spatialvalid}
 
 \title{
-Plot Method for spatialvalid. A plot to visualize the flags from CleanCoordinates
+Plot Method for Class Spatialvalid
 }
 \description{
-a set of plots to explore class spatialvalid
+a set of plots to explore objects of the class \code{spatialvalid}. A plot to visualize the flags from CleanCoordinates
 }
 \usage{
 \method{plot}{spatialvalid}(x, bgmap = NULL, clean = T, details = T, 
@@ -25,10 +25,10 @@ logical.  If TRUE, non-flagged coordinates are included in the map.
 logical. If TRUE, occurences are colourcoded by the type of flag.
 }
   \item{pts.size}{
-numerical. The point size for the plot.
+numeric. The point size for the plot.
 }
   \item{font.size}{
-numerical. The font size for the legend and axes
+numeric. The font size for the legend and axes
 }
   \item{\dots}{
 additional arguments passed to other methods
@@ -53,5 +53,5 @@ test <- CleanCoordinates(exmpl[, 2:3],species = exmpl[, 1], verbose = FALSE)
 summary(test)
 plot(test)
 }
-\keyword{ methods }
+\keyword{ Visualisation }
 

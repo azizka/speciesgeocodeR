@@ -41,4 +41,4 @@ data(lemurs)
 dat <- RichnessGrid(lemurs, reso = 1, type = "spnum")
 
 }
-\keyword{ spatial }
+\keyword{Diversity pattern}

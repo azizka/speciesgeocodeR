@@ -1,8 +1,6 @@
-# add collections argument with: Herbaria from INdex Herbariorum, GBIF institutionen, Botanical gardens from GBCI and Museums from gr bio, all where referencing is was possible from google and that to not fall into water
-# add a dataset test
 # include warning message in case the standard landmass is used
 
-CleanCoordinates <- function(x, countries, species, dataset,
+CleanCoordinates <- function(x, countries, species,
                              output = "spatialvalid", report = F, capitals = T, 
                              centroids = T, countrycheck = F, duplicates = F, 
                              GBIF = T, institutions = T, outliers = F, seas = T, 
@@ -29,9 +27,6 @@ CleanCoordinates <- function(x, countries, species, dataset,
       warning("is.null(species), outliers test skipped")
     }
     species <- NULL
-  }
-  if(missing(dataset)){
-    dataset <- NULL
   }
   if(missing(capitals.ref)){
     capitals.ref <- NULL

@@ -9,7 +9,7 @@ A gazetteer of global capital coordinates.
 }
 \usage{data("capitals")}
 \format{
-  A data frame with 69 observations on the following 4 variables.
+  A data frame with 225 observations on the following 4 variables.
   \describe{
     \item{\code{ISO3}}{a factor, ISO-3 country code.}
     \item{\code{capital}}{a factor, capital names.}
@@ -28,4 +28,4 @@ CENTRAL INTELLIGENCE AGENCY (2014) \emph{The World Factbook}, Washington, DC.
 data(capitals)
 str(capitals)
 }
-\keyword{datasets}
+\keyword{gazetteers}

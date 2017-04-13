@@ -43,4 +43,4 @@ write(exp1)
 }
 }
 
-\keyword{ methods }
+\keyword{ Area classification }

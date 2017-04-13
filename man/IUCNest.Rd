@@ -15,7 +15,7 @@ IUCNest(x, value = "all",
 
 \arguments{
   \item{x}{
-an object of the class range.sizes, as produced by \code{\link{CalcRange}}.
+an object of the class \code{range.sizes}, as produced by \code{\link{CalcRange}}.
 }
   \item{value}{
 a \code{character string}. Defining the output value, see details. One of "all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN500" Default = "all".
@@ -61,5 +61,5 @@ rang <- CalcRange(occ.exmpl, method = 'pseudospherical', terrestrial = FALSE)
 IUCNest(rang)
 }
 
-\keyword{ spatial }
+\keyword{ Range size }
 

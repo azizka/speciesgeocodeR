@@ -2,7 +2,7 @@
 \alias{institutions}
 \docType{data}
 \title{
-Geographic coordinates and addresses of biodiversity institutions.
+Global Locations of Biodiversity Institutions.
 }
 \description{
 A global gazetteer for biodiviersity institutions from various sources, including zoos, museums, botanical gardens, GBIF contributors, herbaria, university collections.
@@ -13,11 +13,19 @@ A global gazetteer for biodiviersity institutions from various sources, includin
 }
 
 \source{
-various
+Compiled from various sources:
+\itemize{
+\item{Global Biodiversity Information Facility \url{www.gbif.org}}
+\item{Wikipedia \url{www.wikipedia.org}}
+\item{Geonames \url{www.geonames.org}}
+\item{The Global Registriy of Biodiversity Repositories \url{www.grbio.org}}
+\item{Index Herbariorum \url{http://sciweb.nybg.org/Science2/IndexHerbariorum.asp}}
+\item{Botanic Gardens Conservation International \url{https://www.bgci.org/}}
+}
 }
 
 \examples{
 data(institutions)
 str(institutions)
 }
-\keyword{datasets}
+\keyword{gazetteers}

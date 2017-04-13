@@ -48,4 +48,4 @@ data(mdg_biomes)
 outp <- SpGeoCod(lemurs, mdg_biomes, areanames = "name")
 }
 
-\keyword{ spatial }
+\keyword{ Area classification }

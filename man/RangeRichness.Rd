@@ -47,4 +47,6 @@ rang <- CalcRange(occ.exmpl, method = 'pseudospherical')
 sprich <- RangeRichness(rang)
 plot(sprich)
 }
-\keyword{spatial}
+\keyword{Range size}
+\keyword{Diversity pattern}
+

@@ -21,4 +21,4 @@ ecoregions of the world: A new map of life on earth. \emph{BioScience}, \bold{51
 data(mdg_biomes)
 str(mdg_biomes)
 }
-\keyword{datasets}
+\keyword{Example data}

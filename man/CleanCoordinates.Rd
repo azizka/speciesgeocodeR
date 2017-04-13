@@ -7,10 +7,10 @@
 Geographic Cleaning of Coordinates from Biologic Collections
 }
 \description{
-Cleaning geographic coordinates by multiple empirical tests to flag potentially erroneous coordinates.
+Cleaning geographic coordinates by multiple empirical tests to flag potentially erroneous coordinates, addressing issues common in biological collection databases.
 }
 \usage{
-CleanCoordinates(x, countries, species, dataset,
+CleanCoordinates(x, countries, species,
                 output = "spatialvalid", report = F, capitals = T,
                 centroids = T, countrycheck = F, duplicates = F, 
                 GBIF = T, institutions = T, outliers = F, seas = T,
@@ -27,13 +27,10 @@ CleanCoordinates(x, countries, species, dataset,
 a \code{matrix} or \code{data.frame} with two columns in the format: decimallongitude, decimallatitude.  
 }
   \item{countries}{
-character. A vector of the same length as x, with country information for each record in ISO3 format.  If missing, the countries test is skipped.
+character. A vector of the same length as rows in x, with country information for each record in ISO3 format.  If missing, the countries test is skipped.
 }
   \item{species}{
-character. A vector of the same length as x, with the species identity for each record.  If missing, the outliers test is skipped.
-}
-  \item{dataset}{
-character. A vector of the same length as x, with the dataset of origin for each record.  If missing, the dataset test is skipped.
+character. A vector of the same length as rows in x, with the species identity for each record.  If missing, the outliers test is skipped.
 }
   \item{output}{
 a character string defining the output value. See the value section for details. one of \sQuote{spatialvalid}, \sQuote{summary}, \sQuote{cleaned}. Default = \sQuote{\code{spatialvalid}}.
@@ -42,7 +39,7 @@ a character string defining the output value. See the value section for details.
 logical or character.  If TRUE a report file is written to the working directory, summarizing the cleaning results. If a character, the path to which the file should be written.  Default = FALSE.
 }
   \item{capitals}{
-logical. If TRUE, tests a radiusaround adm-0 capitals. The radius is \code{capitals.rad}. Default = TRUE.
+logical. If TRUE, tests a radius around adm-0 capitals. The radius is \code{capitals.rad}. Default = TRUE.
 }
   \item{centroids}{
 logical. If TRUE, tests a radius around country centroids. The radius is \code{centroids.rad}. Default = TRUE.
@@ -51,7 +48,7 @@ logical. If TRUE, tests a radius around country centroids. The radius is \code{c
 logical.  If TRUE, tests if coordinates are from the country indicated in the country column.  Default = FALSE.
 }
   \item{duplicates}{
-logical.  If TRUE, tests for duplicate records. THis checks for identical coordinates or if a species vector is provided for identical coordinates within a species. All but the first records are flagged as duplicates.  Default = FALSE.
+logical.  If TRUE, tests for duplicate records. This checks for identical coordinates or if a species vector is provided for identical coordinates within a species. All but the first records are flagged as duplicates.  Default = FALSE.
 }
   \item{GBIF}{
 logical.  If TRUE, tests a one-degree radius around the GBIF headquarters in Copenhagen, Denmark.  Default = TRUE.

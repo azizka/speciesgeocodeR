@@ -5,7 +5,7 @@
 Geographic Coordinate Cleaning based on Dataset Properties
 }
 \description{
-Identifies properties of datasets linked to potential problematic coordinates. Includes test to flag potential errors with converting ddmm to dd.dd, and periodicity in the data decimals indicating either rounding or a raster basis linked to low coordinate precision.
+Identifiespotential problematic coordinates based on dataset properties. Includes test to flag potential errors with converting ddmm to dd.dd, and periodicity in the data decimals indicating either rounding or a raster basis linked to low coordinate precision.
 }
 \usage{
 CleanCoordinatesDS(x, ddmm = TRUE, periodicity = TRUE, output = "flags", 
@@ -16,10 +16,10 @@ CleanCoordinatesDS(x, ddmm = TRUE, periodicity = TRUE, output = "flags",
 
 \arguments{
   \item{x}{
-a \code{data.frame} including columns named "dataset", "decimallongitude" and "decimallatitude".
+a \code{data.frame} including columns named \sQuote{dataset}, \sQuote{decimallongitude} and \sQuote{decimallatitude}.
 }
   \item{ddmm}{
-logical. If TRUE, testing for erroneous conversion from a degree minute format (ddmm) to a decimal degree format. See details.
+logical. If TRUE, testing for erroneous conversion from a degree minute format (ddmm) to a decimal degree (dd.dd) format. See details.
 }
   \item{periodicity}{
 logical. If TRUE, testing for periodicity in the data, which can indicate imprecise coordinates, due to rounding or rasterization.
@@ -50,7 +50,7 @@ logical. If TRUE, only a random subsample of 1000 records is used for the period
 This function checks the distribution of decimal points within datasets of geographic distribution records to identify datasets with potential errors/biases. Three potential error sources can be identified. The ddmm flag tests for the particular pattern that emerges if geographical coordinates in a degree minute annotation are transferred into decimal degrees, simply replacing the degree symbol with the decimal point. This kind of problem has been observed by in older datasets first recorded on paper using typewriters, where e.g. a floating point was used as symbol for degrees. The function uses a binomial test to check if more records then expected have decimals blow 0.6 (which is the maximum that can be obtained in minutes, as one degree has 60 minutes) and if the number of these records is higher than those above 0.6 by a certain proportion. The periodicity test uses rate estimation in a poison process to estimate if there is periodicity in the decimals of a dataset (as would be expected by for example rounding or data that was collected in a raster format) and if there is an over proportional number of records with the decimal 0 (full degrees) which indicates rounding and thus low precision. The default values are empirically optimized by with GBIF data, but should probably be adapted. \emph{The test results should be verified manually!}
 }
 \value{
-A \code{data.frame} with one row for each dataset in \code{x} and columns depending on the output option. \sQuote{detail} shows most level of detail, \sQuote{flag} shows only  flags from the test and \sQuote{minimal} shows only the combined flags. Available columns are: \code{binomial.pvalue} = p-value compared to ddmm.pvalue; \code{perc.difference} = the percentage of difference from the expectation under a binomial test; \code{pass.ddmm} = logical flag summarizing the ddmm test, if TRUE: passed, if FALSE: potentially problematic; \code{mle} = the maximum likelihood for the rate parameters of the periodicity test; rate.ratio = rate ratio between the two rates of the periodicity model compared to \code{periodicity.thresh}; \code{zero.mle} = size of the maximum likelihood zero size bin from the zero test; \code{zero.rate.ratio} = ratio by which the number of zero decimals surpasses the number of records with other decimals; \code{pass.zero} = logical flag summarizing the zero test, if TRUE: passed, if FALSE: potentially problematic; \code{pass.periodicity} = logical flag summarizing the periodicity test, if TRUE: passed, if FALSE: potentially problematic. Flags for the periodicity test will be marked dependent on the meridional direction tested: \sQuote{lon} = Longitude, \sQuote{lat} = latitude, \sQuote{com} = AND combination of the two former.
+A \code{data.frame} with one row for each dataset in \code{x} and columns depending on the output option: \sQuote{detail} shows most level of detail, \sQuote{flag} shows only  flags from the test and \sQuote{minimal} shows only the combined flags. Available columns are: \code{binomial.pvalue} = p-value compared to ddmm.pvalue; \code{perc.difference} = the percentage of difference from the expectation under a binomial test; \code{pass.ddmm} = logical flag summarizing the ddmm test, if TRUE: passed, if FALSE: potentially problematic; \code{mle} = the maximum likelihood for the rate parameters of the periodicity test; rate.ratio = rate ratio between the two rates of the periodicity model compared to \code{periodicity.thresh}; \code{zero.mle} = size of the maximum likelihood zero size bin from the zero test; \code{zero.rate.ratio} = ratio by which the number of zero decimals surpasses the number of records with other decimals; \code{pass.zero} = logical flag summarizing the zero test, if TRUE: passed, if FALSE: potentially problematic; \code{pass.periodicity} = logical flag summarizing the periodicity test, if TRUE: passed, if FALSE: potentially problematic. Flags for the periodicity test will be marked dependent on the meridional direction tested: \sQuote{lon} = longitude, \sQuote{lat} = latitude, \sQuote{com} = AND combination of the two former.
 }
 \author{
 person("Alexander", "Zizka", email = "alexander.zizka@bioenv.gu.se",
