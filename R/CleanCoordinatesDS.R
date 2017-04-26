@@ -1,13 +1,13 @@
 CleanCoordinatesDS <- function(x, ddmm = TRUE, periodicity = TRUE, output = "flags", 
                                ddmm.pvalue = 0.025, ddmm.diff = 0.2, 
-                               periodicity.target = "both", periodicity.thresh = 2.5, 
+                               periodicity.target = "both", periodicity.thresh = 3.5, 
                                periodicity.diagnostics = FALSE, 
-                               subsampling = FALSE) {
+                               subsampling = NULL) {
   
   # check input arguments
   match.arg(output, choices = c("detail", "flags", "minimum"))
   match.arg(periodicity.target, choices = c("lat", "lon", "both"))
-  
+
   # prepare input data
   if (!is.data.frame(x)) {
     stop("only defined for class 'data.frame'")
@@ -29,6 +29,7 @@ CleanCoordinatesDS <- function(x, ddmm = TRUE, periodicity = TRUE, output = "fla
       }
     }
     if (ncol(x) == 2) {
+      dat <- x
       dat$dataset <- "dataset"
       warning("column 'dataset' not found, assuming lon, lat input from single dataset")
     }
@@ -94,7 +95,6 @@ CleanCoordinatesDS <- function(x, ddmm = TRUE, periodicity = TRUE, output = "fla
     })
     
     # Reduce output to data.frame
-    
     out.t1 <- do.call("rbind.data.frame", out.t1)
     names(out.t1) <- c("binomial.pvalue", "perc.difference", "pass.ddmm")
     out.t1$pass.ddmm <- as.logical(out.t1$pass.ddmm)
@@ -104,11 +104,21 @@ CleanCoordinatesDS <- function(x, ddmm = TRUE, periodicity = TRUE, output = "fla
   
   # Run Test 2 and 3 per dataset
   if (periodicity) {
+    if(!is.null(subsampling)){
+      if(subsampling < 1000){
+        warning("Subsampling <1000 not recommended")
+      }
+    }
+    
     out.t2 <- lapply(test, function(k) {
       t2 <- k[, c("lon.test", "lat.test")]
-      if (nrow(t2) > 1000 & subsampling) {
-        warning("large dataset. Using subsampling for periodicity")
-        t2 <- t2[sample(nrow(t2), 1000), ]
+      if (!is.null(subsampling)) {
+        if(subsampling > nrow(t2)){
+          warning("Subsampling larger than rows in data, subsampling skipped")
+        }else{
+          warning(sprintf("Using subsampling for periodicity, n = %s", subsampling))
+          t2 <- t2[sample(nrow(t2), subsampling), ]
+        }
       }
       if (periodicity.target == "lon") {
         t2.res <- .AnalyzeBias(var = t2, nam = k$dataset[1], var_latlong = 1, 

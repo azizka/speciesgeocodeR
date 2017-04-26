@@ -12,8 +12,8 @@ Facilitating the use of large scale species occurrence records in biogeographic 
 \tabular{ll}{
 Package: \tab speciesgeocodeR\cr
 Type: \tab Package\cr
-Version: \tab 2.0-5\cr
-Date: \tab 2017-4-13\cr
+Version: \tab 2.0-6\cr
+Date: \tab 2017-4-26\cr
 License: \tab GPL-3\cr
 }
 The core functions of the package can be used via \code{\link{CleanCoordinates}},\code{\link{CalcRangeSize}} and \code{\link{SpGeoCod}} based on a \code{data.frame} of species names and occurrence coordinates  In addition to this the package includes easy methods for data visualization and producing output tailored for phylogenetic analyses.

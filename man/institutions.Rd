@@ -9,7 +9,7 @@ A global gazetteer for biodiviersity institutions from various sources, includin
 }
 \usage{data("institutions")}
 \format{
-  A data frame with 5987 observations on 9 variables.
+  A data frame with 12170 observations on 12 variables.
 }
 
 \source{

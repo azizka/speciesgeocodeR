@@ -10,8 +10,8 @@ Identifiespotential problematic coordinates based on dataset properties. Include
 \usage{
 CleanCoordinatesDS(x, ddmm = TRUE, periodicity = TRUE, output = "flags", 
                    ddmm.pvalue = 0.025, ddmm.diff = 0.2, 
-                   periodicity.target = "both", periodicity.thresh = 2.5, 
-                   periodicity.diagnostics = FALSE, subsampling = FALSE)
+                   periodicity.target = "both", periodicity.thresh = 3.5, 
+                   periodicity.diagnostics = FALSE, subsampling = NULL)
 }
 
 \arguments{
@@ -43,7 +43,7 @@ numerical. The threshold to for flagging in the periodicity test. Indicates the 
 logical. If TRUE, plots a series of diagnostics visualizing the periodicity test. Default = FALSE.
 }
   \item{subsampling}{
-logical. If TRUE, only a random subsample of 1000 records is used for the periodicity test. Speeds up analyses, for the use with many datasets. Default = FALSE. 
+numerical. If defined, only a random subsample of n = subsampling records is used for the periodicity test. Speeds up analyses, for the use with many large datasets. 
 }
 }
 \details{
