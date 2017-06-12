@@ -1,6 +1,7 @@
 CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, biome = NULL,
                           eco = NULL, convex.reps = 100, convex.repfrac = 0.3, 
-                          convex.repsize = NULL, aoo.reps = 3, aoo.proj = NULL, 
+                          convex.repsize = NULL, convex.rare = "buffer", convex.buffer.width = 10000,
+                          aoo.reps = 3, aoo.proj = NULL, 
                           aoo.gridsize = NULL, verbose = F) {
   base::match.arg(arg = method, 
                   choices = c("eoo_euclidean", 
@@ -9,10 +10,15 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                               "maxdist",
                               "qdist",
                               "ecoregion"))
+  base::match.arg(arg = convex.rare, choices = c("buffer", "drop"))
   
   if (!requireNamespace("geosphere", quietly = TRUE)) {
     stop("Package 'geosphere' not found. Please install.", call. = FALSE)
   }
+  
+  #projection
+  wgs84 <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+  warning("Assuming lat/long wgs84 coordinates")
 
   # fix different input data types data.frame
   if (is.data.frame(x)) {
@@ -49,6 +55,26 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     filt <- filt[filt > 2]
     dat.filt <- base::droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
+    #check for species where all lat or long ar identical, to prevent line polygons
+    ##longitude
+    test <- split(dat.filt, f = dat.filt$species)
+    test <- sapply(test, function(k){
+      length(unique(k$decimallongitude))
+    })
+    sortout2 <- names(test[test == 1])
+    sortout <- c(sortout, sortout2)
+    dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
+    
+    #latitude
+    test <- split(dat.filt, f = dat.filt$species)
+    test <- sapply(test, function(k){
+      length(unique(k$decimallatitude))
+    })
+    sortout2 <- names(test[test == 1])
+    sortout <- c(sortout, sortout2)
+    dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
+    
+    
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences:", 
               base::paste("\n", names(sortout)))
@@ -75,13 +101,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
                     type = "euclidean", cropper = cropper, biome = biome)
       out <- base::do.call("rbind.data.frame", are)
-      names(out) <- "eoo.euc"
-      
-      # add species with not enought points as NA
-      miss.area <- rep("NA", length(sortout))
-      miss.sp <- base::rownames(sortout)
-      miss <- base::data.frame(row.names = miss.sp, eoo.euc = miss.area)
-      out <- base::rbind(out, miss)
+      names(out) <- "eoo"
     }
   }
   
@@ -94,8 +114,28 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     filt <- filt[filt > 2]
     dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
+    #check for species where all lat or long ar identical, to prevent line polygons
+    ##longitude
+    test <- split(dat.filt, f = dat.filt$species)
+    test <- sapply(test, function(k){
+      length(unique(k$decimallongitude))
+    })
+    sortout2 <- names(test[test == 1])
+    sortout <- c(sortout, sortout2)
+    dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
+    
+    #latitude
+    test <- split(dat.filt, f = dat.filt$species)
+    test <- sapply(test, function(k){
+      length(unique(k$decimallatitude))
+    })
+    sortout2 <- names(test[test == 1])
+    sortout <- c(sortout, sortout2)
+    dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
+    
+    
     if (length(sortout) > 0) {
-      warning("found species with < 3 occurrences, excluded from output:",
+      warning("found species with < 3 occurrences:",
               paste("\n", names(sortout)))
     }
     if (nrow(dat.filt) == 0) {
@@ -114,20 +154,55 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
         stop("data includes species spanning >180 degrees.")
       }
       
-      # calcualte polygon area
+      # calculate polygon area
       are <- lapply(inp, ".ConvArea", reps = convex.reps, 
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
                     type = "pseudospherical", cropper = cropper, biome = biome)
       out <- do.call("rbind.data.frame", are)
-      names(out) <- "eoo.sph"
-      
-      # add species with not enought points as NA
-      miss.area <- rep("NA", length(sortout))
-      miss.sp <- rownames(sortout)
-      miss <- data.frame(row.names = miss.sp, eoo.sph = miss.area)
-      out <- rbind(out, miss)
-      }
+      names(out) <- "eoo"
+    }
   }
+  
+  #add rare species to convex methods
+  if(method == "eoo_euclidean" | method == "eoo_pseudospherical" & length(sortout) > 0)
+  # add species with not enought points 
+  ##calculate area based on bufferbuffer if rare  == buffer
+  if(convex.rare == "buffer"){
+    rar <- droplevels(subset(dat, dat$species %in% as.character(names(sortout))))
+    
+    cea <- sp::CRS("+proj=cea +lon_0=0 +lat_ts=30 +x_0=0 +y_0=0 +a=6371228 +b=6371228 +units=m +no_defs")
+    
+    rar <- sp::SpatialPointsDataFrame(rar[, c("decimallongitude", "decimallatitude")],
+                                      data = rar[,"species", drop = FALSE], proj4string = wgs84)
+    rar.cea <- sp::spTransform(rar, cea)
+    rar.cea <- rgeos::gBuffer(rar.cea, width = convex.buffer.width, byid=TRUE)
+    rar <- sp::spTransform(rar.cea, wgs84)
+    
+    if(terrestrial){
+      rar2 <- rgeos::gIntersection(rar, cropper, byid = T)
+      
+      rar.add <- rar@data
+      rownames(rar.add) <- getSpPPolygonsIDSlots(rar2)
+      rar <- SpatialPolygonsDataFrame(rar2, data = rar.add)
+    }
+    
+    miss <- round(geosphere::areaPolygon(rar) / (1000 * 1000), 0)
+    miss <- data.frame(eoo = miss, species = rar@data$species)
+    miss <- aggregate(eoo ~species, "sum", data = miss)
+    miss <- data.frame(eoo = miss$eoo, row.names = miss$species)
+    out <- rbind(out, miss)
+    warning(sprintf("using buffer based range for species with <3 records, bufferradius = %s", 
+                    convex.buffer.width))
+  }
+  ##Add as NA if convex.rare == drop
+  if(convex.rare == "drop"){
+    warning("species with < 3 records dropped from output")
+    miss.area <- rep("NA", length(sortout))
+    miss.sp <- base::rownames(sortout)
+    miss <- base::data.frame(row.names = miss.sp, eoo = miss.area)
+    out <- base::rbind(out, miss)
+  }
+
   
   # AOO
   if (method == "aoo") {

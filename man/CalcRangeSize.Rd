@@ -6,14 +6,16 @@ Species Range Size from Occurrence Records
 }
 
 \description{
-Approximate species range size from occurrence records. Implements various methods, including Extent of OCcurrence (EOO) based on planar or sherical convex hulls, Area of Occupancy (AOO), maximum and quantile distance between occurrences as well as WWF ecoregions.  Can be used to inform for criterion B of the IUCN red list classification using \code{\link{IUCNest}}.
+Approximate species range size from occurrence records. Implements various methods, including Extent of OCcurrence (EOO) based on planar or spherical convex hulls, Area of Occupancy (AOO), maximum and quantile distance between occurrences as well as WWF ecoregions.  Can be used to inform for criterion B of the IUCN red list classification using \code{\link{IUCNest}}.
 }
 
 \usage{
 CalcRangeSize(x, method = "eoo_pseudospherical", terrestrial = F,
               biome = NULL, eco = NULL, convex.reps = 100, 
-              convex.repfrac = 0.3, convex.repsize = NULL,aoo.reps = 3, 
-              aoo.proj = NULL, aoo.gridsize = NULL, verbose = F)
+              convex.repfrac = 0.3, convex.repsize = NULL,
+              convex.rare = "buffer", convex.buffer.width = 10000, 
+              aoo.reps = 3, aoo.proj = NULL, 
+              aoo.gridsize = NULL, verbose = F)
 }
 
 \arguments{
@@ -25,6 +27,8 @@ CalcRangeSize(x, method = "eoo_pseudospherical", terrestrial = F,
   \item{convex.reps}{numeric. The number of subsampling rounds for the convex hull calculation. See details.}
   \item{convex.repfrac}{numeric. The fraction of occurrence points (from the total number of occurrencepoints available in x for this species) to be used for convex hull calculation. See details.}
   \item{convex.repsize}{numeric. The number of occurrence points (from the total number of occurrencepoints available in x for this species) to be used for convex hull calculation. See details.}
+    \item{convex.rare}{character string. Details how to deal with species with less <3 occurrence records for the convex hul methods. One of \sQuote{buffer} or \sQuote{drop}. If buffer a geographic buffer with width \code{convex.buffer.width} around the occurrence records is used, if \dQuote{drop}, the respective speceis are dropped.}
+\item{convex.buffer.width}{numeric. The size of the buffer for \code{rare} in meters. A cylindrical equal arae projection is used for buffering.  Default is to 10000 meters.}
   \item{aoo.gridsize}{ numeric. 
 The area of the grid cells used for the AOO calculation in units of aoo.proj or in meter if aoo.proj == NULL. Following the IUCN recommendations the default is to 4 square kilometres.
 }
