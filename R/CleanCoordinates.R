@@ -18,7 +18,7 @@ CleanCoordinates <- function(x, countries, species,
     countries <- NULL
     if (countrycheck) {
       countrycheck <- FALSE
-      warning("inputformat matrix, countrycheck set to FALSE")
+      warning("countries missing, countrycheck set to FALSE")
     }
   }
   if(missing(species)){
