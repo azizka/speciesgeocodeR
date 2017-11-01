@@ -1,5 +1,5 @@
 CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, biome = NULL,
-                          eco = NULL, convex.reps = 100, convex.repfrac = 0.3, 
+                          eco = NULL, convex.reps = 1, convex.repfrac = 1, 
                           convex.repsize = NULL, convex.rare = "buffer", convex.buffer.width = 10000,
                           aoo.reps = 3, aoo.proj = NULL, 
                           aoo.gridsize = NULL, verbose = F) {
@@ -74,16 +74,19 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     sortout <- c(sortout, sortout2)
     dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
     
+    #test for almost perfect fit
+    test2 <- sapply(test, function(k){
+      round(abs(cor(k[, "decimallongitude"], k[, "decimallatitude"])), 6)})
+    sortout2 <- names(test2[test2 == 1])
+    sortout <- c(sortout, sortout2)
+    dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
+    
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences:", 
               base::paste("\n", names(sortout)))
     }
-    if (nrow(dat.filt) == 0) {
-      warning("no species with more than 2 occurrences found")
-      out <- base::data.frame(eoo_euc = NA)
-    }else{
-      
+    if (nrow(dat.filt) > 0) {
       # split by species
       inp <- split(dat.filt, f = dat.filt$species)
       
@@ -102,6 +105,9 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                     type = "euclidean", cropper = cropper, biome = biome)
       out <- base::do.call("rbind.data.frame", are)
       names(out) <- "eoo"
+    }else{
+      warning("no species with more than 2 occurrences found")
+      out <- data.frame(eoo_sph = NA)
     }
   }
   
@@ -110,7 +116,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     # species with less than 3 records
     filt <- dat[!duplicated(dat),]
     filt <- table(filt$species)
-    sortout <- filt[filt <= 2]
+    sortout <- names(filt[filt <= 2])
     filt <- filt[filt > 2]
     dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
@@ -133,15 +139,19 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     sortout <- c(sortout, sortout2)
     dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
     
+    #test for almost perfect fit
+    test2 <- sapply(test, function(k){
+      round(abs(cor(k[, "decimallongitude"], k[, "decimallatitude"])), 6)})
+    sortout2 <- names(test2[test2 == 1])
+    sortout <- c(sortout, sortout2)
+    dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
+    
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences:",
               paste("\n", names(sortout)))
     }
-    if (nrow(dat.filt) == 0) {
-      warning("no species with more than 2 occurrences found")
-      out <- data.frame(eoo_sph = NA)
-    }else{
+    if (nrow(dat.filt) > 0) {
       # split by species
       inp <- split(dat.filt, f = dat.filt$species)
       
@@ -160,6 +170,9 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                     type = "pseudospherical", cropper = cropper, biome = biome)
       out <- do.call("rbind.data.frame", are)
       names(out) <- "eoo"
+    }else{
+      warning("no species with more than 2 occurrences found")
+      out <- NULL
     }
   }
   
@@ -168,32 +181,41 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
   # add species with not enought points 
   ##calculate area based on bufferbuffer if rare  == buffer
   if(convex.rare == "buffer"){
-    rar <- droplevels(subset(dat, dat$species %in% as.character(names(sortout))))
-    
-    cea <- sp::CRS("+proj=cea +lon_0=0 +lat_ts=30 +x_0=0 +y_0=0 +a=6371228 +b=6371228 +units=m +no_defs")
-    
-    rar <- sp::SpatialPointsDataFrame(rar[, c("decimallongitude", "decimallatitude")],
-                                      data = rar[,"species", drop = FALSE], proj4string = wgs84)
-    rar.cea <- sp::spTransform(rar, cea)
-    rar.cea <- rgeos::gBuffer(rar.cea, width = convex.buffer.width, byid=TRUE)
-    rar <- sp::spTransform(rar.cea, wgs84)
+      rar <- sapply(sortout, function(k){
+        sub <- droplevels(subset(dat, dat$species == k))
+        rar <- sp::SpatialPointsDataFrame(sub[, c("decimallongitude", "decimallatitude")],
+                                          data = sub[,"species", drop = FALSE], proj4string = wgs84)
+        rar.cea <- sp::spTransform(rar, cea)
+        rar.cea <- rgeos::gBuffer(rar.cea, width = convex.buffer.width, byid=TRUE)
+        rar.cea <- rgeos::gUnaryUnion(rar.cea)
+        rar <- sp::spTransform(rar.cea,  wgs84)
+      })
+      
+    rar.out <- Reduce(raster::bind, rar)
+    rar.out <- SpatialPolygonsDataFrame(rar.out, data = data.frame(species = sortout))
     
     if(terrestrial){
-      rar2 <- rgeos::gIntersection(rar, cropper, byid = T)
+      rar2 <- rgeos::gIntersection(rar.out, cropper, byid = T)
       
-      rar.add <- rar@data
+      rar.add <- rar.out@data
       rownames(rar.add) <- getSpPPolygonsIDSlots(rar2)
-      rar <- SpatialPolygonsDataFrame(rar2, data = rar.add)
+      rar.out <- SpatialPolygonsDataFrame(rar2, data = rar.add)
     }
     
-    miss <- round(geosphere::areaPolygon(rar) / (1000 * 1000), 0)
-    miss <- data.frame(eoo = miss, species = rar@data$species)
-    miss <- aggregate(eoo ~species, "sum", data = miss)
-    miss <- data.frame(eoo = miss$eoo, row.names = miss$species)
-    out <- rbind(out, miss)
+    miss <- round(geosphere::areaPolygon(rar.out) / (1000 * 1000), 0)
+    miss <- data.frame(eoo = miss, species = rar.out@data$species)
+    miss <- data.frame(eoo_sph = miss$eoo, row.names = miss$species)
+    
+    if(length(out) == 0){
+      out <- miss
+    }else{
+      out <- rbind(out, miss)
+    }
+
     warning(sprintf("using buffer based range for species with <3 records, bufferradius = %s", 
                     convex.buffer.width))
   }
+  
   ##Add as NA if convex.rare == drop
   if(convex.rare == "drop"){
     warning("species with < 3 records dropped from output")

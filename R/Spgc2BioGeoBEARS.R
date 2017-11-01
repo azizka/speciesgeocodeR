@@ -3,7 +3,7 @@ Spgc2BioGeoBEARS <- function(x, phyl = NULL, file = NULL, true.areas = T,
   
   # reformat input
   dat <- x$spec_table
-  dat <- data.frame(dat[, -1])
+  dat <- data.frame(dat[!names(dat) == "not_classified"])
   
   # set occurrences to logical
   dat[dat >= 1] <- 1
@@ -57,6 +57,5 @@ Spgc2BioGeoBEARS <- function(x, phyl = NULL, file = NULL, true.areas = T,
     names(dat) <- c(paste(letters[1:length(names(dat))], names(dat), 
                           sep = "_"))
   }
-  
-  # return(list(BioGeoBEARS_command = command_string, BioGeoBEARS_matrix = dat))
+  #return(list(BioGeoBEARS_command = command_string, BioGeoBEARS_matrix = dat))
 } 

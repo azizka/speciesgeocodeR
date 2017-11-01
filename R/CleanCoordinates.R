@@ -7,21 +7,23 @@ CleanCoordinates <- function(x, countries, species,
                              urban = F, validity = T, zeros = T, verbose = T,
                              capitals.rad = 0.05, centroids.rad = 0.01, 
                              centroids.detail = "both", inst.rad = 0.001, 
-                             outliers.mtp = 25, outliers.td = NULL, zeros.rad = 0.5, 
-                             capitals.ref, centroids.ref, country.ref,
+                             outliers.method = "dist.quantile", outliers.mtp = 3, outliers.td = 1000, 
+                             zeros.rad = 0.5, capitals.ref, centroids.ref, country.ref,
                              inst.ref, seas.ref, urban.ref) {
   #check function arguments
   match.arg(output, choices = c("spatialvalid", "summary", "cleaned"))
   match.arg(centroids.detail, choices = c("both", "country", "provinces"))
+  match.arg(outliers.method, choices = c("dist.distance", "dist.quantile", "dist.mad"))
   
-  if(missing(countries)){
+  
+  if(missing(countries) | is.null(countries)){
     countries <- NULL
     if (countrycheck) {
       countrycheck <- FALSE
       warning("countries missing, countrycheck set to FALSE")
     }
   }
-  if(missing(species)){
+  if(missing(species) | is.null(species)){
     if (outliers) {
       outliers <- FALSE
       warning("is.null(species), outliers test skipped")
@@ -163,7 +165,8 @@ CleanCoordinates <- function(x, countries, species,
       if (verbose) {
         cat("running outliers test\n")
       }
-      otl <- .OutlierCoordinates(x, species = species, mltpl = outliers.mtp, tdi = outliers.td)
+      otl <- .OutlierCoordinates(x, species = species, mltpl = outliers.mtp, 
+                                 tdi = outliers.td, outl.method = outliers.method)
       if (verbose) {
         cat(sprintf("flagged %s records \n", sum(!otl)))
       }

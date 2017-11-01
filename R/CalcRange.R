@@ -28,37 +28,43 @@ CalcRange <- function(x, method = "pseudospherical", terrestrial = F,
   
   # check for species with less than 3 records
   filt <- table(dat$species)
-  sortout <- filt[filt <= 2]
+  sortout <- names(filt[filt <= 2])
   filt <- filt[filt > 2]
   
   dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
   
-  #check for species where all lat or long ar identical, to prevent line polygons
+  #check for species where all lat or long ar identical, or almost identical, to prevent line polygons
   ##longitude
   test <- split(dat.filt, f = dat.filt$species)
-  test <- sapply(test, function(k){
+  test2 <- sapply(test, function(k){
     length(unique(k$decimallongitude))
   })
-  sortout2 <- names(test[test == 1])
+  sortout2 <- names(test2[test2 == 1])
   sortout <- c(sortout, sortout2)
   dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
   
   #latitude
-  test <- split(dat.filt, f = dat.filt$species)
-  test <- sapply(test, function(k){
+  test2 <- sapply(test, function(k){
     length(unique(k$decimallatitude))
   })
-  sortout2 <- names(test[test == 1])
+  sortout2 <- names(test2[test2 == 1])
   sortout <- c(sortout, sortout2)
   dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
   
-  if (length(sortout) > 0) {
-    warning("found species with < 3 occurrences:", paste("\n", names(sortout)))
-  }
-  if (nrow(dat.filt) == 0) {
-    stop("no species with more than 2 occurrences found")
-  }
+  #test for almost perfect fit
+  test2 <- sapply(test, function(k){
+    round(abs(cor(k[, "decimallongitude"], k[, "decimallatitude"])), 6)})
+  sortout2 <- names(test2[test2 == 1])
+  sortout <- c(sortout, sortout2)
+  dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
   
+  sortout <- sortout[!is.na(sortout)]
+    
+  if (length(sortout) > 0) {
+    warning("found species with < 3 occurrences:", paste("\n", sortout))
+  }
+  if (nrow(dat.filt) > 0) {
+    
   #calculate convex hulls
   inp <- split(dat.filt, f = dat.filt$species)
   
@@ -107,19 +113,34 @@ CalcRange <- function(x, method = "pseudospherical", terrestrial = F,
       suppressWarnings(proj4string(out) <- wgs84)
     }
   }
+  }else{
+    warning("no species with more than 2 occurrences found")
+    out <- "empty"
+  }
   
   #calculate buffer if rare  == buffer
   if(rare == "buffer" & length(sortout) > 0){
-    rar <- droplevels(subset(dat, dat$species %in% as.character(names(sortout))))
-    
     cea <- sp::CRS("+proj=cea +lon_0=0 +lat_ts=30 +x_0=0 +y_0=0 +a=6371228 +b=6371228 +units=m +no_defs")
     
-    rar <- sp::SpatialPointsDataFrame(rar[, c("decimallongitude", "decimallatitude")],
-                                       data = rar[,"species", drop = FALSE], proj4string = wgs84)
-    rar.cea <- sp::spTransform(rar, cea)
-    rar.cea <- rgeos::gBuffer(rar.cea, width = buffer.width, byid=TRUE)
-    rar <- sp::spTransform(rar.cea, wgs84)
-    out <- rbind(out, rar)
+    #buffer each species' records with buffer width
+    rar <- sapply(sortout, function(k){
+      sub <- droplevels(subset(dat, dat$species == k))
+      rar <- sp::SpatialPointsDataFrame(sub[, c("decimallongitude", "decimallatitude")],
+                                        data = sub[,"species", drop = FALSE], proj4string = wgs84)
+      rar.cea <- sp::spTransform(rar, cea)
+      rar.cea <- rgeos::gBuffer(rar.cea, width = buffer.width, byid=TRUE)
+      rar.cea <- rgeos::gUnaryUnion(rar.cea)
+      rar <- sp::spTransform(rar.cea,  wgs84)
+    })
+    
+    #combine into one data.frame
+    rar.out <- Reduce(bind, rar)
+    rar.out <- SpatialPolygonsDataFrame(rar.out, data = data.frame(species = sortout))
+    
+    if(!is.character(out)){
+      out <- rbind(out, rar.out)
+    }else{
+      out <- rar.out}
     warning(sprintf("using buffer based range for species with <3 records, bufferradius = %s", 
                     buffer.width))
   }

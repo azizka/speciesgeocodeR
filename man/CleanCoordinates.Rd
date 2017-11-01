@@ -16,8 +16,9 @@ CleanCoordinates(x, countries, species,
                 GBIF = T, institutions = T, outliers = F, seas = T,
                 urban = F, validity = T, zeros = T, verbose = T,
                 capitals.rad = 0.05, centroids.rad = 0.01,
-                centroids.detail = "both", inst.rad = 0.001,
-                outliers.mtp = 25, outliers.td = NULL, zeros.rad = 0.5,
+                centroids.detail = "both", inst.rad = 0.001, 
+                outliers.method = "dist.quantile", outliers.mtp = 3, 
+                outliers.td = 1000, zeros.rad = 0.5,
                 capitals.ref, centroids.ref, country.ref,
                 inst.ref, seas.ref, urban.ref)
 }
@@ -86,11 +87,15 @@ a \code{character string}. If set to \sQuote{country} only country (adm-0) centr
   \item{inst.rad}{
 numeric. The radius around biodiveristy institutions coordinates in degrees. Default = 0.001
 }
+  \item{outliers.method}{
+The method used for outlier testing. See details.
+}
+
   \item{outliers.mtp}{
-numeric. The multiplier for the interquartile range of the outlier test.  If NULL \code{outliers.td} is used.  Default = 25.
+numeric. The multiplier for the interquartile range of the outlier test.  If NULL \code{outliers.td} is used.  Default = 3.
 }
   \item{outliers.td}{
-numeric.  The minimum distance of a record to all other records of a species to be indentified as outlier, in km. If NULL \code{outliers.mtp} is used. Default = NULL
+numeric.  The minimum distance of a record to all other records of a species to be indentified as outlier, in km. Default = 1000.
 }
   \item{zeros.rad}{
 numeric. The radius around 0/0 in degrees. Default = 0.5.
@@ -116,8 +121,9 @@ a \code{SpatialPolygonsDataFrame} as alternative reference for the urban test. I
 }
 
 \details{
-The function needs all coordinates to be formally valid according to WGS84. If the data contains invalid coordinates, the function will stop and return a vector flagging the invalid records. TRUE = non-problematic coordinate, FALSE = potentially problematic coordinates. A reference gazetteer for the urban test is available at at https://github.com/azizka/speciesgeocodeR/extra_gazetteers.
-}
+The function needs all coordinates to be formally valid according to WGS84. If the data contains invalid coordinates, the function will stop and return a vector flagging the invalid records. TRUE = non-problematic coordinate, FALSE = potentially problematic coordinates. A reference gazetteer for the urban test is available at at https://github.com/azizka/speciesgeocodeR/extra_gazetteers. Three different methods are available for the outlier test: "dist.distance" calculates the minimum distance to the next record of the same species and flags all distance above the outliers.td threshold provided; "dist.quantile" calculates the mean distance to all other records of the same species and uses
+an approach based on the Tukey box plot method, with boundaries at outliers.mtp times the interquartile range (IQR); "dist.map" also calculates mean distance to all points, bu uses the absolute deviation from the median, with a
+limit at outliers.mtp times the median absolute deviation (MAD).}
 
 \value{
 Depending on the output argument:

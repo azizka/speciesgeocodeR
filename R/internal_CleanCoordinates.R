@@ -77,36 +77,72 @@
   return(out)
 }
 
-.OutlierCoordinates <- function(x, species, mltpl, tdi, method = "Haversine") {
+.OutlierCoordinates <- function(x, species, mltpl, tdi, outl.method) {
   
+  #split up into species
   splist <- split(x, f = as.character(species))
   
+  #remove duplicate records and make sure that there are at least two records left
   test <- lapply(splist, "duplicated")
   test <- lapply(test, "!")
   test <- as.vector(unlist(lapply(test, "sum")))
   splist <- splist[test > 2]
   
-  flags <- lapply(splist, function(k, td = tdi, mu = mltpl) {
-    
+  #loop over species and run outlier test
+  flags <- lapply(splist, function(k) {
     test <- nrow(k[!duplicated(k), ])
-    dist <- geosphere::distm(k, fun = geosphere::distHaversine)
-    dist[dist == 0] <- NA
     
-    if (!is.null(mu) & !is.null(td)) {
-      stop("set outliers.td OR outliers.mtp, the other one to NULL")
+    if(test >2){
+      
+      #absolute distance test with mean interpoint distance
+      if (outl.method == "dist.distance") {
+        dist <- geosphere::distm(k, fun = geosphere::distHaversine)
+        dist[dist == 0] <- NA
+        
+        mins <- apply(dist, 1, min, na.rm = T)
+        out <- which(mins > tdi * 1000)
+      }
+      
+      #Quantile based test, with mean interpoint distances
+      if (outl.method == "dist.quantile") {
+        dist <- geosphere::distm(k, fun = geosphere::distHaversine)
+        dist[dist == 0] <- NA
+        
+        mins <- apply(dist, 1, mean, na.rm = T)
+        quo <- quantile(mins, c(0.25, 0.75), na.rm = T)
+        out <- which(mins < quo[1] - IQR(mins) * mltpl | mins > quo[2] + IQR(mins) * mltpl)
+      }
+      
+      #MAD (Median absolute deviation) based test, calculate the mean distance to all other points for each point, and then take the mad of this
+      if (outl.method == "dist.mad") {
+        dist <- geosphere::distm(k, fun = geosphere::distHaversine)
+        dist[dist == 0] <- NA
+        
+        mins <- apply(dist, 1, mean, na.rm = T)
+        quo <- median(mins)
+        tester <- mad(mins)
+        out <- which(mins < quo - tester * mltpl | mins > quo + tester * mltpl)
+      }
+      # These did  not work, mostly because the centroid function does give longitudes > 360
+      # #Absolute distance from centroid, only recommended for local scale data
+      # if (outl.method == "cent.distance"){
+      #   cent <- geosphere::centroid(k)
+      #   dist <- geosphere::distHaversine(k, cent)
+      #   
+      #   out <- which(dist > tdi * 1000)
+      # }
+      # 
+      # #Absolute distance from centroid, only recommended for local scale data
+      # if (outl.method == "cent.quantile"){
+      #   cent <- geosphere::centroid(k)
+      #   dist <- geosphere::distHaversine(k, cent)
+      #   
+      #   quo <- quantile(dist, c(0.25, 0.75), na.rm = T)
+      #   out <- which(dist < (quo[1] - IQR(mins) * mltpl) | mins > (quo[2] + IQR(dist) * mltpl))
+      # }
     }
     
-    if (!is.null(mu)) {
-      mins <- apply(dist, 1, min, na.rm = T)
-      quo <- quantile(mins, c(0.99), na.rm = T)
-      out <- which(mins > (quo + mean(mins, na.rm = T) * mu))
-    }
-    
-    if (!is.null(td)) {
-      mins <- apply(dist, 1, min, na.rm = T)
-      out <- which(mins > td * 1000)
-    }
-    
+    #create output object
     if (length(out) == 0) {
       ret <- NA
     }
@@ -115,7 +151,6 @@
     }
     return(ret)
   })
-  
   
   flags <- as.numeric(as.vector(unlist(flags)))
   flags <- flags[!is.na(flags)]

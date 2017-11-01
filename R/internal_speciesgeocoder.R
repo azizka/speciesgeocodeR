@@ -506,10 +506,18 @@
   
   #taxon to area classification
   dat <- x[["spec_table"]]
+  #exclude not classified column
+  dat <- dat[!names(dat) == "not_classified"]
+  #set from occurrence number to present/absent
   dat[dat > 0] <- 1
-  dat[, 1] <- rownames(dat)
-  out <- rbind(c(nrow(dat), ncol(dat[, -1]), ""), dat)
-  out[, 1] <- paste(out[, 1], " ", sep = "")
+  
+  #dat[, 1] <- rownames(dat)
+  dat <- cbind(sp = rownames(dat), dat)
+  dat$sp <- as.character(dat$sp)
+  out <- rbind(rep("", ncol(dat)), dat)
+  out[, 1] <- paste(out[, 1], "\t", sep = "")
+  out[1, 1] <- paste(nrow(dat), sum(names(out) != "sp"))
+  
   
   write.table(out, paste(prefix, "bayarea_data.txt", sep = "_"), sep = "", na = "", 
               col.names = F, row.names = F, quote = F)
@@ -585,7 +593,7 @@
         if (any(is.na(x$polygons@data[, columnname]))) {
             stop("area names contain missing data (#N/A). Renamed to  unnamed. This migh cause problems")
         }
-      occ <- SpatialPoints(x$species_coordinates[, c(1, 2)])
+      occ <- SpatialPoints(x$species_coordinates[, c(1, 2)], proj4string = sp::CRS(sp::proj4string(x$polygons)))
 
         outp <- as.character(over(occ, x$polygon)[, columnname])
         outp[is.na(outp)] <- "not_classified"
