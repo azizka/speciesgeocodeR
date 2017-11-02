@@ -89,7 +89,7 @@
   return(poly)
 }
 
-.ConvArea <- function(x, reps = 100, repfrac = 0.3, repsize = NULL, 
+.ConvArea <- function(x, reps, repfrac, repsize, 
                       terrestrial, biome, type, cropper){
   
   if(!is.null(repfrac)){
@@ -97,7 +97,7 @@
       stop("'repfrac' must be between 0 and 1")
     }
     repsize <- round(nrow(x[!duplicated(x),]) * repfrac)
-    if(repsize < 5){
+    if(repsize < 5 & reps > 1){
       repsize <- 5
       warning("'repfrac' to small, repsize set to 5")
     }

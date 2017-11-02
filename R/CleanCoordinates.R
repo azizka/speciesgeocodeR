@@ -1,6 +1,6 @@
 # include warning message in case the standard landmass is used
 
-CleanCoordinates <- function(x, countries, species,
+CleanCoordinates <- function(x, countries = NULL, species = NULL,
                              output = "spatialvalid", report = F, capitals = T, 
                              centroids = T, countrycheck = F, duplicates = F, 
                              GBIF = T, institutions = T, outliers = F, seas = T, 

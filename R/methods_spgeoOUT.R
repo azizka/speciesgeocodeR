@@ -54,26 +54,26 @@ summary.spgeoOUT <- function(object, ...) {
   return(out)
 } 
 
-print.summary.spgeoOUT <- function(object,...){
+print.summary.spgeoOUT <- function(x,...){
   #general summary
-  gs <- sprintf("%s species with %s occurrences classified to %s input polygons \n\n", object$suma[1], 
-            object$suma[2], object$suma[3])
+  gs <- sprintf("%s species with %s occurrences classified to %s input polygons \n\n", x$suma[1], 
+            x$suma[2], x$suma[3])
   
   #Coordinate summary
   cs <- sprintf("Longitudinal range: %s to %s, mean %s\nLatitudinal range: %s to %s, mean %s \n\n", 
-                object$coords[1], object$coords[2], object$coords[3],
-                object$coords[4], object$coords[5], object$coords[6])
+                x$coords[1], x$coords[2], x$coords[3],
+                x$coords[4], x$coords[5], x$coords[6])
   
   #Number of species per polygon
   sp <- sprintf("Median number of species per polygon = %s; min = %s, max = %s\n\n", 
-                object$sppol[1], object$sppol[2], object$sppol[3])
+                x$sppol[1], x$sppol[2], x$sppol[3])
   
   #not classified records and species
-  nc <-sprintf("%s species (%s records) not classified to any polygon\n", object$nc[1], object$nc[2])
+  nc <-sprintf("%s species (%s records) not classified to any polygon\n", x$nc[1], x$nc[2])
   
   cat(gs)
   cat(cs)
-  cat(paste("Polygon names = ", paste(object$polys, collapse = " "), "\n\n"))
+  cat(paste("Polygon names = ", paste(x$polys, collapse = " "), "\n\n"))
   cat(sp)
   cat(nc)
 }

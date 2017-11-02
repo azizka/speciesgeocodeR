@@ -11,3 +11,4 @@ Depends: R (>= 3.0.0), sp
 Imports: stats, methods, utils, grDevices, graphics, raster, rgeos, ggplot2, geosphere, rgdal, picante, viridis
 Suggests: ape, geiger, rgbif, maptools, rnaturalearth, rnaturalearthdata
 LazyData: true
+RoxygenNote: 6.0.1

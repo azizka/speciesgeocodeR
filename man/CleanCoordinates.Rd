@@ -10,7 +10,7 @@ Geographic Cleaning of Coordinates from Biologic Collections
 Cleaning geographic coordinates by multiple empirical tests to flag potentially erroneous coordinates, addressing issues common in biological collection databases.
 }
 \usage{
-CleanCoordinates(x, countries, species,
+CleanCoordinates(x, countries = NULL, species = NULL,
                 output = "spatialvalid", report = F, capitals = T,
                 centroids = T, countrycheck = F, duplicates = F, 
                 GBIF = T, institutions = T, outliers = F, seas = T,
@@ -144,7 +144,7 @@ exmpl <- data.frame(species = sample(letters, size = 250, replace = TRUE),
                     decimallongitude = runif(250, min = 42, max = 51),
                     decimallatitude = runif(250, min = -26, max = -11))
 
-test <- CleanCoordinates(exmpl[, 2:3],species = exmpl[, 1], verbose = FALSE)
+test <- CleanCoordinates(x = exmpl[, 2:3], species = exmpl[, 1])
 
 summary(test)
 plot(test)

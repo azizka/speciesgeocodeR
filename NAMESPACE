@@ -11,6 +11,8 @@ S3method(as.data.frame, spgeoOUT)
 S3method(is, spgeoOUT)
 S3method(plot, spgeoOUT)
 S3method(summary, spgeoOUT)
+S3method(print, summary.spgeoOUT)
+
 
 import(graphics)
 importFrom("grDevices", chull, dev.off, heat.colors, pdf, rainbow, rgb)

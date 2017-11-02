@@ -104,10 +104,10 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
                     type = "euclidean", cropper = cropper, biome = biome)
       out <- base::do.call("rbind.data.frame", are)
-      names(out) <- "eoo"
+      names(out) <- "range"
     }else{
       warning("no species with more than 2 occurrences found")
-      out <- data.frame(eoo_sph = NA)
+      out <- data.frame(range = NA)
     }
   }
   
@@ -140,12 +140,12 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
     
     #test for almost perfect fit
+    test <- split(dat.filt, f = dat.filt$species)
     test2 <- sapply(test, function(k){
       round(abs(cor(k[, "decimallongitude"], k[, "decimallatitude"])), 6)})
     sortout2 <- names(test2[test2 == 1])
     sortout <- c(sortout, sortout2)
     dat.filt <- droplevels(subset(dat.filt, !dat.filt$species %in% sortout))
-    
     
     if (length(sortout) > 0) {
       warning("found species with < 3 occurrences:",
@@ -169,63 +169,93 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
                     type = "pseudospherical", cropper = cropper, biome = biome)
       out <- do.call("rbind.data.frame", are)
-      names(out) <- "eoo"
+      names(out) <- "range"
     }else{
       warning("no species with more than 2 occurrences found")
       out <- NULL
     }
   }
   
-  #add rare species to convex methods
-  if(method == "eoo_euclidean" | method == "eoo_pseudospherical" & length(sortout) > 0)
-  # add species with not enought points 
-  ##calculate area based on bufferbuffer if rare  == buffer
-  if(convex.rare == "buffer"){
-      rar <- sapply(sortout, function(k){
-        sub <- droplevels(subset(dat, dat$species == k))
-        rar <- sp::SpatialPointsDataFrame(sub[, c("decimallongitude", "decimallatitude")],
-                                          data = sub[,"species", drop = FALSE], proj4string = wgs84)
-        rar.cea <- sp::spTransform(rar, cea)
-        rar.cea <- rgeos::gBuffer(rar.cea, width = convex.buffer.width, byid=TRUE)
-        rar.cea <- rgeos::gUnaryUnion(rar.cea)
-        rar <- sp::spTransform(rar.cea,  wgs84)
-      })
+  # maxdist
+  if (method == "maxdist") {
+      # species with less than 3 records
+      filt <- table(dat$species)
+      sortout <- names(filt[filt <= 2])
+      filt <- filt[filt > 2]
+      dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
       
-    rar.out <- Reduce(raster::bind, rar)
-    rar.out <- SpatialPolygonsDataFrame(rar.out, data = data.frame(species = sortout))
-    
-    if(terrestrial){
-      rar2 <- rgeos::gIntersection(rar.out, cropper, byid = T)
-      
-      rar.add <- rar.out@data
-      rownames(rar.add) <- getSpPPolygonsIDSlots(rar2)
-      rar.out <- SpatialPolygonsDataFrame(rar2, data = rar.add)
+      if (length(sortout) > 0) {
+        warning("found species with < 3 occurrences, excluded from output:",
+                paste("\n", names(sortout)))
+      }
+      if (nrow(dat.filt) == 0) {
+        warning("no species with more than 2 occurrences found")
+        out <- data.frame(row.names = names(sortout), 
+                          maxdist = rep("NA", length(sortout)))
+      }else{
+        if (terrestrial) {
+          pts <- SpatialPoints(dat.filt[, c("decimallongitude", "decimallatitude")])
+          test <- sp::over(pts, cropper)
+          dat.filt <- dat.filt[!is.na(test[, 1]), ]
+        }
+        
+        # split by species
+        inp <- split(dat.filt, f = dat.filt$species)
+        
+        #distance calculation
+        out <- lapply(inp, function(k) {
+          geosphere::distm(x = k[, 2:3], fun = distHaversine)
+        })
+        out <- data.frame(unlist(lapply(out, "max")))
+        names(out) <- "range"
+        out <- round(out / 1000, 0)
+      }
     }
+  
+  # quantile distance
+  if (method == "qdist") {
+    # species with less than 3 records
+    filt <- table(dat$species)
+    sortout <- names(filt[filt <= 2])
+    filt <- filt[filt > 2]
+    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
     
-    miss <- round(geosphere::areaPolygon(rar.out) / (1000 * 1000), 0)
-    miss <- data.frame(eoo = miss, species = rar.out@data$species)
-    miss <- data.frame(eoo_sph = miss$eoo, row.names = miss$species)
-    
-    if(length(out) == 0){
-      out <- miss
+    if (length(sortout) > 0) {
+      warning("found species with < 3 occurrences, excluded from output:",
+              paste("\n", names(sortout)))
+    }
+    if (nrow(dat.filt) == 0) {
+      warning("no species with more than 2 occurrences found")
+      out <- data.frame(row.names = names(sortout), 
+                        qdist25 = rep("NA", length(sortout)),
+                        qdist75 = rep("NA", length(sortout)))
     }else{
-      out <- rbind(out, miss)
+      
+      if (terrestrial) {
+        pts <- SpatialPoints(dat.filt[, c("decimallongitude", "decimallatitude")])
+        test <- sp::over(pts, cropper)
+        dat.filt <- dat.filt[!is.na(test[, 1]), ]
+      }
+      
+      # split by species
+      inp <- split(dat.filt, f = dat.filt$species)
+      
+      #distance calculation
+      out <- lapply(inp, function(k) {
+        geosphere::distm(x = k[, 2:3], fun = geosphere::distHaversine)
+      })
+      out.qntd <- lapply(out, function(k) {
+        apply(k, 2, "max")
+      })  #take the maximum distance per point
+      out.qntd <- lapply(out.qntd, function(k) {
+        stats::quantile(k, probs = c(0.25, 0.75))
+      })
+      out <- do.call("rbind.data.frame", out.qntd)
+      names(out) <- c("qdist25", "qdist75")
+      out <- round(out / 1000, 0) 
     }
-
-    warning(sprintf("using buffer based range for species with <3 records, bufferradius = %s", 
-                    convex.buffer.width))
-  }
-  
-  ##Add as NA if convex.rare == drop
-  if(convex.rare == "drop"){
-    warning("species with < 3 records dropped from output")
-    miss.area <- rep("NA", length(sortout))
-    miss.sp <- base::rownames(sortout)
-    miss <- base::data.frame(row.names = miss.sp, eoo = miss.area)
-    out <- base::rbind(out, miss)
   }
 
-  
   # AOO
   if (method == "aoo") {
     wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
@@ -287,90 +317,11 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
 
     out <- round(out / (1000 * 1000), 0)
     }else{
-      out <- data.frame(AOO = rep(round(aoo.gridsize / (1000 * 1000), 0), length(sings)), row.names = sings) 
+      out <- data.frame(range = rep(round(aoo.gridsize / (1000 * 1000), 0), length(sings)), row.names = sings) 
     }
+    sortout <- NULL
   }
-  
-  # maxdist
-  if (method == "maxdist") {
-    # species with less than 3 records
-    filt <- table(dat$species)
-    sortout <- filt[filt <= 2]
-    filt <- filt[filt > 2]
-    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
-    
-    if (length(sortout) > 0) {
-      warning("found species with < 3 occurrences, excluded from output:",
-              paste("\n", names(sortout)))
-    }
-    if (nrow(dat.filt) == 0) {
-      warning("no species with more than 2 occurrences found")
-      out <- data.frame(row.names = names(sortout), 
-                        maxdist = rep("NA", length(sortout)))
-    }else{
-      if (terrestrial) {
-        pts <- SpatialPoints(dat.filt[, c("decimallongitude", "decimallatitude")])
-        test <- sp::over(pts, cropper)
-        dat.filt <- dat.filt[!is.na(test[, 1]), ]
-      }
-      
-      # split by species
-      inp <- split(dat.filt, f = dat.filt$species)
-      
-      #distance calculation
-      out <- lapply(inp, function(k) {
-        geosphere::distm(x = k[, 2:3], fun = distHaversine)
-      })
-      out <- data.frame(unlist(lapply(out, "max")))
-      names(out) <- "maxdist"
-      out <- round(out / 1000, 0)
-    }
-  }
-  
-  # quantile distance
-  if (method == "qdist") {
-    # species with less than 3 records
-    filt <- table(dat$species)
-    sortout <- filt[filt <= 2]
-    filt <- filt[filt > 2]
-    dat.filt <- droplevels(subset(dat, dat$species %in% as.character(names(filt))))
-    
-    if (length(sortout) > 0) {
-      warning("found species with < 3 occurrences, excluded from output:",
-              paste("\n", names(sortout)))
-    }
-    if (nrow(dat.filt) == 0) {
-      warning("no species with more than 2 occurrences found")
-      out <- data.frame(row.names = names(sortout), 
-                              qdist25 = rep("NA", length(sortout)),
-                              qdist75 = rep("NA", length(sortout)))
-    }else{
-      
-      if (terrestrial) {
-        pts <- SpatialPoints(dat.filt[, c("decimallongitude", "decimallatitude")])
-        test <- sp::over(pts, cropper)
-        dat.filt <- dat.filt[!is.na(test[, 1]), ]
-      }
-      
-      # split by species
-      inp <- split(dat.filt, f = dat.filt$species)
-      
-      #distance calculation
-      out <- lapply(inp, function(k) {
-        geosphere::distm(x = k[, 2:3], fun = geosphere::distHaversine)
-      })
-      out.qntd <- lapply(out, function(k) {
-        apply(k, 2, "max")
-      })  #take the maximum distance per point
-      out.qntd <- lapply(out.qntd, function(k) {
-        stats::quantile(k, probs = c(0.25, 0.75))
-      })
-      out <- do.call("rbind.data.frame", out.qntd)
-      names(out) <- c("qdist25", "qdist75")
-      out <- round(out / 1000, 0) 
-    }
-  }
-  
+
   #ecoregion
   if (method == "ecoregion"){
     if (!requireNamespace("rgeos", quietly = TRUE)) {
@@ -399,8 +350,57 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     })
     
     out <- do.call("rbind.data.frame", out)
-    names(out) <- "ecoregion.size"
+    names(out) <- "range"
     out <- round(out / (1000 * 1000), 0) 
+    sortout <- NULL
+  }
+  
+  # add species with not enought points 
+  ##calculate area based on bufferbuffer if rare  == buffer
+  if(convex.rare == "buffer" & length(sortout) > 0){
+    cea <- sp::CRS("+proj=cea +lon_0=0 +lat_ts=30 +x_0=0 +y_0=0 +a=6371228 +b=6371228 +units=m +no_defs")
+    rar <- sapply(sortout, function(k){
+      sub <- droplevels(subset(dat, dat$species == k))
+      rar <- sp::SpatialPointsDataFrame(sub[, c("decimallongitude", "decimallatitude")],
+                                        data = sub[,"species", drop = FALSE], proj4string = wgs84)
+      rar.cea <- sp::spTransform(rar, cea)
+      rar.cea <- rgeos::gBuffer(rar.cea, width = convex.buffer.width, byid=TRUE)
+      rar.cea <- rgeos::gUnaryUnion(rar.cea)
+      rar <- sp::spTransform(rar.cea,  wgs84)
+    })
+    
+    rar.out <- Reduce(raster::bind, rar)
+    rar.out <- SpatialPolygonsDataFrame(rar.out, data = data.frame(species = sortout))
+    
+    if(terrestrial){
+      rar2 <- rgeos::gIntersection(rar.out, cropper, byid = T)
+      
+      rar.add <- rar.out@data
+      rownames(rar.add) <- getSpPPolygonsIDSlots(rar2)
+      rar.out <- SpatialPolygonsDataFrame(rar2, data = rar.add)
+    }
+    
+    miss <- round(geosphere::areaPolygon(rar.out) / (1000 * 1000), 0)
+    miss <- data.frame(range = miss, species = rar.out@data$species)
+    miss <- data.frame(range = miss$range, row.names = miss$species)
+    
+    if(length(out) == 0){
+      out <- miss
+    }else{
+      out <- rbind(out, miss)
+    }
+    
+    warning(sprintf("using buffer based range for species with <3 records, bufferradius = %s", 
+                    convex.buffer.width))
+  }
+  
+  ##Add as NA if convex.rare == drop
+  if(convex.rare == "drop" & length(sortout) > 0){
+    warning("species with < 3 records dropped from output")
+    miss.area <- rep("NA", length(sortout))
+    miss.sp <- base::rownames(sortout)
+    miss <- base::data.frame(row.names = miss.sp, range = miss.area)
+    out <- base::rbind(out, miss)
   }
   
   return(out)

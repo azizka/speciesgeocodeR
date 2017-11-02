@@ -31,7 +31,7 @@ data(lemurs)
 data(mdg_biomes)
 
 CleanCoordinates(lemurs[,2:3])
-CalcRangeSize(lemurs, convex.reps = 10)
+CalcRangeSize(lemurs)
 SpGeoCod(lemurs, mdg_biomes, areanames = "name")
 
 }
