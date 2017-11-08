@@ -1,8 +1,9 @@
-#speciesgeocodeR v. 2.0-4
+#speciesgeocodeR v. 2.0-8
+
+*NOTE: All coordinate cleaning functions have been moved to the new [CoordinateCleaner package](https://github.com/azizka/CoordinateCleaner)!*
 
 SpeciesgeocodeR is an R-package for the preparation for geographic point occurrence data in biogeographic analyses. A major focus is on securing data quality and providing ready to use output for biogeographic software. The main functions include:
 
-* Automated coordinate cleaning
 * Point-in-polygon classification
 * Data visualization
 * Species richness maps
@@ -10,24 +11,7 @@ SpeciesgeocodeR is an R-package for the preparation for geographic point occurre
 
 Short instructions are given below, see the [wiki pages](https://github.com/azizka/speciesgeocodeR/wiki) for more information and detailed tutorials. For comments, questions and bug reports, please use [speciesgeocodeRatgooglegroups](speciesgeocodeR@googlegroups).
 
-#Automated cleaning of geographic coordinates
-Biological collection data from public databases are prone to various common geographic errors resulting from erroneous data entry or imprecise geo-referencing. The `CleanCoordinates` function of speciesgeocodeR can automatically flag some of the most common problems, if supplied with a data.frame with lat/lon coordinates and optionally species and country information.  
 
-```{r, evaluate = F}
-library(speciesgeocodeR)
-data(lemurs)
-data(mdg_biomes)
-
-#see the function help for a vast set of options
-flags <- CleanCoordinates(lemurs, species = "species")
-
-#visualize the results
-summary(flags)
-plot(flags)
-
-# to exclude all flagged records (make sure this is what you want)
-cleaned.df <- lemurs[flags$summary, ]
-```
 #Point to Polygon classification
 Most biogeographic methods require a discrete area classification of species. speciesgeocodeR, enables the quick and reproducible classification of point occurrences into discrete areas based on a `data.frame` with species names and lat/long coordinates and a `spatialPolygonsDataFrame` with the target areas using the `SpGeoCod` function. Elevation and a minimum occurrence threshold can optionally be included. A vast set of visualizations are available via the `type` argument of the `plot` method. The results can be exported in various formats suitable for biogeographic analyses software using the `WriteOut` function.
 
