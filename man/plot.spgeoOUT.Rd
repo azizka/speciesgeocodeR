@@ -13,7 +13,7 @@ The plotting method for objects of the class spgeoOUT.  Depending on the \code{t
 
 \arguments{
   \item{x}{
-an object of the class spgeoOUT
+an object of the class spgeoOUT.
 }
   \item{type}{
 a character string. Controls which data shall be plotted. Default is to \dQuote{summary}. See details for more information.

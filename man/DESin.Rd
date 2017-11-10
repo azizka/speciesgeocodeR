@@ -6,7 +6,7 @@
 Create Input Files for DES-PyRate
 }
 \description{
-Creat the input for the DES model implemented in PyRate from tables of fossil and current species distributions. 
+Create the input for the DES model implemented in PyRate from tables of fossil and current species distributions. 
 }
 \usage{
 DESin(x, recent, bin.size, reps = 3, verbose = F)

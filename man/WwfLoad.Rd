@@ -5,7 +5,7 @@
 Download the WWF Terrestrial Ecoregions
 }
 \description{
-Downloads a shape-file containing the terrestrial ecoregions as defined by Olson et al. 2001 from worldwildlife.org/publications/terrestrial-ecoregions-of-theworld, unpacks them and loads the into R.
+Downloads a shape-file containing the terrestrial ecoregions as defined by Olson et al. 2001 from \url{www.worldwildlife.org/publications/terrestrial-ecoregions-of-the-world}, unpacks them and loads the into R.
 }
 \usage{
 WWFload(x = "")

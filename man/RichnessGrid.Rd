@@ -18,7 +18,7 @@ an object of the class  \code{spgeoOUT} or a \code{data.frame}.  If x is a \code
 an object of the class \code{raster} defining the extent and resolution for the richness grid.  If missing,  estimated from the data.
 }
   \item{reso}{
-numeric.  resolution of the raster in decimal degree, only speciefy if ras is missing.
+numeric.  resolution of the raster in decimal degree, only specify if ras is missing.
 }
   \item{type}{
 character string indicating the type of data displayed: \dQuote{spnum} = number of species per grid cell, \dQuote{abu} = the number of occurrence points per grid cell.

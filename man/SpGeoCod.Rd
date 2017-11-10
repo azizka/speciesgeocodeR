@@ -19,7 +19,7 @@ SpGeoCod(x, y, areanames, occ.thresh = 0, elevation, threshold)
 a \code{data.frame} with three columns named: species, decimallongitude, decimallatitude OR a \code{character string} with the path to a text file containing the coordinates of points of interest (tab delimited, three columns with header: species, decimallongitude, decimallatitude) OR a \code{character string} giving species names, to download from GBIF.
 }
   \item{y}{
-an  \code{SpatialPolygonsDataframe} OR a \code{character string} with the path to a shape file containing the polygons of interet OR the path to a text file containing the polygons of interest (tab delimited, three columns with header: species, decimallongitude, decimallatitude) OR an object of the class SpatialPolygons .
+an  \code{SpatialPolygonsDataframe} OR a \code{character string} with the path to a shape file containing the polygons of interest OR the path to a text file containing the polygons of interest (tab delimited, three columns with header: species, decimallongitude, decimallatitude) OR an object of the class SpatialPolygons .
 }
   \item{areanames}{
 a \code{character string}.  If \code{y} is a \code{SpatialPolygonsDataFrame} or the path to a shape file, this column indicates the column with the area names. If the polygon input file is a text file leave as default (Default = ""). 

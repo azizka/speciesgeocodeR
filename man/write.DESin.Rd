@@ -16,12 +16,12 @@ Writes out objects of the class DESin to the working directory in a format suita
 an object of the class DESin.
 }
   \item{file}{
-character. Path to where the files shall be written
+character. Path to where the files shall be written.
 }
 }
 
 \value{
-a set of replicate tables in the workingdirectory.
+a set of replicate tables in the working directory.
 }
 
 \seealso{

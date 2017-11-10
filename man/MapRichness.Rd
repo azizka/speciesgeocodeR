@@ -16,7 +16,7 @@ MapRichness(x, buffer = 1, show.occ = F)
 an object of the class \sQuote{spgeoOUT}.
 }
   \item{buffer}{
-numeric. Indicating the buffer around the the data rectangel when plotting the map.
+numeric. Indicating the buffer around the the data rectangle when plotting the map.
 }
   \item{show.occ}{
 logical.  Defines if the occurrence points should be added to the plot (default = F).

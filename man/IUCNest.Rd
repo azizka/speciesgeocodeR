@@ -21,7 +21,7 @@ an object of the class \code{range.sizes}, as produced by \code{\link{CalcRange}
 a \code{character string}. Defining the output value, see details. One of "all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN500" Default = "all".
 }
   \item{NT.thresh}{
-numeric. Thresholds for categorization to near threatend, in the form (EOO, AOO). Defaults from IUCN Standards and Petitions (Subcommittee 2014). 
+numeric. Thresholds for categorization to near threatened, in the form (EOO, AOO). Defaults from IUCN Standards and Petitions (Subcommittee 2014). 
 }
   \item{VU.thresh}{
 numeric. Thresholds for categorization to vulnerable, in the form (EOO, AOO). Defaults from IUCN Standards and Petitions (Subcommittee 2014). 
@@ -48,7 +48,7 @@ See \url{https://github.com/azizka/speciesgeocodeR/wiki} for more details and tu
 \references{
 IUCN Standards and Petitions Subcommittee (2014) Guidelines for using the IUCN Red List categories and criteria. Version 11. Prepared by the Standards and Petitions Subcommittee. Downloadable from: http://www.iucnredlist.org/documents/RedListGuidelines.pdf.
 
-Mooers, A.O., Faith D.P. & MAddison W. P. (2008) Converting Endangered Species Categories to Probabilities if Extinction for Phylogenetic COnservation Prioritization. \emph{PLOSone}, 
+Mooers, A.O., Faith D.P. & Maddison W. P. (2008) Converting Endangered Species Categories to Probabilities if Extinction for Phylogenetic Conservation Prioritization. \emph{PLOSone}, 
 \bold{3}(11)
 }
 

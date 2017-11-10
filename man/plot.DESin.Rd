@@ -15,7 +15,7 @@ Plotting method for class DESin. Plots the number of species through time, after
 an object of the class DESin.
 }
   \item{ribbon}{
-logical. If TRUE, the minium and maximum species numbers per timebin over all replicates are shown as a ribbon around the mean.
+logical. If TRUE, the minimum and maximum species numbers per timebin over all replicates are shown as a ribbon around the mean.
 }
 
   \item{\dots}{
