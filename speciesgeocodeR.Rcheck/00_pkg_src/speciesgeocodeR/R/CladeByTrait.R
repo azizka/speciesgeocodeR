@@ -7,21 +7,21 @@ CladeByTrait <- function(x, tree, prefix, min_clade_size, max_clade_size, monoph
     geo <- data.frame(trait = x[, 2], row.names = x[, 1])
   }
   
-    dat.tre <- suppressWarnings(geiger::treedata(tree, geo))
+    dat.tre<- suppressWarnings(geiger::treedata(tree, geo))
     
     #records from the tree with no occrrences
     nodata <- tree$tip.label[!tree$tip.label %in% row.names(geo)]
     nodatatab <- data.frame(rep(NA, length(nodata)), row.names = nodata)
     
     #records not occurring in the study area
-    outsidetab <- data.frame(subset(dat.tre$data, dat.tre$data[, 1] == 0))
+    outsidetab <- data.frame(subset(dat.tre$trait, dat.tre$data[, 1] == 0))
     outside <- rownames(outsidetab)
     
     #standardize names
-    names(outsidetab) <- names(nodatatab) <- names(data.frame(trait = dat.tre$data))
+    names(outsidetab) <- names(nodatatab) <- names(data.frame(dat.tre$trait))
     
     #combine species with data and species in the phylogeny but without data
-    all.classified <- rbind(data.frame(trait = dat.tre$dat), nodatatab)
+    all.classified <- rbind(data.frame(dat.tre$dat), nodatatab)
 
     #species not in the phylogeny and not in the study area
     others2 <- data.frame(subset(geo, geo[, 1] == 0)[, 1], row.names = rownames(subset(geo, geo[, 1] == 0)))
@@ -49,7 +49,7 @@ CladeByTrait <- function(x, tree, prefix, min_clade_size, max_clade_size, monoph
     }
     
   ##finding trait-exclusive clades, this part was written by R. SCharn
-    tr <- dat.tre$phy
+    tr <- data$phy
     # create matrix for each node on state 1 ('not checked')
     nodenr <- matrix(nrow = length((length(tr$tip.label) + 1):max(tr$edge)), ncol = 2)
     # sets all nodes to 1 ie all can be checked
@@ -66,7 +66,7 @@ CladeByTrait <- function(x, tree, prefix, min_clade_size, max_clade_size, monoph
     
     for (i in (length(tr$tip.label) + 1):max(tr$edge)) {
       if (nodenr[as.character(i), 1] == 1) {
-        V <- geo[geiger::tips(tr, i), "trait"]
+        V <- geo[geiger::tips(tr, i), area]
         if (length(V[V == 0])/length(V) >= monophyly_threshold || length(geiger::tips(tr, i)) > max_clade_size) {
           nodenr[as.character(i), 1] = 0
         } else {
@@ -94,7 +94,7 @@ CladeByTrait <- function(x, tree, prefix, min_clade_size, max_clade_size, monoph
       node <- as.numeric(row.names(clades)[i])
       subtree <- ape::extract.clade(tr, node, root.edge = 0, interactive = F)
       lengtab[i] <- max(picante::node.age(subtree)$ages)
-      ape::write.tree(subtree, file = paste(prefix, "clade_", i, ".tre", sep = ""))
+      ape::write.tree(subtree, file = paste("clade_", i, "_area_", area, ".tre", sep = ""))
       
       colo <- geo[match(subtree$tip.label, rownames(geo)), ]
       colo <- gsub(1, "red", colo)
@@ -113,12 +113,12 @@ CladeByTrait <- function(x, tree, prefix, min_clade_size, max_clade_size, monoph
                    "max_clade_size", 
                    "monophyly_threshold", 
                    "Species in Phylogeny",
-                   "Species with traits data",
+                   "SPecies with traits data",
                    "Species in trait and phylogeny", 
                    "Species with no trait information", 
                    "Number of clades returned", 
                    "Mean_tip_number_per_tree",
-                   "Median tip age")
+                   "MEdian tip age")
     
     logwrite <- c(as.character(Sys.Date()), 
                   prefix, 
@@ -133,10 +133,8 @@ CladeByTrait <- function(x, tree, prefix, min_clade_size, max_clade_size, monoph
                   round(mean(clades[, 2]), digits = 2),
                   round(median(lengtab), 1))
 
-    screenout <- data.frame(logwrite, row.names = descwrite)
-
-    print(screenout)
     if(summary){
+      
     #write log file
       if (!"GetAreasClades_log.txt" %in% list.files()) {
       write.table(as.vector(data.frame(t(descwrite))), "CladesByTrait_log.txt", col.names = F, row.names = F, quote = F, 

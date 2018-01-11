@@ -1,0 +1,27 @@
+CalcRange               Range Polygons from Occurrence Points
+CalcRangeSize           Species Range Size from Occurrence Records
+CladeByTrait            Extract Clades Based on Trait Values
+DESin                   Create Input Files for DES-PyRate
+GeoClean                Defunct functions in package 'speciesgeocodeR'
+IUCNest                 Convert Range Sizes to IUCN Assessment
+MapRichness             Plotting Species Richness in a Set of Polygons
+PlotHull                Plotting Species Ranges
+RangeRichness           Species Richness Raster from Range Polygons
+RichnessGrid            Species Richness and Abundance Grids from Point
+                        Records
+SpGeoCod                Point to Polygon Classification
+Spgc2BioGeoBEARS        Geography Input for BioGeoBEARS
+WWFload                 Download the WWF Terrestrial Ecoregions
+WriteOut                Write spgeoOUT Objects to the Working Directory
+landmass                Global Coastlines
+lemurs                  Distribution of Lemur Species
+mdg_biomes              WWF Biomes of Madagascar
+plot.DESin              Plot Method for DESin
+plot.spgeoOUT           Plot Method for SpgeoOUT Objects
+print.summary.spgeoOUT
+                        Printing method for spgeoOUT summary object
+speciesgeocodeR-package
+                        Prepare Species Distributions for the Use in
+                        Phylogenetic Analyses
+summary.DESin           Summary Method for DESin
+write.DESin             Write Method for DESin
