@@ -104,6 +104,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
                     type = "euclidean", cropper = cropper, biome = biome)
       out <- base::do.call("rbind.data.frame", are)
+      rownames(out) <- names(are)
       names(out) <- "range"
     }else{
       warning("no species with more than 2 occurrences found")
@@ -169,6 +170,7 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
                     repfrac = convex.repfrac, repsize = convex.repsize, terrestrial = terrestrial, 
                     type = "pseudospherical", cropper = cropper, biome = biome)
       out <- do.call("rbind.data.frame", are)
+      rownames(out) <- names(are)
       names(out) <- "range"
     }else{
       warning("no species with more than 2 occurrences found")
@@ -310,14 +312,15 @@ CalcRangeSize <- function(x, method = "eoo_pseudospherical", terrestrial = F, bi
     # find minimum value and create output object
     aoo.out <- do.call("cbind.data.frame", aoo.out)
     aoo.out <- data.frame(AOO = do.call(pmin, as.data.frame(aoo.out)),
-                          row.names = rownames(aoo.out))
+                          row.names = names(occs))
     out <- rbind(aoo.out,
                  data.frame(AOO = rep(aoo.gridsize, length(sings)),
                             row.names = sings))
 
     out <- round(out / (1000 * 1000), 0)
     }else{
-      out <- data.frame(range = rep(round(aoo.gridsize / (1000 * 1000), 0), length(sings)), row.names = sings) 
+      out <- data.frame(range = rep(round(aoo.gridsize / (1000 * 1000), 0), length(sings)), 
+                        row.names = sings) 
     }
     sortout <- NULL
   }

@@ -1,8 +1,8 @@
 Package: speciesgeocodeR
 Type: Package
 Title: Prepare Species Distributions for the Use in Phylogenetic Analyses
-Version: 2.0-9
-Date: 2017-11-21
+Version: 2.0-10
+Date: 2018-01-23
 Authors@R:  c(person(given = "Alexander", family = "Zizka", email = "alexander.zizka@bioenv.gu.se",
                     role = c("aut", "cre")),
              person(given = "Ruud", family = "Scharn", role = c("ctb")))
