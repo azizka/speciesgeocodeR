@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/azizka/CoordinateCleaner.svg?branch=master)](https://travis-ci.org/azizka/speciesgeocodeR)
+[![Coverage Status](https://coveralls.io/repos/github/azizka/speciesgeocodeR/badge.svg?branch=master)](https://coveralls.io/github/azizka/speciesgeocodeR?branch=master)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/CoordinateCleaner)](https://cran.r-project.org/package=speciesgeocodeR)
+
+
 #speciesgeocodeR v. 2.0-8
 
 *NOTE: All coordinate cleaning functions have been moved to the new [CoordinateCleaner package](https://github.com/azizka/CoordinateCleaner)!*
