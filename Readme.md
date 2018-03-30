@@ -3,7 +3,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/CoordinateCleaner)](https://cran.r-project.org/package=speciesgeocodeR)
 
 
-#speciesgeocodeR v. 2.0-8
+#speciesgeocodeR v. 2.0-10
 
 *NOTE: All coordinate cleaning functions have been moved to the new [CoordinateCleaner package](https://github.com/azizka/CoordinateCleaner)!*
 
@@ -17,7 +17,7 @@ SpeciesgeocodeR is an R-package for the preparation for geographic point occurre
 Short instructions are given below, see the [wiki pages](https://github.com/azizka/speciesgeocodeR/wiki) for more information and detailed tutorials. For comments, questions and bug reports, please use [speciesgeocodeRatgooglegroups](speciesgeocodeR@googlegroups).
 
 
-#Point to Polygon classification
+# Point to Polygon classification
 Most biogeographic methods require a discrete area classification of species. speciesgeocodeR, enables the quick and reproducible classification of point occurrences into discrete areas based on a `data.frame` with species names and lat/long coordinates and a `spatialPolygonsDataFrame` with the target areas using the `SpGeoCod` function. Elevation and a minimum occurrence threshold can optionally be included. A vast set of visualizations are available via the `type` argument of the `plot` method. The results can be exported in various formats suitable for biogeographic analyses software using the `WriteOut` function.
 
 ```{r, evaluate = F}
@@ -29,7 +29,7 @@ plot(sp.class, type = "speciesrichness")
 WriteOut(sp.class, type = "nexus")
 ```
 
-#Species Richness
+# Species Richness
 Species richness in each polygon can be plotted using the `MapRichness` function and the number of occurrence records or species in a `raster` format can be calculated using the `RichnessGrid` function. 
 
 ```{r, evaluate = F}
@@ -38,7 +38,7 @@ MapRichness(class)
 sp.ras <- RichnessGrid(class, reso = 1)
 plot(sp.ras)
 ```
-#Range size calculation
+# Range size calculation
 On a *local to regional* scale speciesgeocodeR can calculate species range size as a alpha hull based on a `data.frame` of point occurrences. The `CalcRange` function can return range polygons for each species in the dataset, or calculate range sizes in sqkm (Extent of Occurrence and Area of Occupancy). The output can be used to calculate a species richness grid based on the range sizes using the `RangeRichness` function.
 
 ```{r, evaluate = F}
@@ -46,11 +46,11 @@ On a *local to regional* scale speciesgeocodeR can calculate species range size 
 rang <- CalcRange(lemurs, method = "pseudospherical")
 plot(rang)
 
-#species richness from ranges
+# Species richness from ranges
 sp.rich <- RangeRichness(rang, reso = 0.1)
 plot(sp.rich)
 
-#calculate range size
+# Calculate range size
 rang <- CalcRangeSize(lemurs, method = "eoo_pseudospherical")
 head(rang)
 ```
@@ -76,7 +76,7 @@ summary(exp1)
 #write data to disk for use in pyrate
 write.DESin(exp1, file = "Example1_DES_in")
 ```
-#More
+# More
 Other versions of speciesgeocodeR include:
 1. A web interface that allows the analysis of data online: https://portal.bils.se/speciesgeocoder/tool
 2. A equivalent python package written by Mats T\"opel https://github.com/mtop/speciesgeocoder
