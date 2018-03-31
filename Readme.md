@@ -56,7 +56,8 @@ plotHull(rang)
 ## Species Richness maps
 
 ```{r, evaluate = F}
-sp.ras <- RichnessGrid(class, reso = 1)
+data(lemurs)
+sp.ras <- RichnessGrid(lemurs, reso = 1)
 plot(sp.ras)
 ```
 
@@ -64,15 +65,21 @@ plot(sp.ras)
 On a *local to regional* scale speciesgeocodeR can calculate species range size as a alpha hull based on a `data.frame` of point occurrences. The `CalcRange` function can return range polygons for each species in the dataset, or calculate range sizes in sqkm (Extent of Occurrence and Area of Occupancy). The output can be used to calculate a species richness grid based on the range sizes using the `RangeRichness` function.
 
 ```{r, evaluate = F}
-#calculate range shapes
+data(lemurs)
 rang <- CalcRange(lemurs)
 ```
 
 ## Species richness from ranges
+```
+data(lemurs)
+rang <- CalcRange(lemurs)
 sp.rich <- RangeRichness(rang, reso = 0.1)
 plot(sp.rich)
+```
 
 ## Calculate range size
+```
+data(lemurs)
 rang <- CalcRangeSize(lemurs, method = "eoo_pseudospherical")
 head(rang)
 ```
