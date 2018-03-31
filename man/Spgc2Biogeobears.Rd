@@ -8,7 +8,7 @@ Geography Input for BioGeoBEARS
 Convert an object of the class \code{spgeoOUT} in the format to be used as geography input for BioGeoBEARS.
 }
 \usage{
-Spgc2BioGeoBEARS(x, phyl = NULL, file = NULL, true.areas = T, true.species = T)
+Spgc2BioGeoBEARS(x, phyl = NULL, file = NULL, true.areas = TRUE, true.species = TRUE)
 }
 
 \arguments{

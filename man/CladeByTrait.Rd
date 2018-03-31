@@ -9,7 +9,7 @@ Extract clades from a larger phylogeny based on a binary trait, with options to 
 }
 \usage{
 CladeByTrait(x, tree, prefix, min_clade_size, max_clade_size, 
-             monophyly_threshold, summary = F)
+             monophyly_threshold, summary = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

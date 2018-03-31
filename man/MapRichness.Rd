@@ -8,7 +8,7 @@ Plotting Species Richness in a Set of Polygons
 Illustrates the species number per polygon, based on and object of the class \code{spgeoOUT} (created by \code{\link{SpGeoCod}}). 
 }
 \usage{
-MapRichness(x, buffer = 1, show.occ = F)
+MapRichness(x, buffer = 1, show.occ = FALSE)
 }
 
 \arguments{
@@ -19,7 +19,7 @@ an object of the class \sQuote{spgeoOUT}.
 numeric. Indicating the buffer around the the data rectangle when plotting the map.
 }
   \item{show.occ}{
-logical.  Defines if the occurrence points should be added to the plot (default = F).
+logical.  Defines if the occurrence points should be added to the plot (default = FALSE).
 }
 }
 \value{

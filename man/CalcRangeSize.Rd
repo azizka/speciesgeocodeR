@@ -10,12 +10,12 @@ Approximate species range size from occurrence records. Implements various metho
 }
 
 \usage{
-CalcRangeSize(x, method = "eoo_pseudospherical", terrestrial = F,
+CalcRangeSize(x, method = "eoo_pseudospherical", terrestrial = FALSE,
               biome = NULL, eco = NULL, convex.reps = 1, 
               convex.repfrac = 1, convex.repsize = NULL,
               convex.rare = "buffer", convex.buffer.width = 10000, 
               aoo.reps = 3, aoo.proj = NULL, 
-              aoo.gridsize = NULL, verbose = F)
+              aoo.gridsize = NULL, verbose = FALSE)
 }
 
 \arguments{

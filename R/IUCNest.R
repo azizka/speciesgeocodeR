@@ -1,9 +1,8 @@
-IUCNest <- function(x, value = "all", 
-                    NT.thresh = c(30000, 3000), VU.thresh = c(20000, 2000), 
-                    EN.thresh = c(5000,500), CR.thresh = c(100, 10)) {
-  
-  match.arg(value, choices = c("all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN500"))
-
+IUCNest <- function(x, value = "all", NT.thresh = c(30000, 3000), VU.thresh = c(20000, 
+    2000), EN.thresh = c(5000, 500), CR.thresh = c(100, 10)) {
+    
+    match.arg(value, choices = c("all", "AOO", "EOO", "IUCN50", "IUCN100", "IUCN500"))
+    
     AOO <- rep("DD", nrow(x))
     EOO <- rep("DD", nrow(x))
     both <- rep("DD", nrow(x))
@@ -52,25 +51,25 @@ IUCNest <- function(x, value = "all",
     out <- data.frame(AOO, EOO, both, IUCN50, IUCN100, IUCN500)
     
     if ("all" %in% value) {
-      return(out)
+        return(out)
     } else {
-      if (!"AOO" %in% value) {
-        out <- out[, -1]
-      }
-      if (!"EOO" %in% value) {
-        out <- out[, -2]
-      }
-      if (!"both" %in% value) {
-        out <- out[, -3]
-      }
-      if (!"IUCN50" %in% value) {
-        out <- out[, -4]
-      }
-      if (!"IUCN100" %in% value) {
-        out <- out[, -5]
-      }
-      if (!"IUCN500" %in% value) {
-        out <- out[, -6]
-      }
+        if (!"AOO" %in% value) {
+            out <- out[, -1]
+        }
+        if (!"EOO" %in% value) {
+            out <- out[, -2]
+        }
+        if (!"both" %in% value) {
+            out <- out[, -3]
+        }
+        if (!"IUCN50" %in% value) {
+            out <- out[, -4]
+        }
+        if (!"IUCN100" %in% value) {
+            out <- out[, -5]
+        }
+        if (!"IUCN500" %in% value) {
+            out <- out[, -6]
+        }
     }
 }
