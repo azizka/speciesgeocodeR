@@ -49,21 +49,34 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
 }
 
 summary.DESin <- function(object, ...) {
-    ares <- split(object[["input_fossils"]], f = object[["input_fossils"]]$area)
+    ares <- split(object[["input_fossils"]], f = object[["input_fossils"]][[object$area]])
     
-    outp.nams <- c("Minimum_age", "Maximum_age", "Number of records", "Mean record age", 
-        "Number of taxa", "Mean taxon age")
-    area.1 <- c(round(min(ares[[1]]$midpointage), 1), round(max(ares[[1]]$midpointage), 
-        1), nrow(ares[[1]]), round(mean(ares[[1]]$midpointage), 1), length(unique(ares[[1]]$species)), 
-        round(mean(aggregate(ares[[1]]$midpointage, by = list(ares[[1]]$species), 
-            min)$x), 1))
-    area.2 <- c(round(min(ares[[2]]$midpointage), 1), round(max(ares[[2]]$midpointage), 
-        1), nrow(ares[[2]]), round(mean(ares[[2]]$midpointage), 1), length(unique(ares[[2]]$species)), 
-        round(mean(aggregate(ares[[2]]$midpointage, by = list(ares[[2]]$species), 
-            min)$x), 1))
+    outp.nams <- c("Minimum_age", 
+                   "Maximum_age", 
+                   "Number of records",
+                   "Mean record age", 
+                   "Number of taxa",
+                   "Mean taxon age")
     
-    list(Number_of_areas = length(ares), Input_Data = data.frame(row.names = outp.nams, 
-        Area_1 = area.1, Area_2 = area.2), Number_of_Replicates = length(object[["DES_replicates"]]))
+    area.1 <- c(round(min(ares[[1]]$midpointage), 1),
+                round(max(ares[[1]]$midpointage),1),
+                nrow(ares[[1]]), 
+                round(mean(ares[[1]]$midpointage), 1), 
+                length(unique(ares[[1]][[object$taxon]])),
+                round(mean(aggregate(ares[[1]]$midpointage, by = list(ares[[1]][[object$taxon]]),min)$x), 1))
+    
+    area.2 <- c(round(min(ares[[2]]$midpointage), 1),
+                round(max(ares[[2]]$midpointage),  1), 
+                nrow(ares[[2]]),
+                round(mean(ares[[2]]$midpointage), 1),
+                length(unique(ares[[2]][[object$taxon]])),
+                round(mean(aggregate(ares[[2]]$midpointage, by = list(ares[[2]][[object$taxon]]), min)$x), 1))
+    
+    list(Number_of_areas = length(ares), 
+         Input_Data = data.frame(row.names = outp.nams, 
+                                 Area_1 = area.1, 
+                                 Area_2 = area.2), 
+         Number_of_Replicates = length(object[["DES_replicates"]]))
 }
 
 write.DESin <- function(x, file) {

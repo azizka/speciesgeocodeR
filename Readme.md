@@ -3,7 +3,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/CoordinateCleaner)](https://cran.r-project.org/package=speciesgeocodeR)
 
 
-#speciesgeocodeR v. 2.0-10
+# speciesgeocodeR v. 2.0-10
 
 *NOTE: All coordinate cleaning functions have been moved to the new [CoordinateCleaner package](https://github.com/azizka/CoordinateCleaner)!*
 
@@ -117,7 +117,7 @@ IUCNest(rang)
 # More
 Other versions of speciesgeocodeR include:
 1. A web interface that allows the analysis of data online: https://portal.bils.se/speciesgeocoder/tool
-2. A equivalent python package written by Mats T\"opel https://github.com/mtop/speciesgeocoder
+2. A equivalent python package written by Mats Töpel https://github.com/mtop/speciesgeocoder
 
 # Citation
 Töpel M, Zizka A, Calió MF, Scharn R, Silvestro D, Antonelli A (2016) SpeciesGeoCoder: Fast Categorisation of Species Occurrences for Analyses of Biodiversity, Biogeography, Ecology and Evolution. Systematic Biology.
