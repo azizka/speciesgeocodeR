@@ -7,7 +7,7 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
     area1 <- lapply(x[["DES_replicates"]], function(k) {
         k[is.na(k)] <- 0
         k[k != 1] <- 0
-        colSums(k)
+        colSums(k[,-1])
     })
     area1 <- do.call("rbind.data.frame", area1)
     
@@ -15,7 +15,7 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
         k[is.na(k)] <- 0
         k[k != 2] <- 0
         k[k == 2] <- 1
-        colSums(k)
+        colSums(k[,-1])
     })
     area2 <- do.call("rbind.data.frame", area2)
     
@@ -23,27 +23,45 @@ plot.DESin <- function(x, ribbon = TRUE, ...) {
         k[is.na(k)] <- 0
         k[k != 3] <- 0
         k[k == 3] <- 1
-        colSums(k)
+        colSums(k[,-1])
     })
     areaB <- do.call("rbind.data.frame", areaB)
     
-    times <- as.numeric(as.character(names(x[["DES_replicates"]][[1]])))
+    times <- as.numeric(as.character(names(x[["DES_replicates"]][[1]][-1])))
     
-    dat.plo <- data.frame(time = rep(times, 3), mean = c(round(colMeans(area1), 
-        1), round(colMeans(area2), 1), round(colMeans(areaB), 1)), lwr = c(do.call(pmin, 
-        data.frame(t(area1))), do.call(pmin, data.frame(t(area2))), do.call(pmin, 
-        data.frame(t(areaB)))), upr = c(do.call(pmax, data.frame(t(area1))), 
-        do.call(pmax, data.frame(t(area2))), do.call(pmax, data.frame(t(areaB)))), 
-        area = c(rep("Area1", length(times)), rep("Area2", length(times)), rep("Both", 
-            length(times))))
+    dat.plo <- data.frame(time = rep(times, 3), 
+                          mean = c(round(colMeans(area1), 1),
+                                   round(colMeans(area2), 1), 
+                                   round(colMeans(areaB), 1)), 
+                          lwr = c(do.call(pmin, data.frame(t(area1))), 
+                                  do.call(pmin, data.frame(t(area2))),
+                                  do.call(pmin, data.frame(t(areaB)))), 
+                          upr = c(do.call(pmax, data.frame(t(area1))), 
+                                  do.call(pmax, data.frame(t(area2))),
+                                  do.call(pmax, data.frame(t(areaB)))), 
+                          area = c(rep("Area1", length(times)), 
+                                   rep("Area2", length(times)), 
+                                   rep("Both", length(times))))
     
-    plo <- ggplot() + geom_line(data = dat.plo, aes_string(x = "time", y = "mean", 
-        group = "area", col = " area")) + scale_x_reverse() + xlab("Time") + 
-        ylab("Species") + theme_bw() + theme(legend.title = element_blank())
+    plo <- ggplot() + 
+      geom_line(data = dat.plo, 
+                aes_string(x = "time", y = "mean",
+                           group = "area", col = " area")) +
+      scale_x_reverse() + 
+      xlab("Time") + 
+      ylab("Species") + 
+      theme_bw() + 
+      theme(legend.title = element_blank())
     
     if (ribbon) {
-        plo <- plo + geom_ribbon(data = dat.plo, aes_string(x = "time", ymax = "upr", 
-            ymin = "lwr", group = "area", fill = "area"), alpha = 1/5)
+        plo <- plo + 
+          geom_ribbon(data = dat.plo, 
+                      aes_string(x = "time", 
+                                 ymax = "upr",
+                                 ymin = "lwr", 
+                                 group = "area",
+                                 fill = "area"), 
+                      alpha = 1/5)
     }
     plo
 }
