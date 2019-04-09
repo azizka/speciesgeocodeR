@@ -1,0 +1,196 @@
+# A script to model the geographic distribution of Bromelliaceae, using ensemble modelling with the sdm package#
+
+# Libraries
+#install.packages(c("dismo", "rJAva", "SDMTools", "spdep", "spThin", "usdm", "RStoolbox"))
+#install.packages("input/sdm_1.0-41.tar", repos = NULL, type = "source") # sdm got archived on CRAN (not a good sign), therefore downloaded the altest available version 
+#install.packages("sdm", dependencies = T)
+library(dismo)
+library(rgdal)
+library(maptools)
+#install.packages("rJava", dependencies = T)
+require(rJava)
+library(SDMTools)
+library(spdep)
+library(spThin)
+library(sdm)
+library(raster)
+library(usdm)
+library(rgeos)
+library(rgbif)
+require(speciesgeocodeR)
+library(igraph)
+library(ggplot2)
+library(reshape2)
+library(RStoolbox)
+library(devtools)
+library(tidyverse)
+#installAll() # this is necessary for the random forests to run in sdm
+
+# Load data
+## A world map
+data(wrld_simpl)
+setwd("/Volumes/My Book/Zizka/bromeliaceae/")
+
+##The Chelsa bioclim variables, aggregated to 10 minutes (20x), aggreagation in script 01
+n <- list.files("output/chelsa_aggregated", pattern="tif")
+bio <- stack(paste("output/chelsa_aggregated/", n, sep = ""))
+
+# Perepare data for modelling
+## PCA of all 19 env variables
+rpc1 <- rasterPCA(bio,nComp=2) ### So, if we are running spp with 10 or more points, we should reduce the number of pca to 2
+bi_sub <- rpc1$map
+names(bi_sub)<- c("pca1","pca2")
+
+
+# select only those species with 10 to 14 records. You have to create a new folder
+occ.sps <- list.files("output/thinned_occurrences")
+for (i in 1:length(occ.sps)){
+  brom.occs <- read.csv(paste("output/thinned_occurrences/", occ.sps[i],sep=""), h=T, row.names = NULL)
+  if (nrow(brom.occs) > 9 & nrow(brom.occs)< 15 ) {
+    readr::write_csv(brom.occs, paste("output/thinned_occurrences_10_14_records/", occ.sps[i],sep=""))
+  } else {
+    print(paste(i, "/", length(occ.sps), "-", occ.sps[i], sep =""))
+  }
+}
+
+# Distribution modelling
+## Object to perform save the AUC values of the ensembles
+AUC.vec <- vector()  # To create a list with the AUC values for all final ensemblings
+TSS.vec <- vector()  # To create a list with the TSS values for all final ensemblings
+max.se.sp <- vector()  # To create a list with the max_se_sp values for all final ensemblings
+
+## creates object with all .csv occurence files
+occ.sps <- list.files("output/thinned_occurrences_10_14_records") # 
+splist <- gsub("_thin1.csv", "", occ.sps)
+
+## A test subset
+# occ.sps <- occ.sps[c(grep( "Fascicularia_bicolor", splist),
+#           grep( "Ochagavia_litoralis", splist),
+#           grep( "Ochagavia_carnea", splist),
+#           grep( "Ochagavia_andina", splist),
+#           grep( "Ochagavia_elegans", splist))]
+# 
+# 
+# splist <- splist[c(grep( "Fascicularia_bicolor", splist),
+#                      grep( "Ochagavia_litoralis", splist),
+#                      grep( "Ochagavia_carnea", splist),
+#                      grep( "Ochagavia_andina", splist),
+#                      grep( "Ochagavia_elegans", splist))]
+
+## run modelling loop
+#i=24
+
+oldproj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+behr <- '+proj=cea +lon_0=0 +lat_ts=30 +x_0=0 +y_0=0 +datum=WGS84 +ellps=WGS84 +units=m +no_defs'
+
+for (i in 13:length(occ.sps)){
+  print(paste(i, "/", length(occ.sps), "-", splist[i], sep =""))
+  points <- read.csv(paste("output/thinned_occurrences_10_14_records/", occ.sps[i],sep=""),h=T)
+  sp1 <- points[,c("Long","Lat")] # we only kept the coordinates columns
+  sp1$Occurrence <- 1 # add Occurrence column
+  coordinates(sp1) <- c('Long','Lat')
+  proj4string(sp1) <- CRS(oldproj)
+  sp1 <-  sp::spTransform(sp1, CRS(behr))
+  
+ 
+  ## Buffer around
+  e <- gConvexHull(sp1, byid=FALSE, id = NULL)
+  e <- raster::buffer(e,width=500000)
+  e <-  sp::spTransform(e, CRS(behr))
+  
+
+  ## Restricting the predictions
+  bioL <- crop(bi_sub,e)
+  bioL <- mask(bioL,e)
+
+  # generate pseudo-absences
+  zza <- nrow(sp1)*5
+  psudo <- sampleRandom(bioL[[1]],na.rm=TRUE,zza,xy=T,sp=T)
+  #plot(bioL[[1]])
+  #points(sp1,col='blue',pch=16,cex=0.2)
+  #points(psudo,col='red',pch=16,cex=0.5)
+  psudo@data$Occurrence <- 0
+  psudo@data <- psudo@data[,"Occurrence",drop=F] # we only keep the column Occurrence
+  #proj4string(psudo)
+  species <- rbind(sp1,psudo)
+  
+  ## Joining all the necessary data
+  dat <- data.frame(species, raster::extract(bioL, species))
+  d <- sdmData(Occurrence~pca1+pca2,train=dat)
+  
+  ###Modeling
+  m <- sdm::sdm(Occurrence~pca1+pca2,data = d, 
+                methods = c('gam','rf', 'BioclimDismo'),
+                replication=c('cv'), 
+                cv.folds=5, n=5) # Don't forget to add maxent.jar file either in the working or where the sdm package is installed /models or /rjava and then chenge here methods = c('gam','rf',"maxent")
+  
+  write.sdm(m,filename=paste("output/ensemble_rasters/", 
+                             splist[i], sep = ""),
+            overwrite=T) # You have to create this folder at your directory
+  
+  #Ensemble
+  e1 <- sdm::ensemble(m, bioL,
+                      filename=paste("output/models/"), 
+                      setting=list(method='weighted',stat='TSS',opt=2),overwrite=TRUE)
+  
+  #Ensemble maps
+  jpeg(file=paste("output/ensemble_maps/", splist[i], ".jpeg", sep=""), width = 880, height = 880,quality = 100)
+  plot(e1)
+  plot(sp1, col='red', add=T)
+  plot(wrld_simpl, add=T)
+  title(paste (splist[i]),font=3)
+  dev.off()
+  
+  #Binary occurrences
+  ## I chose to extract values of specificy=sensitivity 
+  obs <- species$Occurrence
+  pred <- raster::extract(e1,species)
+  
+  ev <- evaluates(obs,pred)
+  ev1 <- ev@threshold_based$threshold
+  ev2 <- ev1[2] # I changed it to max(specificity+sensitivity). 
+  
+  # Getting some statistcs to report
+  AUC <- ev@statistics$AUC
+  TSS <- ev@threshold_based$TSS[5]
+  max_se_sp <- ev2
+  
+  AUC.vec <- c(AUC.vec, AUC) 
+  TSS.vec <- c(TSS.vec, TSS) 
+  max.se.sp <- c(max.se.sp, max_se_sp)
+  #AZ I do not understand why to concatenate here
+  #JA Maybe it is not necessary, I just wanted a list of AUC values.
+  
+  # using ifelse to convert predicted probabilities into presence-absence (threshold=ev2)
+  pr.pa <- raster(e1) # creating an empty raster
+  pr.pa[] <- ifelse(e1[] >= ev2,1,0)
+  
+  #Detect continous clamps in the rasters
+  clumped <- clump(pr.pa, directions=8)
+  
+  sp_buf <- raster::buffer(sp1,width=100000) ## here we use a buffer remove suitable areas that are not continuous with the species records
+  
+
+  inter <- raster::extract(clumped, sp_buf,na.rm=TRUE) 
+  inters <- na.exclude(inter[[1]])
+  
+  raster1 <- match(clumped,inters)
+  
+  pr.pa2 <- raster(raster1) # creating an empty raster
+  pr.pa2[] <- ifelse(raster1[] >= 1,1,0)
+  plot(pr.pa2)
+  
+  writeRaster(pr.pa2, file=paste("output/binary_rasters/", splist[i], ".asc", sep=""), overwrite = T)
+  
+  # Figure map of the final binary map
+  jpeg(file=paste("output/binary_maps/", splist[i], ".jpeg", sep=""),width = 880, height = 880,quality = 100)
+  plot(pr.pa2)
+  plot(sp1, col='red', add=T)
+  plot(wrld_simpl, add=T)
+  title(paste (splist[i]),font=3)
+  dev.off()
+}
+
+Model_evalutation <- cbind(splist, AUC.vec, TSS.vec, round(max.se.sp,3))
+colnames(Model_evalutation)<- c("Species","AUC","TSS","Max.se.sp")
+write.csv(Model_evalutation, "Model_evalutation_10_14.csv")
