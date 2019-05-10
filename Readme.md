@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/azizka/speciesgeocodeR.svg?branch=master)](https://travis-ci.org/azizka/speciesgeocodeR)
 [![codecov](https://codecov.io/gh/azizka/speciesgeocodeR/branch/master/graph/badge.svg)](https://codecov.io/gh/azizka/speciesgeocodeR)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/CoordinateCleaner)](https://cran.r-project.org/package=speciesgeocodeR)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/speciesgeocodeR)](https://cran.r-project.org/package=speciesgeocodeR)
 
 
 # speciesgeocodeR v. 2.0-10
