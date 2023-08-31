@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.org/azizka/speciesgeocodeR.svg?branch=master)](https://travis-ci.org/azizka/speciesgeocodeR)
 [![codecov](https://codecov.io/gh/azizka/speciesgeocodeR/branch/master/graph/badge.svg)](https://codecov.io/gh/azizka/speciesgeocodeR)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/speciesgeocodeR)](https://cran.r-project.org/package=speciesgeocodeR)
-[![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
+[![Project Status: unsupported.](https://www.repostatus.org/badges/latest/unsupported.svg)](https://www.repostatus.org/#unsupported)
 
 # speciesgeocodeR v. 2.0-10
 
-*NOTE: All coordinate cleaning functions have been moved to the new [CoordinateCleaner package](https://github.com/azizka/CoordinateCleaner)!*
+*NOTE: With the changes imminent to r-spatial, speciesgeocoder will be defunct and will be archived end of September 2023. All coordinate cleaning functions have been moved to the [CoordinateCleaner package](https://github.com/azizka/CoordinateCleaner)!*
 
 An R-package for the preparation for geographic point occurrence data in biogeographic analyses. A major focus is on securing data quality and providing ready to use output for biogeographic software. The main functions include:
 
